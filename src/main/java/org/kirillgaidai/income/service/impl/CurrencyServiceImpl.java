@@ -1,41 +1,37 @@
 package org.kirillgaidai.income.service.impl;
 
+import org.kirillgaidai.income.dao.CurrencyDao;
 import org.kirillgaidai.income.dto.CurrencyDto;
+import org.kirillgaidai.income.entity.CurrencyEntity;
 import org.kirillgaidai.income.service.CurrencyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
+    @Autowired
+    private CurrencyDao currencyDao;
+
     @Override
     public List<CurrencyDto> getCurrencyList() {
-        final List<CurrencyDto> result = new ArrayList<>();
-
-        final CurrencyDto currencyDto1 = new CurrencyDto();
-        currencyDto1.setId(1L);
-        currencyDto1.setCode("USD");
-        currencyDto1.setTitle("United states dollar");
-        result.add(currencyDto1);
-
-        final CurrencyDto currencyDto2 = new CurrencyDto();
-        currencyDto2.setId(2L);
-        currencyDto2.setCode("EUR");
-        currencyDto2.setTitle("United states dollar");
-        result.add(currencyDto2);
-
-        return result;
+        return currencyDao.getCurrencyList().stream().map(this::convertToCurrencyDto).collect(Collectors.toList());
     }
 
     @Override
-    public CurrencyDto getCurrencyById(Long id) {
-        final CurrencyDto result = new CurrencyDto();
-        result.setId(1L);
-        result.setCode("USD");
-        result.setTitle("United states dollar");
-        return result;
+    public CurrencyDto getCurrencyById(final Long id) {
+        return convertToCurrencyDto(currencyDao.getCurrencyById(id));
+    }
+
+    private CurrencyDto convertToCurrencyDto(final CurrencyEntity currencyEntity) {
+        final CurrencyDto currencyDto = new CurrencyDto();
+        currencyDto.setId(currencyEntity.getId());
+        currencyDto.setCode(currencyEntity.getCode());
+        currencyDto.setTitle(currencyEntity.getTitle());
+        return currencyDto;
     }
 
 }
