@@ -3,7 +3,7 @@ package org.kirillgaidai.income.dto;
 public class CategoryDto {
 
     private Long id;
-    private Long title;
+    private String title;
 
     public Long getId() {
         return id;
@@ -13,11 +13,11 @@ public class CategoryDto {
         this.id = id;
     }
 
-    public Long getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(Long title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
