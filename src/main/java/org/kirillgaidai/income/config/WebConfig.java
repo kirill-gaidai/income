@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean
-    public InternalResourceViewResolver setupViewResolver() {
+    public InternalResourceViewResolver internalResourceViewResolver() {
         final InternalResourceViewResolver internalResourceViewResolver = new InternalResourceViewResolver();
         internalResourceViewResolver.setPrefix("/WEB-INF/pages/");
         internalResourceViewResolver.setSuffix(".jsp");

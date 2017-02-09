@@ -2,6 +2,7 @@ package org.kirillgaidai.income.service.impl;
 
 import org.kirillgaidai.income.dao.CurrencyDao;
 import org.kirillgaidai.income.dto.CurrencyDto;
+import org.kirillgaidai.income.dto.CurrencyListDto;
 import org.kirillgaidai.income.entity.CurrencyEntity;
 import org.kirillgaidai.income.service.CurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,16 @@ public class CurrencyServiceImpl implements CurrencyService {
     private CurrencyDao currencyDao;
 
     @Override
-    public List<CurrencyDto> getCurrencyList() {
-        return currencyDao.getCurrencyList().stream().map(this::convertToCurrencyDto).collect(Collectors.toList());
+    public CurrencyListDto getCurrencyList() {
+        List<CurrencyDto> currencyDtoList = currencyDao
+                .getCurrencyList()
+                .stream()
+                .map(this::convertToCurrencyDto)
+                .collect(Collectors.toList());
+
+        CurrencyListDto currencyListDto = new CurrencyListDto();
+        currencyListDto.setCurrencyDtoList(currencyDtoList);
+        return currencyListDto;
     }
 
     @Override
