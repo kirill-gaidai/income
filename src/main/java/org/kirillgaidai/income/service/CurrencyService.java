@@ -11,4 +11,6 @@ public interface CurrencyService {
 
     CurrencyDto getCurrencyById(final Long id);
 
+    void createCurrency(final CurrencyDto currencyDto);
+
 }

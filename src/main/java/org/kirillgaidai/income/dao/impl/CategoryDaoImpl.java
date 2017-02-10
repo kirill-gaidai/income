@@ -28,7 +28,7 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
-    public CategoryEntity getCategoryById(Long id) {
+    public CategoryEntity getCategoryById(final Long id) {
         final CategoryEntity result = new CategoryEntity();
         result.setId(1L);
         result.setTitle("Category1");

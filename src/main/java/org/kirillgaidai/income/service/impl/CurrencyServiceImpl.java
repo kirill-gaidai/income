@@ -35,12 +35,22 @@ public class CurrencyServiceImpl implements CurrencyService {
         return convertToCurrencyDto(currencyDao.getCurrencyById(id));
     }
 
+    @Override
+    public void createCurrency(final CurrencyDto currencyDto) {
+
+    }
+
     private CurrencyDto convertToCurrencyDto(final CurrencyEntity currencyEntity) {
         final CurrencyDto currencyDto = new CurrencyDto();
         currencyDto.setId(currencyEntity.getId());
         currencyDto.setCode(currencyEntity.getCode());
         currencyDto.setTitle(currencyEntity.getTitle());
         return currencyDto;
+    }
+
+    private CurrencyEntity convertToCurrencyentity(final CurrencyDto currencyDto) {
+        final CurrencyEntity currencyEntity = new CurrencyEntity();
+        return currencyEntity;
     }
 
 }
