@@ -7,3 +7,5 @@ target/
 .settings
 .classpath
 .DS_Store
+db/*.sws
+db/*.pdb
