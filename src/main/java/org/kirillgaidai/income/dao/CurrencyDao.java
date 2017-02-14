@@ -10,6 +10,4 @@ public interface CurrencyDao {
 
     CurrencyEntity getCurrencyById(final Long id);
 
-    void createCurrency(final CurrencyEntity currencyEntity);
-
 }

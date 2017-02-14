@@ -2,7 +2,6 @@ package org.kirillgaidai.income.service.impl;
 
 import org.kirillgaidai.income.dao.CategoryDao;
 import org.kirillgaidai.income.dto.CategoryDto;
-import org.kirillgaidai.income.dto.CategoryListDto;
 import org.kirillgaidai.income.entity.CategoryEntity;
 import org.kirillgaidai.income.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +13,16 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
     private CategoryDao categoryDao;
 
-    @Override
-    public CategoryListDto getCategoryList() {
-        List<CategoryDto> categoryDtoList = categoryDao
-                .getCategoryList()
-                .stream()
-                .map(this::convertToCategory)
-                .collect(Collectors.toList());
+    @Autowired
+    public CategoryServiceImpl(final CategoryDao categoryDao) {
+        this.categoryDao = categoryDao;
+    }
 
-        CategoryListDto categoryListDto = new CategoryListDto();
-        categoryListDto.setCategoryDtoList(categoryDtoList);
-        return categoryListDto;
+    @Override
+    public List<CategoryDto> getCategoryList() {
+        return categoryDao.getCategoryList().stream().map(this::convertToCategory).collect(Collectors.toList());
     }
 
     @Override

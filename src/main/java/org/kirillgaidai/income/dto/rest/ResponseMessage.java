@@ -1,4 +1,4 @@
-package org.kirillgaidai.income.dto;
+package org.kirillgaidai.income.dto.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

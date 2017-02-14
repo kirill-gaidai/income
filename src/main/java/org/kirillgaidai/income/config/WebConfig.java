@@ -9,7 +9,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(value = "org.kirillgaidai.income.controller")
+@ComponentScan(value = {"org.kirillgaidai.income.web"})
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean

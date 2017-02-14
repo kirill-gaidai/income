@@ -1,7 +1,7 @@
-package org.kirillgaidai.income.controller;
+package org.kirillgaidai.income.web.rest;
 
 import org.kirillgaidai.income.dto.CurrencyDto;
-import org.kirillgaidai.income.dto.CurrencyListDto;
+import org.kirillgaidai.income.dto.rest.CurrencyListDto;
 import org.kirillgaidai.income.service.CurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/currency")
-public class CurrencyController {
+public class CurrencyRest {
+
+    private CurrencyService currencyService;
 
     @Autowired
-    private CurrencyService currencyService;
+    public CurrencyRest(final CurrencyService currencyService) {
+        this.currencyService = currencyService;
+    }
 
     @RequestMapping(value = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity getCurrencyById(final @PathVariable("id") Long id) {
@@ -25,8 +29,9 @@ public class CurrencyController {
 
     @RequestMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity getCurrencyList() {
-        final CurrencyListDto currencyDtoList = currencyService.getCurrencyList();
-        return ResponseEntity.ok(currencyDtoList);
+        final CurrencyListDto currencyListDto = new CurrencyListDto();
+        currencyListDto.setCurrencyDtoList(currencyService.getCurrencyList());
+        return ResponseEntity.ok(currencyListDto);
     }
 
 }

@@ -2,7 +2,6 @@ package org.kirillgaidai.income.service.impl;
 
 import org.kirillgaidai.income.dao.CurrencyDao;
 import org.kirillgaidai.income.dto.CurrencyDto;
-import org.kirillgaidai.income.dto.CurrencyListDto;
 import org.kirillgaidai.income.entity.CurrencyEntity;
 import org.kirillgaidai.income.service.CurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,30 +13,21 @@ import java.util.stream.Collectors;
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
-    @Autowired
     private CurrencyDao currencyDao;
 
-    @Override
-    public CurrencyListDto getCurrencyList() {
-        List<CurrencyDto> currencyDtoList = currencyDao
-                .getCurrencyList()
-                .stream()
-                .map(this::convertToCurrencyDto)
-                .collect(Collectors.toList());
+    @Autowired
+    public CurrencyServiceImpl(final CurrencyDao currencyDao) {
+        this.currencyDao = currencyDao;
+    }
 
-        CurrencyListDto currencyListDto = new CurrencyListDto();
-        currencyListDto.setCurrencyDtoList(currencyDtoList);
-        return currencyListDto;
+    @Override
+    public List<CurrencyDto> getCurrencyList() {
+        return currencyDao.getCurrencyList().stream().map(this::convertToCurrencyDto).collect(Collectors.toList());
     }
 
     @Override
     public CurrencyDto getCurrencyById(final Long id) {
         return convertToCurrencyDto(currencyDao.getCurrencyById(id));
-    }
-
-    @Override
-    public void createCurrency(final CurrencyDto currencyDto) {
-
     }
 
     private CurrencyDto convertToCurrencyDto(final CurrencyEntity currencyEntity) {
@@ -46,11 +36,6 @@ public class CurrencyServiceImpl implements CurrencyService {
         currencyDto.setCode(currencyEntity.getCode());
         currencyDto.setTitle(currencyEntity.getTitle());
         return currencyDto;
-    }
-
-    private CurrencyEntity convertToCurrencyentity(final CurrencyDto currencyDto) {
-        final CurrencyEntity currencyEntity = new CurrencyEntity();
-        return currencyEntity;
     }
 
 }

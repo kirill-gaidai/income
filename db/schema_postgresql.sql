@@ -17,8 +17,8 @@ CREATE TABLE categories (
 );
 
 CREATE TABLE accounts (
-  id          INT8         NOT NULL,
-  currency_id INT8         NOT NULL,
+  id          SERIAL       NOT NULL,
+  currency_id INTEGER      NOT NULL,
   title       VARCHAR(250) NOT NULL,
   CONSTRAINT pk_accounts PRIMARY KEY (id),
   CONSTRAINT fk_accounts_currencies FOREIGN KEY (currency_id) REFERENCES currencies (id)
@@ -27,9 +27,9 @@ CREATE TABLE accounts (
 );
 
 CREATE TABLE operations (
-  id          INT8           NOT NULL,
-  account_id  INT8           NOT NULL,
-  category_id INT8           NOT NULL,
+  id          SERIAL         NOT NULL,
+  account_id  INTEGER        NOT NULL,
+  category_id INTEGER        NOT NULL,
   day         DATE           NOT NULL,
   amount      NUMERIC(20, 4) NOT NULL,
   note        VARCHAR(250),
