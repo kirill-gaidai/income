@@ -1,6 +1,5 @@
 package org.kirillgaidai.income.web.controller;
 
-import org.kirillgaidai.income.dto.rest.CurrencyListDto;
 import org.kirillgaidai.income.service.CurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

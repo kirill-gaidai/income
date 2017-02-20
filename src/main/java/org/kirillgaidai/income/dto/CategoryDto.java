@@ -1,6 +1,5 @@
 package org.kirillgaidai.income.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -14,15 +13,15 @@ import javax.xml.bind.annotation.XmlType;
 @JsonPropertyOrder(value = {"id", "title"})
 public class CategoryDto {
 
-    private Long id;
+    private Integer id;
     private String title;
 
     @XmlElement
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

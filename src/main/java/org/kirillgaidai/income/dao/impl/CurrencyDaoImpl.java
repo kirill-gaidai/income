@@ -2,16 +2,12 @@ package org.kirillgaidai.income.dao.impl;
 
 import org.kirillgaidai.income.dao.CurrencyDao;
 import org.kirillgaidai.income.entity.CurrencyEntity;
-import org.kirillgaidai.income.exception.IncomeNotFoundDaoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -8,6 +8,12 @@ public interface CategoryDao {
 
     List<CategoryEntity> getCategoryList();
 
-    CategoryEntity getCategoryById(final Long id);
+    CategoryEntity getCategoryById(final Integer id);
+
+    int insertCategory(final CategoryEntity categoryEntity);
+
+    int updateCategory(final CategoryEntity categoryEntity);
+
+    int deleteCategory(final Integer id);
 
 }

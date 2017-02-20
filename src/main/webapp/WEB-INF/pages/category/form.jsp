@@ -1,12 +1,18 @@
 <%@page language="java" contentType="text/html;charset=utf-8" pageEncoding="utf-8" %>
+
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<spring:url value="/category/edit" var="actionUrl"/>
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>income</title>
     <style type="text/css">
         table, td {
-            border: 1px solid black;
+            border: none;
             border-collapse: collapse;
         }
     </style>
@@ -15,16 +21,19 @@
 
 <h1>Category</h1>
 
-<table>
-    <tr>
-        <td>
-            <label for="title">Title</label>
-        </td>
-        <td>
-            <input type="text" id="title" name="title" value=""/>
-        </td>
-    </tr>
-</table>
+<form:form method="post" action="${actionUrl}" modelAttribute="categoryDto">
+    <form:hidden path="id"/>
+    <table>
+        <tr>
+            <td><form:label path="title">Title</form:label></td>
+            <td><form:input path="title"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><form:button>Save</form:button></td>
+        </tr>
+    </table>
+</form:form>
 
 </body>
 </html>

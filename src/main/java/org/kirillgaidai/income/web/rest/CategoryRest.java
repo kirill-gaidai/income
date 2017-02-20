@@ -22,7 +22,7 @@ public class CategoryRest {
     }
 
     @RequestMapping(value = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity getCategoryById(final @PathVariable("id") Long id) {
+    public ResponseEntity getCategoryById(final @PathVariable("id") Integer id) {
         final CategoryDto categoryDto = categoryService.getCategoryById(id);
         return ResponseEntity.ok(categoryDto);
     }
