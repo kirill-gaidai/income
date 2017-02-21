@@ -26,16 +26,49 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto getCurrencyById(final Long id) {
+    public CurrencyDto getCurrencyById(final Integer id) {
+        if (id == null) {
+            return null;
+        }
         return convertToCurrencyDto(currencyDao.getCurrencyById(id));
     }
 
+    @Override
+    public void saveCurrency(final CurrencyDto currencyDto) {
+        final CurrencyEntity currencyEntity = convertToCurrencyEntity(currencyDto);
+        if (currencyEntity.getId() != null) {
+            currencyDao.updateCurrency(currencyEntity);
+            return;
+        }
+        currencyDao.insertCurrency(currencyEntity);
+        currencyDto.setId(currencyEntity.getId());
+    }
+
+    @Override
+    public void deleteCurrency(final Integer id) {
+        currencyDao.deleteCurrency(id);
+    }
+
     private CurrencyDto convertToCurrencyDto(final CurrencyEntity currencyEntity) {
+        if (currencyEntity == null) {
+            return null;
+        }
         final CurrencyDto currencyDto = new CurrencyDto();
         currencyDto.setId(currencyEntity.getId());
         currencyDto.setCode(currencyEntity.getCode());
         currencyDto.setTitle(currencyEntity.getTitle());
         return currencyDto;
+    }
+
+    private CurrencyEntity convertToCurrencyEntity(final CurrencyDto currencyDto) {
+        if (currencyDao == null) {
+            return null;
+        }
+        final CurrencyEntity currencyEntity = new CurrencyEntity();
+        currencyEntity.setId(currencyDto.getId());
+        currencyEntity.setCode(currencyDto.getCode());
+        currencyEntity.setTitle(currencyDto.getTitle());
+        return currencyEntity;
     }
 
 }

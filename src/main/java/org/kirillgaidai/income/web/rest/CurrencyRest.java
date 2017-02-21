@@ -22,7 +22,7 @@ public class CurrencyRest {
     }
 
     @RequestMapping(value = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity getCurrencyById(final @PathVariable("id") Long id) {
+    public ResponseEntity getCurrencyById(final @PathVariable("id") Integer id) {
         final CurrencyDto currencyDto = currencyService.getCurrencyById(id);
         return ResponseEntity.ok(currencyDto);
     }

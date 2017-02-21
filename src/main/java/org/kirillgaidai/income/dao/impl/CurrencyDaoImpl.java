@@ -25,12 +25,12 @@ public class CurrencyDaoImpl implements CurrencyDao {
 
     @Override
     public List<CurrencyEntity> getCurrencyList() {
-        final String QUERY = "SELECT id, code, title FROM currencies";
+        final String QUERY = "SELECT id, code, title FROM currencies ORDER BY id";
         return namedParameterJdbcTemplate.query(QUERY, new HashMap<>(), getRowMapper());
     }
 
     @Override
-    public CurrencyEntity getCurrencyById(final Long id) {
+    public CurrencyEntity getCurrencyById(final Integer id) {
         final String QUERY = "SELECT id, code, title FROM currencies WHERE :id = id";
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
@@ -41,10 +41,43 @@ public class CurrencyDaoImpl implements CurrencyDao {
         }
     }
 
+    @Override
+    public int insertCurrency(final CurrencyEntity currencyEntity) {
+        final String QUERY_KEY = "SELECT nextval('currencies_id_seq')";
+        final Integer id = namedParameterJdbcTemplate.queryForObject(
+                QUERY_KEY, new HashMap<>(), (resultSet, rowNum) -> resultSet.getInt(1));
+        currencyEntity.setId(id);
+
+        final String QUERY = "INSERT INTO currencies(id, code, title) VALUES(:id, :code, :title)";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("code", currencyEntity.getCode());
+        params.put("title", currencyEntity.getTitle());
+        return namedParameterJdbcTemplate.update(QUERY, params);
+    }
+
+    @Override
+    public int updateCurrency(final CurrencyEntity currencyEntity) {
+        final String QUERY = "UPDATE currencies SET code = :code, title = :title WHERE id = :id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", currencyEntity.getId());
+        params.put("code", currencyEntity.getCode());
+        params.put("title", currencyEntity.getTitle());
+        return namedParameterJdbcTemplate.update(QUERY, params);
+    }
+
+    @Override
+    public int deleteCurrency(final Integer id) {
+        final String QUERY = "DELETE FROM currencies WHERE id = :id";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        return namedParameterJdbcTemplate.update(QUERY, params);
+    }
+
     private RowMapper<CurrencyEntity> getRowMapper() {
         return (resultSet, rowNum) -> {
             CurrencyEntity currencyEntity = new CurrencyEntity();
-            currencyEntity.setId(resultSet.getLong("id"));
+            currencyEntity.setId(resultSet.getInt("id"));
             currencyEntity.setCode(resultSet.getString("code"));
             currencyEntity.setTitle(resultSet.getString("title"));
             return currencyEntity;

@@ -13,16 +13,16 @@ import javax.xml.bind.annotation.XmlType;
 @JsonPropertyOrder(value = {"id", "code", "title"})
 public class CurrencyDto {
 
-    private Long id;
+    private Integer id;
     private String code;
     private String title;
 
     @XmlElement
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

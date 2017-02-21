@@ -8,6 +8,10 @@ public interface CurrencyService {
 
     List<CurrencyDto> getCurrencyList();
 
-    CurrencyDto getCurrencyById(final Long id);
+    CurrencyDto getCurrencyById(final Integer id);
+
+    void saveCurrency(final CurrencyDto categoryDto);
+
+    void deleteCurrency(final Integer id);
 
 }
