@@ -11,7 +11,6 @@ public class HomeController {
     public ModelAndView showIndexPage() {
         final ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("index");
-        modelAndView.addObject("message", "Hello, World!");
         return modelAndView;
     }
 
