@@ -64,6 +64,10 @@ public class AccountServiceImpl implements AccountService {
 
     private AccountDto convertToAccountDto(
             final AccountEntity accountEntity, final Map<Integer, CurrencyEntity> currencyEntities) {
+        if (accountEntity == null) {
+            return null;
+        }
+
         final AccountDto accountDto = new AccountDto();
         accountDto.setId(accountEntity.getId());
         accountDto.setTitle(accountEntity.getTitle());
