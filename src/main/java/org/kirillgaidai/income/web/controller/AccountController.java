@@ -51,6 +51,15 @@ public class AccountController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "/card/{id}", method = RequestMethod.GET)
+    public ModelAndView showAccountCard(final @PathVariable("id") Integer id) {
+        AccountDto accountDto = accountService.getAccountById(id);
+        if (accountDto == null) {
+            throw new IncomeControllerNotFoundException("account with id %d not found", id);
+        }
+        return new ModelAndView("account/card", "account", accountDto);
+    }
+
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String saveAccount(final @Validated AccountDto accountDto) {
         accountService.saveAccount(accountDto);

@@ -34,11 +34,14 @@
 
         <spring:url var="accountEdit" value="/account/edit/${account.id}"/>
         <spring:url var="accountDelete" value="/account/delete/${account.id}"/>
+        <spring:url var="accountCard" value="/account/card/${account.id}"/>
 
         <tr>
             <td>${account.id}</td>
             <td>${account.currencyCode}</td>
-            <td>${account.title}</td>
+            <td>
+                <a href="${accountCard}">${account.title}</a>
+            </td>
             <td>
                 <a href="${accountEdit}">Edit</a>
                 <form method="post" action="${accountDelete}">
