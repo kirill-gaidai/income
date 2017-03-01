@@ -4,8 +4,6 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<spring:url value="/currency/edit" var="actionUrl"/>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +18,8 @@
 <body>
 
 <h1>Currency</h1>
+
+<spring:url value="/currency/edit" var="actionUrl"/>
 
 <form:form method="post" action="${actionUrl}" modelAttribute="currencyDto">
     <form:hidden path="id"/>

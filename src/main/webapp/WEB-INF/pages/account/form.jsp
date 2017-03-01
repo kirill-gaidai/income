@@ -4,8 +4,6 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<spring:url value="/account/edit" var="actionUrl"/>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +17,9 @@
 </head>
 <body>
 
-<h1>Category</h1>
+<h1>Account</h1>
+
+<spring:url value="/account/edit" var="actionUrl"/>
 
 <form:form method="post" action="${actionUrl}" modelAttribute="account">
     <form:hidden path="id"/>
