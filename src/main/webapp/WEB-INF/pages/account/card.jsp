@@ -8,16 +8,12 @@
 <html>
 <head>
     <title>income</title>
-    <style type="text/css">
-        table, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-    </style>
+    <spring:url var="stylesUri" value="/css/styles.css"/>
+    <link rel="stylesheet" type="text/css" href="${stylesUri}"/>
 </head>
 <body>
 
-<table>
+<table class="list">
     <tr>
         <td>ID</td>
         <td>${account.id}</td>
