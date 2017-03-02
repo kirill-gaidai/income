@@ -28,5 +28,33 @@
     </tr>
 </table>
 
+<spring:url value="/account/card/${operation.accountId}/operation" var="saveOperationUrl"/>
+
+<form:form method="post" action="${saveOperationUrl}" modelAttribute="operation">
+    <form:hidden path="accountId"/>
+    <table class="form">
+        <tr>
+            <td><form:label path="categoryId">Category</form:label></td>
+            <td><form:select path="categoryId" items="${categories}" itemValue="id" itemLabel="title"/></td>
+        </tr>
+        <tr>
+            <td><form:label path="amount">Amount</form:label></td>
+            <td><form:input path="amount"/></td>
+        </tr>
+        <tr>
+            <td><form:label path="day">Day</form:label></td>
+            <td><form:input path="day"/></td>
+        </tr>
+        <tr>
+            <td><form:label path="note">Note</form:label></td>
+            <td><form:textarea path="note"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><form:button>Save</form:button></td>
+        </tr>
+    </table>
+</form:form>
+
 </body>
 </html>
