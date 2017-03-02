@@ -42,12 +42,6 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
-        <!-- PostgreSQL -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.3-1104-jdbc41</version>
-        </dependency>
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>

@@ -5,7 +5,11 @@ import org.kirillgaidai.income.entity.AccountEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -42,17 +46,17 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public int insertAccount(final AccountEntity accountEntity) {
-        final String QUERY_KEY = "SELECT nextval('accounts_id_seq')";
-        final Integer id = namedParameterJdbcTemplate.queryForObject(
-                QUERY_KEY, new HashMap<>(), (resultSet, rowNum) -> resultSet.getInt(1));
-        accountEntity.setId(id);
-
-        final String QUERY = "INSERT INTO accounts(id, currency_id, title) VALUES(:id, :currency_id, :title)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String QUERY = "INSERT INTO accounts(currency_id, title) VALUES(:currency_id, :title)";
+        
         final Map<String, Object> params = new HashMap<>();
-        params.put("id", id);
         params.put("currency_id", accountEntity.getCurrencyId());
         params.put("title", accountEntity.getTitle());
-        return namedParameterJdbcTemplate.update(QUERY, params);
+        final SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+        
+        int affectedRows = namedParameterJdbcTemplate.update(QUERY, sqlParameterSource, keyHolder);
+        accountEntity.setId(keyHolder.getKey().intValue());
+        return affectedRows;
     }
 
     @Override

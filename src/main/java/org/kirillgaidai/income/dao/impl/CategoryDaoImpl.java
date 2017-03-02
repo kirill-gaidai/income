@@ -5,7 +5,11 @@ import org.kirillgaidai.income.entity.CategoryEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -43,16 +47,16 @@ public class CategoryDaoImpl implements CategoryDao {
 
     @Override
     public int insertCategory(final CategoryEntity categoryEntity) {
-        final String QUERY_KEY = "SELECT nextval('categories_id_seq')";
-        final Integer id = namedParameterJdbcTemplate.queryForObject(
-                QUERY_KEY, new HashMap<>(), (resultSet, rowNum) -> resultSet.getInt(1));
-        categoryEntity.setId(id);
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String QUERY = "INSERT INTO categories(title) VALUES(:title)";
 
-        final String QUERY = "INSERT INTO categories(id, title) VALUES(:id, :title)";
         final Map<String, Object> params = new HashMap<>();
-        params.put("id", id);
         params.put("title", categoryEntity.getTitle());
-        return namedParameterJdbcTemplate.update(QUERY, params);
+        final SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+
+        int affectedRows =  namedParameterJdbcTemplate.update(QUERY, sqlParameterSource, keyHolder);
+        categoryEntity.setId(keyHolder.getKey().intValue());
+        return affectedRows;
     }
 
     @Override
