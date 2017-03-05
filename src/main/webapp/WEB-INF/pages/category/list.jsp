@@ -4,7 +4,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<spring:url var="newUrl" value="/category/edit/new"/>
+<spring:url var="newAccountUri" value="/category/edit/new"/>
 
 <!DOCTYPE html>
 <html>
@@ -21,7 +21,7 @@
 
 <h1>Categories</h1>
 
-<a href="${newUrl}">New</a>
+<a href="${newAccountUri}">New</a>
 
 <table>
     <tr>

@@ -54,7 +54,8 @@ public class AccountDaoImpl implements AccountDao {
         params.put("title", accountEntity.getTitle());
         final SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
         
-        int affectedRows = namedParameterJdbcTemplate.update(QUERY, sqlParameterSource, keyHolder);
+        final int affectedRows = namedParameterJdbcTemplate.update(
+                QUERY, sqlParameterSource, keyHolder, new String[] {"id"});
         accountEntity.setId(keyHolder.getKey().intValue());
         return affectedRows;
     }

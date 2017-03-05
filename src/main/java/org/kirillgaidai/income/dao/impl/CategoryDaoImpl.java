@@ -54,7 +54,8 @@ public class CategoryDaoImpl implements CategoryDao {
         params.put("title", categoryEntity.getTitle());
         final SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 
-        int affectedRows =  namedParameterJdbcTemplate.update(QUERY, sqlParameterSource, keyHolder);
+        final int affectedRows =  namedParameterJdbcTemplate.update(
+                QUERY, sqlParameterSource, keyHolder, new String[] {"id"});
         categoryEntity.setId(keyHolder.getKey().intValue());
         return affectedRows;
     }

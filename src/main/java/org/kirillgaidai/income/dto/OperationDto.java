@@ -1,5 +1,8 @@
 package org.kirillgaidai.income.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -8,7 +11,9 @@ public class OperationDto {
     private Integer id;
     private Integer accountId;
     private Integer categoryId;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date day;
+    @NumberFormat(style = NumberFormat.Style.NUMBER)
     private BigDecimal amount;
     private String note;
 

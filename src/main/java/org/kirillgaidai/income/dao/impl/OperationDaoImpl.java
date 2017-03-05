@@ -37,7 +37,8 @@ public class OperationDaoImpl implements OperationDao {
         params.put("note", operationEntity.getNote());
         final SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 
-        int affectedRows = namedParameterJdbcTemplate.update(QUERY, sqlParameterSource, keyHolder);
+        final int affectedRows = namedParameterJdbcTemplate.update(
+                QUERY, sqlParameterSource, keyHolder, new String[] {"id"});
         operationEntity.setId(keyHolder.getKey().intValue());
         return affectedRows;
     }

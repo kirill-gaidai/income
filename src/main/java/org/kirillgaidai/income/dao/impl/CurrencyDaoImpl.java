@@ -55,9 +55,9 @@ public class CurrencyDaoImpl implements CurrencyDao {
         params.put("title", currencyEntity.getTitle());
         final SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 
-        final int affectedRows = namedParameterJdbcTemplate.update(QUERY, sqlParameterSource, keyHolder);
+        final int affectedRows = namedParameterJdbcTemplate.update(
+                QUERY, sqlParameterSource, keyHolder, new String[] {"id"});
         currencyEntity.setId(keyHolder.getKey().intValue());
-
         return affectedRows;
     }
 

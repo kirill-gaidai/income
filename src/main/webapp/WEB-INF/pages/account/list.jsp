@@ -19,9 +19,9 @@
 
 <h1>Accounts</h1>
 
-<spring:url var="newUrl" value="/account/edit/new"/>
+<spring:url var="newAccountUri" value="/account/edit/new"/>
 
-<a href="${newUrl}">New</a>
+<a href="${newAccountUri}">New</a>
 
 <table>
     <tr>
@@ -32,19 +32,19 @@
     </tr>
     <c:forEach var="account" items="${accounts}">
 
-        <spring:url var="accountEdit" value="/account/edit/${account.id}"/>
-        <spring:url var="accountDelete" value="/account/delete/${account.id}"/>
-        <spring:url var="accountCard" value="/account/card/${account.id}"/>
+        <spring:url var="accountEditUri" value="/account/edit/${account.id}"/>
+        <spring:url var="accountDeleteUri" value="/account/delete/${account.id}"/>
+        <spring:url var="accountCardUri" value="/account/${account.id}/operation/edit/new"/>
 
         <tr>
             <td>${account.id}</td>
             <td>${account.currencyCode}</td>
             <td>
-                <a href="${accountCard}">${account.title}</a>
+                <a href="${accountCardUri}">${account.title}</a>
             </td>
             <td>
-                <a href="${accountEdit}">Edit</a>
-                <form method="post" action="${accountDelete}">
+                <a href="${accountEditUri}">Edit</a>
+                <form method="post" action="${accountDeleteUri}">
                     <button>Delete</button>
                 </form>
             </td>

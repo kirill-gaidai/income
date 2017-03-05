@@ -28,7 +28,7 @@
     </tr>
 </table>
 
-<spring:url value="/account/card/${operation.accountId}/operation" var="saveOperationUrl"/>
+<spring:url value="/account/${operation.accountId}/operation/edit" var="saveOperationUrl"/>
 
 <form:form method="post" action="${saveOperationUrl}" modelAttribute="operation">
     <form:hidden path="accountId"/>
