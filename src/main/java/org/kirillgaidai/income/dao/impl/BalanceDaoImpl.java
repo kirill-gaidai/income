@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.HashMap;
 
 @Repository
 public class BalanceDaoImpl implements BalanceDao {
@@ -30,7 +31,16 @@ public class BalanceDaoImpl implements BalanceDao {
 
     @Override
     public int insertEntity(final BalanceEntity entity) {
-        throw new UnsupportedOperationException();
+        final String QUERY =
+                "INSERT INTO balances(account_id, day, amount, fixed) VALUES (:account_id, :day, :amount, :fixed)";
+
+        final HashMap<String, Object> params = new HashMap<>();
+        params.put("account_id", entity.getAccountId());
+        params.put("day", entity.getDay());
+        params.put("amount", entity.getAmount());
+        params.put("fixed", entity.getFixed());
+
+        return namedParameterJdbcTemplate.update(QUERY, params);
     }
 
     @Override

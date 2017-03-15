@@ -1,5 +1,6 @@
 package org.kirillgaidai.income.service.impl;
 
+import org.kirillgaidai.income.dao.BalanceDao;
 import org.kirillgaidai.income.dao.OperationDao;
 import org.kirillgaidai.income.dto.OperationDto;
 import org.kirillgaidai.income.entity.OperationEntity;
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Repository;
 public class OperationServiceImpl implements OperationService {
 
     private OperationDao operationDao;
+    private BalanceDao balanceDao;
 
-    public OperationServiceImpl(final OperationDao operationDao) {
+    public OperationServiceImpl(final OperationDao operationDao, final BalanceDao balanceDao) {
         this.operationDao = operationDao;
+        this.balanceDao = balanceDao;
     }
 
     @Override
