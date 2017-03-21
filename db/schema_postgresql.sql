@@ -1,7 +1,8 @@
-DROP TABLE IF EXISTS OPERATIONS;
-DROP TABLE IF EXISTS ACCOUNTS;
-DROP TABLE IF EXISTS CATEGORIES;
-DROP TABLE IF EXISTS CURRENCIES;
+DROP TABLE IF EXISTS balances;
+DROP TABLE IF EXISTS operations;
+DROP TABLE IF EXISTS accounts;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS currencies;
 
 CREATE TABLE currencies (
   id    SERIAL       NOT NULL,
@@ -38,6 +39,17 @@ CREATE TABLE operations (
   ON DELETE RESTRICT
   ON UPDATE RESTRICT,
   CONSTRAINT fk_operations_categories FOREIGN KEY (category_id) REFERENCES categories (id)
+  ON DELETE RESTRICT
+  ON UPDATE RESTRICT
+);
+
+CREATE TABLE balances (
+  account_id INTEGER        NOT NULL,
+  day        DATE           NOT NULL,
+  amount     NUMERIC(20, 4) NOT NULL,
+  manual     BOOLEAN        NOT NULL,
+  CONSTRAINT pk_balances PRIMARY KEY (account_id, day),
+  CONSTRAINT fk_balances_accounts FOREIGN KEY (account_id) REFERENCES accounts (id)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT
 );
