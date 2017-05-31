@@ -1,0 +1,7 @@
+ALTER TABLE accounts ADD COLUMN sort VARCHAR(10);
+UPDATE accounts SET sort = SUBSTRING(title, 1, 10);
+ALTER TABLE accounts ALTER COLUMN sort SET NOT NULL;
+
+ALTER TABLE categories ADD COLUMN sort VARCHAR(10);
+UPDATE categories SET sort = SUBSTRING(title, 1, 10);
+ALTER TABLE categories ALTER COLUMN sort SET NOT NULL;
