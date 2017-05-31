@@ -20,8 +20,8 @@ public class AccountController {
 
     @Autowired
     public AccountController(
-            final IAccountService accountService,
-            final ICurrencyService currencyService) {
+            IAccountService accountService,
+            ICurrencyService currencyService) {
         super();
         this.accountService = accountService;
         this.currencyService = currencyService;
@@ -41,7 +41,7 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
-    public ModelAndView showAccountForm(final @PathVariable("id") Integer id) {
+    public ModelAndView showAccountForm(@PathVariable("id") Integer id) {
         AccountDto accountDto = accountService.getDto(id);
         final ModelAndView modelAndView = new ModelAndView("account/form");
         modelAndView.addObject("currencies", currencyService.getDtoList());
@@ -50,13 +50,13 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public String saveAccount(final @Validated AccountDto accountDto) {
+    public String saveAccount(@Validated AccountDto accountDto) {
         accountService.saveDto(accountDto);
         return "redirect:/account/list";
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
-    public String deleteAccount(final @PathVariable("id") Integer id) {
+    public String deleteAccount(@PathVariable("id") Integer id) {
         accountService.deleteDto(id);
         return "redirect:/account/list";
     }

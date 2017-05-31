@@ -10,7 +10,7 @@ import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertCurre
 
 public class CurrencyConverterTest {
 
-    private IGenericConverter<CurrencyEntity, CurrencyDto> converter = new CurrencyConverter();
+    final private IGenericConverter<CurrencyEntity, CurrencyDto> converter = new CurrencyConverter();
 
     @Test
     public void testConvertToDto_Ok() throws Exception {

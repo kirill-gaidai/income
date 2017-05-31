@@ -17,10 +17,10 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/category")
 public class CategoryController {
 
-    private ICategoryService categoryService;
+    final private ICategoryService categoryService;
 
     @Autowired
-    public CategoryController(final ICategoryService categoryService) {
+    public CategoryController(ICategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
@@ -36,8 +36,8 @@ public class CategoryController {
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
-    public ModelAndView showCategoryForm(final @PathVariable("id") Integer id) {
-        final CategoryDto categoryDto = categoryService.getDto(id);
+    public ModelAndView showCategoryForm(@PathVariable("id") Integer id) {
+        CategoryDto categoryDto = categoryService.getDto(id);
         if (categoryDto == null) {
             throw new IncomeControllerNotFoundException("category with id " + id + " not found");
         }
@@ -45,13 +45,13 @@ public class CategoryController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public String saveCategory(final @Validated CategoryDto categoryDto) {
+    public String saveCategory(@Validated CategoryDto categoryDto) {
         categoryService.saveDto(categoryDto);
         return "redirect:/category/list";
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
-    public String deleteCategory(final @PathVariable("id") Integer id) {
+    public String deleteCategory(@PathVariable("id") Integer id) {
         categoryService.deleteDto(id);
         return "redirect:/category/list";
     }

@@ -3,7 +3,6 @@ package org.kirillgaidai.income.service.intf;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public interface IBalanceService {
 

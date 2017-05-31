@@ -10,7 +10,7 @@ import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertCateg
 
 public class CategoryConverterTest {
 
-    private IGenericConverter<CategoryEntity, CategoryDto> converter = new CategoryConverter();
+    final private IGenericConverter<CategoryEntity, CategoryDto> converter = new CategoryConverter();
 
     @Test
     public void testConvertToDto_Ok() throws Exception {

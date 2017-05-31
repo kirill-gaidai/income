@@ -28,7 +28,7 @@ import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertAccou
 @ContextConfiguration(classes = PersistenceTestConfig.class)
 public class AccountDaoTest {
 
-    private List<AccountEntity> orig = Arrays.asList(
+    final private List<AccountEntity> orig = Arrays.asList(
             new AccountEntity(3, 5, "01", "account1"),
             new AccountEntity(2, 6, "02", "account2"),
             new AccountEntity(1, 7, "03", "account3")

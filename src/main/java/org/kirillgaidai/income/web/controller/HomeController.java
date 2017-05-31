@@ -1,7 +1,6 @@
 package org.kirillgaidai.income.web.controller;
 
 import org.kirillgaidai.income.service.dto.AccountDto;
-import org.kirillgaidai.income.service.impl.AccountService;
 import org.kirillgaidai.income.service.intf.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

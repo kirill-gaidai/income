@@ -28,7 +28,7 @@ import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCurre
 @ContextConfiguration(classes = PersistenceTestConfig.class)
 public class CurrencyDaoTest {
 
-    private List<CurrencyEntity> orig = Arrays.asList(
+    final private List<CurrencyEntity> orig = Arrays.asList(
             new CurrencyEntity(3, "cc1", "currency1"),
             new CurrencyEntity(2, "cc2", "currency2"),
             new CurrencyEntity(1, "cc3", "currency3")

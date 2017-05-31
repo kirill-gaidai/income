@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/currency")
 public class CurrencyController {
 
-    private ICurrencyService currencyService;
+    final private ICurrencyService currencyService;
 
     @Autowired
     public CurrencyController(ICurrencyService currencyService) {
@@ -36,8 +36,8 @@ public class CurrencyController {
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/edit/{id}")
-    public ModelAndView showCurrencyForm(final @PathVariable("id") Integer id) {
-        final CurrencyDto currencyDto = currencyService.getDto(id);
+    public ModelAndView showCurrencyForm(@PathVariable("id") Integer id) {
+        CurrencyDto currencyDto = currencyService.getDto(id);
         if (currencyDto == null) {
             throw new IncomeControllerNotFoundException("currency with id " + id + " not found");
         }
@@ -45,13 +45,13 @@ public class CurrencyController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public String saveCategory(final @Validated CurrencyDto currencyDto) {
+    public String saveCategory(@Validated CurrencyDto currencyDto) {
         currencyService.saveDto(currencyDto);
         return "redirect:/currency/list";
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
-    public String deleteCategory(final @PathVariable("id") Integer id) {
+    public String deleteCategory(@PathVariable("id") Integer id) {
         currencyService.deleteDto(id);
         return "redirect:/currency/list";
     }

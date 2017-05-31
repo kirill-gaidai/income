@@ -32,16 +32,16 @@ import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertOpera
 @ContextConfiguration(classes = PersistenceTestConfig.class)
 public class OperationDaoTest {
 
-    private Integer ACCOUNT_ID_1 = 10;
-    private Integer ACCOUNT_ID_2 = 11;
-    private Integer ACCOUNT_ID_3 = 12;
-    private Integer CATEGORY_ID_1 = 20;
-    private Integer CATEGORY_ID_2 = 21;
-    private LocalDate DAY_0 = LocalDate.of(2017, 3, 4);
-    private LocalDate DAY_1 = LocalDate.of(2017, 3, 5);
-    private LocalDate DAY_2 = LocalDate.of(2017, 3, 6);
-    private LocalDate DAY_3 = LocalDate.of(2017, 3, 7);
-    private List<OperationEntity> orig = Arrays.asList(
+    final private Integer ACCOUNT_ID_1 = 10;
+    final private Integer ACCOUNT_ID_2 = 11;
+    final private Integer ACCOUNT_ID_3 = 12;
+    final private Integer CATEGORY_ID_1 = 20;
+    final private Integer CATEGORY_ID_2 = 21;
+    final private LocalDate DAY_0 = LocalDate.of(2017, 3, 4);
+    final private LocalDate DAY_1 = LocalDate.of(2017, 3, 5);
+    final private LocalDate DAY_2 = LocalDate.of(2017, 3, 6);
+    final private LocalDate DAY_3 = LocalDate.of(2017, 3, 7);
+    final private List<OperationEntity> orig = Arrays.asList(
             new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note 1"),
             new OperationEntity(2, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_2, new BigDecimal("0.2"), "Note 2"),
             new OperationEntity(3, ACCOUNT_ID_1, CATEGORY_ID_2, DAY_1, new BigDecimal("0.4"), "Note 3"),

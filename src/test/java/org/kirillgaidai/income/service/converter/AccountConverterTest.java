@@ -10,7 +10,7 @@ import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertAccou
 
 public class AccountConverterTest {
 
-    private IGenericConverter<AccountEntity, AccountDto> converter = new AccountConverter();
+    final private IGenericConverter<AccountEntity, AccountDto> converter = new AccountConverter();
 
     @Test
     public void testConvertToDto_Ok() throws Exception {

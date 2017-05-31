@@ -2,13 +2,10 @@ package org.kirillgaidai.income.dao.rowmappers;
 
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
-import org.kirillgaidai.income.dao.utils.PersistenceTestUtils;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCurrencyEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;

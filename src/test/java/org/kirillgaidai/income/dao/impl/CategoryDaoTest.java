@@ -28,7 +28,7 @@ import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCateg
 @ContextConfiguration(classes = PersistenceTestConfig.class)
 public class CategoryDaoTest {
 
-    private List<CategoryEntity> orig = Arrays.asList(
+    final private List<CategoryEntity> orig = Arrays.asList(
             new CategoryEntity(3, "01", "category1"),
             new CategoryEntity(2, "02", "category2"),
             new CategoryEntity(1, "03", "category3")

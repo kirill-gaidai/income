@@ -1,6 +1,5 @@
 package org.kirillgaidai.income.web.controller;
 
-import org.kirillgaidai.income.service.dto.SummaryDto;
 import org.kirillgaidai.income.service.intf.ISummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,9 +25,9 @@ public class SummaryController {
 
     @RequestMapping(value = "/summary", method = RequestMethod.GET)
     public ModelAndView getSummary(
-            final @RequestParam("account_id") Set<Integer> accountIds,
-            final @RequestParam("first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate firstDay,
-            final @RequestParam("last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastDay) {
+            @RequestParam("account_id") Set<Integer> accountIds,
+            @RequestParam("first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate firstDay,
+            @RequestParam("last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastDay) {
         ModelAndView modelAndView = new ModelAndView("summary/list");
         modelAndView.addObject("summaryDto", summaryService.getSummaryDto(accountIds, firstDay, lastDay));
         modelAndView.addObject("returnFirstDay", firstDay);

@@ -33,14 +33,14 @@ import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertBalan
 @ContextConfiguration(classes = PersistenceTestConfig.class)
 public class BalanceDaoTest {
 
-    private Integer ACCOUNT_ID_1 = 10;
-    private Integer ACCOUNT_ID_2 = 11;
-    private Integer ACCOUNT_ID_3 = 12;
-    private LocalDate DAY_0 = LocalDate.of(2017, 3, 4);
-    private LocalDate DAY_1 = LocalDate.of(2017, 3, 5);
-    private LocalDate DAY_2 = LocalDate.of(2017, 3, 6);
-    private LocalDate DAY_3 = LocalDate.of(2017, 3, 7);
-    private List<BalanceEntity> orig = Arrays.asList(
+    final private Integer ACCOUNT_ID_1 = 10;
+    final private Integer ACCOUNT_ID_2 = 11;
+    final private Integer ACCOUNT_ID_3 = 12;
+    final private LocalDate DAY_0 = LocalDate.of(2017, 3, 4);
+    final private LocalDate DAY_1 = LocalDate.of(2017, 3, 5);
+    final private LocalDate DAY_2 = LocalDate.of(2017, 3, 6);
+    final private LocalDate DAY_3 = LocalDate.of(2017, 3, 7);
+    final private List<BalanceEntity> orig = Arrays.asList(
             new BalanceEntity(ACCOUNT_ID_1, DAY_2, new BigDecimal("0.1"), true),
             new BalanceEntity(ACCOUNT_ID_1, DAY_1, new BigDecimal("0.2"), false),
             new BalanceEntity(ACCOUNT_ID_2, DAY_2, new BigDecimal("0.4"), true),
