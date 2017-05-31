@@ -76,6 +76,7 @@ public class OperationService implements IOperationService {
 
         LocalDate thisDay = operationDto.getDay();
         LocalDate prevDay = thisDay.minusDays(1L);
+
         BalanceEntity thisBalanceEntity = balanceDao.getEntity(accountId, thisDay);
         BalanceEntity prevBalanceEntity = balanceDao.getEntity(accountId, prevDay);
         if (thisBalanceEntity == null && prevBalanceEntity == null) {
@@ -93,14 +94,6 @@ public class OperationService implements IOperationService {
             return;
         }
 
-        if (!thisBalanceEntity.getManual()) {
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay,
-                    thisBalanceEntity.getAmount().subtract(amount), false);
-            balanceDao.updateEntity(newBalanceEntity);
-            operationDao.insertEntity(operationEntity);
-            return;
-        }
-
         if (prevBalanceEntity == null) {
             BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay,
                     thisBalanceEntity.getAmount().add(amount), false);
@@ -109,11 +102,44 @@ public class OperationService implements IOperationService {
             return;
         }
 
-        if (!prevBalanceEntity.getManual()) {
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay,
-                    prevBalanceEntity.getAmount().add(amount), false);
-            balanceDao.updateEntity(newBalanceEntity);
+        if (prevBalanceEntity.getManual() && thisBalanceEntity.getManual()) {
+            operationDao.insertEntity(operationEntity);
+            return;
         }
+
+        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate beforeDay = prevDay.minusDays(1L);
+        BigDecimal prevAmount = prevBalanceEntity.getAmount();
+        BigDecimal thisAmount = thisBalanceEntity.getAmount();
+
+        if (prevBalanceEntity.getManual()) {
+            if (balanceDao.getEntity(accountId, afterDay) == null) {
+                balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
+            }
+            operationDao.insertEntity(operationEntity);
+            return;
+        }
+
+        if (thisBalanceEntity.getManual()) {
+            if (balanceDao.getEntity(accountId, beforeDay) == null) {
+                balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
+            }
+            operationDao.insertEntity(operationEntity);
+            return;
+        }
+
+        if (balanceDao.getEntity(accountId, afterDay) == null) {
+            balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
+            operationDao.insertEntity(operationEntity);
+            return;
+        }
+
+        if (balanceDao.getEntity(accountId, beforeDay) == null) {
+            balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
+            operationDao.insertEntity(operationEntity);
+            return;
+        }
+
         operationDao.insertEntity(operationEntity);
     }
 
@@ -172,7 +198,7 @@ public class OperationService implements IOperationService {
 
         Set<Integer> accountIds = new HashSet<>();
         Set<Integer> categoryIds = new HashSet<>();
-        for (OperationDto operationDto: operationDtoList) {
+        for (OperationDto operationDto : operationDtoList) {
             accountIds.add(operationDto.getAccountId());
             categoryIds.add(operationDto.getCategoryId());
         }
@@ -203,6 +229,7 @@ public class OperationService implements IOperationService {
      * Prepares operation dto for new operation input.
      * If account ids set contains single id, fills account id and title. Otherwise sets them to null.
      * If category id is not null fills category id and title. Otherwise sets them to null.
+     *
      * @param accountIds - account ids set
      * @param categoryId - category id
      * @return prepared operation dto
