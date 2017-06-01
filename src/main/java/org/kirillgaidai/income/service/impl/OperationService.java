@@ -152,7 +152,9 @@ public class OperationService implements IOperationService {
 
         Integer accountId = operationEntity.getAccountId();
         LocalDate thisDay = operationEntity.getDay();
+        LocalDate afterDay = thisDay.plusDays(1L);
         LocalDate prevDay = thisDay.minusDays(1L);
+        LocalDate beforeDay = prevDay.minusDays(1L);
 
         BalanceEntity thisBalanceEntity = balanceDao.getEntity(accountId, thisDay);
         if (thisBalanceEntity == null) {
@@ -164,15 +166,39 @@ public class OperationService implements IOperationService {
             throw new IncomeServiceBalanceNotFoundException(accountId, prevDay);
         }
 
+        if (thisBalanceEntity.getManual() && prevBalanceEntity.getManual()) {
+            operationDao.deleteEntity(id);
+            return;
+        }
+
         BigDecimal amount = operationEntity.getAmount();
-        if (!thisBalanceEntity.getManual()) {
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay,
-                    thisBalanceEntity.getAmount().add(amount), false);
-            balanceDao.updateEntity(newBalanceEntity);
-        } else if (!prevBalanceEntity.getManual()) {
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay,
-                    prevBalanceEntity.getAmount().subtract(amount), false);
-            balanceDao.updateEntity(newBalanceEntity);
+        BigDecimal thisBalanceAmount = thisBalanceEntity.getAmount();
+        BigDecimal prevBalanceAmount = prevBalanceEntity.getAmount();
+
+        if (prevBalanceEntity.getManual()) {
+            if (balanceDao.getEntity(accountId, afterDay) == null) {
+                balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisBalanceAmount.add(amount), false));
+            }
+            operationDao.deleteEntity(id);
+            return;
+        }
+
+        if (thisBalanceEntity.getManual()) {
+            if (balanceDao.getEntity(accountId, beforeDay) == null) {
+                balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevBalanceAmount.subtract(amount), false));
+            }
+            operationDao.deleteEntity(id);
+            return;
+        }
+
+        if (balanceDao.getEntity(accountId, afterDay) == null) {
+            balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisBalanceAmount.add(amount), false));
+            operationDao.deleteEntity(id);
+            return;
+        }
+
+        if (balanceDao.getEntity(accountId, beforeDay) == null) {
+            balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevBalanceAmount.subtract(amount), false));
         }
 
         operationDao.deleteEntity(id);
