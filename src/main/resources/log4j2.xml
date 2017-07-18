@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30">
+
+    <Properties>
+        <Property name="logsFolder">d:/temp/logs</Property>
+    </Properties>
+
+    <!-- https://logging.apache.org/log4j/2.x/manual -->
+
+    <!-- PatternLayout placeholders:
+         %d - current date %p - level %t - thread  %M - method   %C - class
+         %F - file name    %L - line  %m - message %n - new line
+         -->
+
+    <Appenders>
+        <File name="file-appender" fileName="${logsFolder}/income.log" append="false">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5p | [%t] %C.%M(): %m%n"/>
+        </File>
+        <Console name="console-appender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5p | [%t] %C.%M(): %m%n"/>
+        </Console>
+    </Appenders>
+
+    <!-- Logging levels: off, fatal, error, warn, info, debug, trace/all -->
+
+    <Loggers>
+        <Logger name="org.kirillgaidai.income" level="debug" additivity="false">
+            <AppenderRef ref="console-appender"/>
+            <AppenderRef ref="file-appender"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="console-appender"/>
+            <AppenderRef ref="file-appender"/>
+        </Root>
+    </Loggers>
+</Configuration>
