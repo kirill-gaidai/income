@@ -2,13 +2,11 @@ package org.kirillgaidai.income.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 
 import javax.sql.DataSource;
 
-@Configuration
 @ComponentScan("org.kirillgaidai.income.dao")
 public class PersistenceConfig {
 
