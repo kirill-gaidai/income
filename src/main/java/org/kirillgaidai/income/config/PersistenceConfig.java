@@ -12,7 +12,7 @@ public class PersistenceConfig {
 
     @Bean
     public DataSource dataSource() {
-        final JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
+        JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
         jndiDataSourceLookup.setResourceRef(true);
         return jndiDataSourceLookup.getDataSource("jdbc/income");
     }

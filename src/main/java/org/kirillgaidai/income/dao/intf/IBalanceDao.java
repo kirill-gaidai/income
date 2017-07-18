@@ -16,6 +16,10 @@ public interface IBalanceDao {
 
     BalanceEntity getEntity(Integer accountId, LocalDate day);
 
+    BalanceEntity getEntityBefore(Integer accountId, LocalDate day);
+
+    BalanceEntity getEntityAfter(Integer accountId, LocalDate day);
+
     int insertEntity(BalanceEntity entity);
 
     int updateEntity(BalanceEntity entity);

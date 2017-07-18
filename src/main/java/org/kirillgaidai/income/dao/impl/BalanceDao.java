@@ -79,6 +79,34 @@ public class BalanceDao implements IBalanceDao {
     }
 
     @Override
+    public BalanceEntity getEntityBefore(Integer accountId, LocalDate day) {
+        String sql = "SELECT account_id, day, amount, MANUAL FROM balances " +
+                "WHERE (account_id = :account_id) AND (day < :day) ORDER BY day DESC LIMIT 1";
+        Map<String, Object> params = new HashMap<>();
+        params.put("account_id", accountId);
+        params.put("day", Date.valueOf(day));
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, params, balanceEntityRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public BalanceEntity getEntityAfter(Integer accountId, LocalDate day) {
+        String sql = "SELECT account_id, day, amount, MANUAL FROM balances " +
+                "WHERE (account_id = :account_id) AND (day > :day) ORDER BY day LIMIT 1";
+        Map<String, Object> params = new HashMap<>();
+        params.put("account_id", accountId);
+        params.put("day", Date.valueOf(day));
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, params, balanceEntityRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     public int insertEntity(BalanceEntity entity) {
         String sql = "INSERT INTO balances(account_id, day, amount, manual) " +
                 "VALUES(:account_id, :day, :amount, :manual)";

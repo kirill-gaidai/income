@@ -140,6 +140,32 @@ public class BalanceDaoTest {
     }
 
     @Test
+    public void testGetEntityBefore_Ok() throws Exception {
+        BalanceEntity expected = orig.get(1);
+        BalanceEntity actual = balanceDao.getEntityBefore(ACCOUNT_ID_1, DAY_2);
+        assertBalanceEntityEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetEntityBefore_NotFound() throws Exception {
+        BalanceEntity actual = balanceDao.getEntityBefore(ACCOUNT_ID_1, DAY_1);
+        assertNull(actual);
+    }
+
+    @Test
+    public void testGetEntityAfter_Ok() throws Exception {
+        BalanceEntity expected = orig.get(0);
+        BalanceEntity actual = balanceDao.getEntityAfter(ACCOUNT_ID_1, DAY_1);
+        assertBalanceEntityEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetEntityAfter_NotFound() throws Exception {
+        BalanceEntity actual = balanceDao.getEntityAfter(ACCOUNT_ID_1, DAY_2);
+        assertNull(actual);
+    }
+
+    @Test
     public void testInsertEntity_Ok() throws Exception {
         BalanceEntity entity = new BalanceEntity(ACCOUNT_ID_1, DAY_3, new BigDecimal("0.8"), true);
         List<BalanceEntity> expected = Arrays.asList(entity, orig.get(0), orig.get(1));
