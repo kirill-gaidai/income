@@ -66,6 +66,11 @@ public class OperationService implements IOperationService {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Creates new operation. Recalculates balance for account if necessary.
+     *
+     * @param operationDto - operation dto
+     */
     @Override
     public void saveDto(OperationDto operationDto) {
         Integer accountId = operationDto.getAccountId();
@@ -75,132 +80,164 @@ public class OperationService implements IOperationService {
         }
 
         LocalDate thisDay = operationDto.getDay();
-        LocalDate prevDay = thisDay.minusDays(1L);
 
         BalanceEntity thisBalanceEntity = balanceDao.getEntity(accountId, thisDay);
-        BalanceEntity prevBalanceEntity = balanceDao.getEntity(accountId, prevDay);
+        BalanceEntity prevBalanceEntity = balanceDao.getEntityBefore(accountId, thisDay);
+
+        // if no operations for account, then error
         if (thisBalanceEntity == null && prevBalanceEntity == null) {
-            throw new IncomeServiceBalanceNotFoundException(accountEntity.getTitle(), prevDay);
+            throw new IncomeServiceBalanceNotFoundException(accountEntity.getTitle(), thisDay);
         }
 
         BigDecimal amount = operationDto.getAmount();
         OperationEntity operationEntity = operationConverter.convertToEntity(operationDto);
 
+        // if balance before this day exists, but no balance for this day - calculating balance for this day
         if (thisBalanceEntity == null) {
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay,
-                    prevBalanceEntity.getAmount().subtract(amount), false);
+            BalanceEntity newBalanceEntity =
+                    new BalanceEntity(accountId, thisDay, prevBalanceEntity.getAmount().subtract(amount), false);
             balanceDao.insertEntity(newBalanceEntity);
             operationDao.insertEntity(operationEntity);
             return;
         }
 
+        // if balance for this day exists, but no balance before - calculating balance for previous day
         if (prevBalanceEntity == null) {
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay,
+            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay.minusDays(1L),
                     thisBalanceEntity.getAmount().add(amount), false);
             balanceDao.insertEntity(newBalanceEntity);
             operationDao.insertEntity(operationEntity);
             return;
         }
 
+        // if both balances exist, but fixed - no balance recalculation
         if (prevBalanceEntity.getManual() && thisBalanceEntity.getManual()) {
             operationDao.insertEntity(operationEntity);
             return;
         }
 
-        LocalDate afterDay = thisDay.plusDays(1L);
-        LocalDate beforeDay = prevDay.minusDays(1L);
+        // After that point both balances (for this day and previous balance) exist
         BigDecimal prevAmount = prevBalanceEntity.getAmount();
         BigDecimal thisAmount = thisBalanceEntity.getAmount();
+        LocalDate prevDay = prevBalanceEntity.getDay();
 
+        // If previous balance fixed, only balance for this day may be recalculated
         if (prevBalanceEntity.getManual()) {
-            if (balanceDao.getEntity(accountId, afterDay) == null) {
+            // Balance for this day may be recalculated (operation amount is subtracted from it) only
+            // if no balance after this day
+            if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
                 balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
             }
             operationDao.insertEntity(operationEntity);
             return;
         }
 
+        // If this balance fixed, only balance for previous day may be recalculated
         if (thisBalanceEntity.getManual()) {
-            if (balanceDao.getEntity(accountId, beforeDay) == null) {
+            // Balance for previous day may be recalculated (operation amount is added to it) only
+            // if no balance before previous day
+            if (balanceDao.getEntityBefore(accountId, prevDay) == null) {
                 balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
             }
             operationDao.insertEntity(operationEntity);
             return;
         }
 
-        if (balanceDao.getEntity(accountId, afterDay) == null) {
+        // After that point no fixed balances at this or previous days
+
+        // If no balance after this day then then recalculating balance for this day (subtracting)
+        if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
             balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
             operationDao.insertEntity(operationEntity);
             return;
         }
 
-        if (balanceDao.getEntity(accountId, beforeDay) == null) {
+        // If no balance before previous day then recalculating balance for previous day (adding)
+        if (balanceDao.getEntityBefore(accountId, prevDay) == null) {
             balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
             operationDao.insertEntity(operationEntity);
             return;
         }
 
+        // Balance recalculation in the middle is forbidden
         operationDao.insertEntity(operationEntity);
     }
 
+    /**
+     * Deletes operation and updates account balance if needed
+     *
+     * @param id - operation id
+     */
     @Override
     public void deleteDto(Integer id) {
+        // Error in case operation with specified id is not found
         OperationEntity operationEntity = operationDao.getEntity(id);
         if (operationEntity == null) {
             throw new IncomeServiceOperationNotFoundException(id);
         }
 
+        // Retrieving balance for operation account and date
         Integer accountId = operationEntity.getAccountId();
         LocalDate thisDay = operationEntity.getDay();
-        LocalDate afterDay = thisDay.plusDays(1L);
-        LocalDate prevDay = thisDay.minusDays(1L);
-        LocalDate beforeDay = prevDay.minusDays(1L);
-
         BalanceEntity thisBalanceEntity = balanceDao.getEntity(accountId, thisDay);
         if (thisBalanceEntity == null) {
             throw new IncomeServiceBalanceNotFoundException(accountId, thisDay);
         }
 
-        BalanceEntity prevBalanceEntity = balanceDao.getEntity(accountId, prevDay);
+        // Retrieving balance for operation account before operation date
+        BalanceEntity prevBalanceEntity = balanceDao.getEntityBefore(accountId, thisDay);
         if (prevBalanceEntity == null) {
-            throw new IncomeServiceBalanceNotFoundException(accountId, prevDay);
+            throw new IncomeServiceBalanceNotFoundException(accountId, thisDay);
         }
 
+        // At this point this and previous balances exist
+        LocalDate prevDay = prevBalanceEntity.getDay();
+
+        // If this and previous balances fixed, then simply deleting operation
         if (thisBalanceEntity.getManual() && prevBalanceEntity.getManual()) {
             operationDao.deleteEntity(id);
             return;
         }
 
+        // At this point only one of two balances is fixed
         BigDecimal amount = operationEntity.getAmount();
         BigDecimal thisBalanceAmount = thisBalanceEntity.getAmount();
         BigDecimal prevBalanceAmount = prevBalanceEntity.getAmount();
 
+        // If previous balance is fixed then updating this balance if no balances after this
         if (prevBalanceEntity.getManual()) {
-            if (balanceDao.getEntity(accountId, afterDay) == null) {
+            if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
                 balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisBalanceAmount.add(amount), false));
             }
             operationDao.deleteEntity(id);
             return;
         }
 
+        // If this balance is fixed then updating previous one if no balances before it
         if (thisBalanceEntity.getManual()) {
-            if (balanceDao.getEntity(accountId, beforeDay) == null) {
-                balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevBalanceAmount.subtract(amount), false));
+            if (balanceDao.getEntityBefore(accountId, prevDay) == null) {
+                balanceDao.updateEntity(
+                        new BalanceEntity(accountId, prevDay, prevBalanceAmount.subtract(amount), false));
             }
             operationDao.deleteEntity(id);
             return;
         }
 
-        if (balanceDao.getEntity(accountId, afterDay) == null) {
+        // At this point no balances are fixed
+
+        // If no balances after this, then updating this balance
+        if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
             balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisBalanceAmount.add(amount), false));
             operationDao.deleteEntity(id);
             return;
         }
 
-        if (balanceDao.getEntity(accountId, beforeDay) == null) {
+        // If no balances before previous then updating previous balance
+        if (balanceDao.getEntityBefore(accountId, prevDay) == null) {
             balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevBalanceAmount.subtract(amount), false));
         }
 
+        // Otherwise, simply deleting operation
         operationDao.deleteEntity(id);
     }
 

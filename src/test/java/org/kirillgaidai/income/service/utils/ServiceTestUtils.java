@@ -5,6 +5,7 @@ import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.dto.CategoryDto;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
 import org.kirillgaidai.income.service.dto.OperationDto;
+import org.kirillgaidai.income.service.dto.SummaryDto;
 
 import java.util.List;
 
@@ -99,6 +100,25 @@ public class ServiceTestUtils {
         assertEquals(expected.size(), actual.size());
         for (int index = 0; index < expected.size(); index++) {
             assertOperationDtoEquals(expected.get(index), actual.get(index));
+        }
+    }
+
+    public static void assertSummaryDtoRowEquals(SummaryDto.SummaryDtoRow expected, SummaryDto.SummaryDtoRow actual) {
+        assertEquals(expected.getDay(), actual.getDay());
+        assertEquals(expected.getDifference(), actual.getDifference());
+        assertEquals(expected.getBalances(), actual.getBalances());
+        assertEquals(expected.getBalancesSummary(), actual.getBalancesSummary());
+        assertEquals(expected.getAmounts(), actual.getAmounts());
+        assertEquals(expected.getAmountsSummary(), actual.getAmountsSummary());
+    }
+
+    public static void assertSummaryDtoEquals(SummaryDto expected, SummaryDto actual) {
+        assertAccountDtoListEquals(expected.getAccountDtoList(), actual.getAccountDtoList());
+        assertCategoryDtoListEquals(expected.getCategoryDtoList(), actual.getCategoryDtoList());
+        List<SummaryDto.SummaryDtoRow> expectedRows = expected.getSummaryDtoRowList();
+        List<SummaryDto.SummaryDtoRow> actualRows = actual.getSummaryDtoRowList();
+        for (int index = 0; index < expectedRows.size(); index++) {
+            assertSummaryDtoRowEquals(expectedRows.get(index), actualRows.get(index));
         }
     }
 

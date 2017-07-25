@@ -10,7 +10,7 @@ public interface IBalanceDao {
 
     List<BalanceEntity> getEntityList();
 
-    List<BalanceEntity> getEntityList(Integer accountId, LocalDate firstDay, LocalDate lastDay);
+    List<BalanceEntity> getEntityList(Set<Integer> accountIds, LocalDate lastDay);
 
     List<BalanceEntity> getEntityList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay);
 

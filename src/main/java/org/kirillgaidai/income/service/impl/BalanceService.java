@@ -51,12 +51,12 @@ public class BalanceService implements IBalanceService {
             return dto;
         }
 
-        balanceEntity = balanceDao.getEntity(accountId, day.minusDays(1L));
+        balanceEntity = balanceDao.getEntityBefore(accountId, day);
         if (balanceEntity != null) {
             return new BalanceDto(accountId, accountEntity.getTitle(), day, balanceEntity.getAmount(), false);
         }
 
-        balanceEntity = balanceDao.getEntity(accountId, day.plusDays(1L));
+        balanceEntity = balanceDao.getEntityAfter(accountId, day);
         if (balanceEntity != null) {
             return new BalanceDto(accountId, accountEntity.getTitle(), day, balanceEntity.getAmount(), false);
         }

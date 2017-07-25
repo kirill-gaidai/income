@@ -68,63 +68,64 @@ public class OperationServiceTest {
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * Error if no balances for this account
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_BothNotExist() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, prevDay);
+        doReturn(null).when(balanceDao).getEntityBefore(accountId, thisDay);
         doReturn(null).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).insertEntity(any(BalanceEntity.class));
-        doReturn(1).when(operationDao).insertEntity(operationEntity);
 
         try {
             operationService.saveDto(operationDto);
         } catch (IncomeServiceBalanceNotFoundException e) {
-            assertEquals(String.format("Balance for account \"%s\" on %s not found", "account1", prevDay.toString()),
+            assertEquals(String.format("Balance for account \"%s\" on %s not found", "account1", thisDay.toString()),
                     e.getMessage());
         }
 
         verify(accountDao).getEntity(accountId);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * If balance for this day does not exist, but exists for previous one, then adding balance for this day
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_InsertThisNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
         doReturn(null).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
         doReturn(1).when(balanceDao).insertEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -135,7 +136,7 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(operationConverter).convertToEntity(operationDto);
         verify(balanceDao).insertEntity(argumentCaptor.capture());
         verify(operationDao).insertEntity(operationEntity);
@@ -144,27 +145,29 @@ public class OperationServiceTest {
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * If balance for this day exists, but previous one does not exist, then adding balance for day before this
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_InsertPrevNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 6);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "title");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "title")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(null).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(balanceDao).insertEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -175,7 +178,7 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
         verify(balanceDao).insertEntity(argumentCaptor.capture());
         verify(operationDao).insertEntity(operationEntity);
@@ -184,63 +187,67 @@ public class OperationServiceTest {
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * Balances for this and previous days exist, but fixed. No balance update
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeNotExistsPrevFixedThisFixedAfterNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), true)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
         operationService.saveDto(operationDto);
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * If previous balance fixed and this balance not fixed, then recalculating this balance if no one after it
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeNotExistsPrevFixedThisNotFixedAfterNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), true)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(null).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -251,9 +258,9 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
@@ -261,65 +268,71 @@ public class OperationServiceTest {
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * If previous balance fixed and this balance not fixed, then no recalculation if balance after this exists
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeNotExistsPrevFixedThisNotFixedAfterExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        LocalDate afterDay = LocalDate.of(2017, 5, 9);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
+        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), true)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(new BalanceEntity(accountId, afterDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
         operationService.saveDto(operationDto);
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * If this balance fixed and previous balance not fixed, then recalculating previous balance if no one before it
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeNotExistsPrevNotFixedThisFixedAfterNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(null).when(balanceDao).getEntityBefore(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -330,8 +343,8 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
         verify(operationDao).insertEntity(operationEntity);
@@ -340,65 +353,70 @@ public class OperationServiceTest {
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * If this balance fixed and prev balance not fixed, then no recalculation if balance before previous exists
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeExistsPrevNotFixedThisFixedAfterNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate beforeDay = LocalDate.of(2017, 5, 3);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
+        doReturn(beforeBalanceEntity).when(balanceDao).getEntityBefore(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
         operationService.saveDto(operationDto);
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * If if this balance exists and previous exists, but no balances before and after, then recalculating this balance
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeNotExistsPrevNotFixedThisNotFixedAfterNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -409,9 +427,9 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
@@ -419,29 +437,33 @@ public class OperationServiceTest {
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * If if this balance, previous and before exist, but no balance after this, then recalculating this balance
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeExistsPrevNotFixedThisNotFixedAfterNotExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate beforeDay = LocalDate.of(2017, 5, 3);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(beforeBalanceEntity).when(balanceDao).getEntityBefore(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -452,9 +474,9 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
@@ -462,29 +484,33 @@ public class OperationServiceTest {
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * If if this balance, previous and after exist, but no balance before, then recalculating previous balance
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeNotExistsPrevNotFixedThisNotFixedAfterExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        LocalDate afterDay = LocalDate.of(2017, 5, 9);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
+        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(new BalanceEntity(accountId, afterDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, afterDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -495,10 +521,10 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
@@ -506,30 +532,36 @@ public class OperationServiceTest {
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * If this balance exists, and previous and after exist, and before exists then no balance update
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testSaveDto_UpdateBeforeExistsPrevNotFixedThisNotFixedAfterExists() throws Exception {
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 5);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate beforeDay = LocalDate.of(2017, 5, 3);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        LocalDate afterDay = LocalDate.of(2017, 5, 9);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationDto operationDto = new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay,
-                amount, "note1");
+        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
+        OperationDto operationDto =
+                new OperationDto(null, accountId, "account1", categoryId, "category1", thisDay, amount, "note1");
         OperationEntity operationEntity = new OperationEntity(null, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
+        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("10.00"), false);
 
-        doReturn(new AccountEntity(accountId, 4, "01", "account1")).when(accountDao).getEntity(accountId);
+        doReturn(accountEntity).when(accountDao).getEntity(accountId);
         doReturn(operationEntity).when(operationConverter).convertToEntity(operationDto);
-        doReturn(new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, thisDay);
-        doReturn(new BalanceEntity(accountId, afterDay, new BigDecimal("10.00"), false)).when(balanceDao)
-                .getEntity(accountId, afterDay);
+        doReturn(beforeBalanceEntity).when(balanceDao).getEntityBefore(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
@@ -537,14 +569,19 @@ public class OperationServiceTest {
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(operationDao).insertEntity(operationEntity);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * Error is thrown when operation with specified id is not found
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testDeleteById_OperationNotFound() throws Exception {
         Integer operationId = 1;
@@ -559,19 +596,25 @@ public class OperationServiceTest {
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * Error is thrown when this balance not found
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testDeleteById_ThisBalanceNotFound() throws Exception {
-        Integer id = 1;
+        Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
         LocalDate thisDay = LocalDate.of(2017, 5, 6);
         BigDecimal amount = new BigDecimal("1.25");
-        OperationEntity operationEntity = new OperationEntity(id, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
 
-        doReturn(operationEntity).when(operationDao).getEntity(id);
+        doReturn(operationEntity).when(operationDao).getEntity(operationId);
 
         try {
-            operationService.deleteDto(id);
+            operationService.deleteDto(operationId);
         } catch (IncomeServiceBalanceNotFoundException e) {
             assertEquals(String.format("Balance for account with id %d on %s not found", accountId, thisDay),
                     e.getMessage());
@@ -582,81 +625,102 @@ public class OperationServiceTest {
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * Error is thrown when previous balance not found
+     *
+     * @throws Exception - exception
+     */
     @Test
     public void testDeleteById_PrevBalanceNotFound() throws Exception {
-        Integer id = 1;
-        Integer accountId = 2;
-        Integer categoryId = 3;
-        LocalDate thisDay = LocalDate.of(2017, 5, 6);
-        LocalDate prevDay = thisDay.minusDays(1L);
-        BigDecimal amount = new BigDecimal("1.25");
-        OperationEntity operationEntity = new OperationEntity(id, accountId, categoryId, thisDay, amount, "note1");
-        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
-
-        doReturn(operationEntity).when(operationDao).getEntity(id);
-        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
-
-        try {
-            operationService.deleteDto(id);
-        } catch (IncomeServiceBalanceNotFoundException e) {
-            assertEquals(String.format("Balance for account with id %d on %s not found", accountId, prevDay),
-                    e.getMessage());
-        }
-
-        verify(operationDao).getEntity(id);
-        verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
-    }
-
-    @Test
-    public void testDeleteDto_BeforeNotExistsPrevFixedThisFixedAfterNotFound() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+
+        try {
+            operationService.deleteDto(operationId);
+        } catch (IncomeServiceBalanceNotFoundException e) {
+            assertEquals(String.format("Balance for account with id %d on %s not found", accountId, thisDay),
+                    e.getMessage());
+        }
+
+        verify(operationDao).getEntity(operationId);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
+        verify(balanceDao).getEntity(accountId, thisDay);
+        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
+    }
+
+    /**
+     * Operation is deleted, no balance updates, when:
+     * - this balance exists and is fixed
+     * - balance after this does not exist
+     * - previous balance exists and is fixed
+     * - balance before this does not exist
+     *
+     * @throws Exception - exception
+     */
+    @Test
+    public void testDeleteDto_BeforeNotExistPrevFixedThisFixedAfterNotExist() throws Exception {
+        Integer operationId = 1;
+        Integer accountId = 2;
+        Integer categoryId = 3;
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        BigDecimal amount = new BigDecimal("1.25");
+
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true);
+
+        doReturn(operationEntity).when(operationDao).getEntity(operationId);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
         operationService.deleteDto(operationId);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * Operation is deleted, this balance is updated, when:
+     * - this balance exists and is not fixed
+     * - balance after this does not exist
+     * - previous balance exists and is fixed
+     * - balance before this is not encountered
+     *
+     * @throws Exception - exception
+     */
     @Test
-    public void testDeleteDto_BeforeNotExistsPrevFixedThisNotFixedAfterNotFound() throws Exception {
+    public void testDeleteDto_BeforeNotExistPrevFixedThisNotFixedAfterNotExist() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
@@ -666,65 +730,83 @@ public class OperationServiceTest {
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
 
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * Operation is deleted, no balance is updated, when:
+     * - this balance exists and is not fixed
+     * - balance after this exists
+     * - previous balance exists and not fixed
+     * - balance before previous is not encountered
+     *
+     * @throws Exception - exception
+     */
     @Test
-    public void testDeleteDto_BeforeNotExistsPrevFixedThisNotFixedAfterExists() throws Exception {
+    public void testDeleteDto_BeforeNotExistPrevFixedThisNotFixedAfterExist() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        LocalDate afterDay = LocalDate.of(2017, 5, 9);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
+        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("10.00"), false);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
         operationService.deleteDto(operationId);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * Operation is deleted, balance before this is updated, when:
+     * - this balance exists and is fixed
+     * - balance after this is not encountered
+     * - previous balance exists and is not fixed
+     * - no balance before previous previous
+     *
+     * @throws Exception - exception
+     */
     @Test
-    public void testDeleteDto_BeforeNotExistsPrevNotFixedThisFixedAfterNotExists() throws Exception {
+    public void testDeleteDto_BeforeNotExistPrevNotFixedThisFixedAfterNotExist() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
@@ -734,102 +816,83 @@ public class OperationServiceTest {
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
 
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * Operation is deleted, no balance update, when:
+     * - this balance exists and is fixed
+     * - balance after this is not encountered
+     * - previous balance exists and is not fixed
+     * - balance before previous exists
+     *
+     * @throws Exception - exception
+     */
     @Test
-    public void testDeleteDto_BeforeExistsPrevNotFixedThisFixedAfterNotExists() throws Exception {
+    public void testDeleteDto_BeforeExistPrevNotFixedThisFixedAfterNotExist() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate beforeDay = LocalDate.of(2017, 5, 3);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("11.25"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false)).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), true)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
+        doReturn(beforeBalanceEntity).when(balanceDao).getEntityBefore(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
         operationService.deleteDto(operationId);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 
+    /**
+     * Operation is deleted, this balance is updated, when:
+     * - this balance exists and is not fixed
+     * - no balance after this
+     * - previous balance exists and is not fixed
+     * - no balance before previous
+     *
+     * @throws Exception - exception
+     */
     @Test
-    public void testDeleteDto_BeforeNotExistsPrevNotFixedThisNotFixedAfterNotExists() throws Exception {
+    public void testDeleteDto_BeforeNotExistPrevNotFixedThisNotFixedAfterNotExist() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
-        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
-        doReturn(1).when(operationDao).deleteEntity(operationId);
-
-        operationService.deleteDto(operationId);
-
-        BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
-        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
-
-        verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, prevDay);
-        verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
-        verify(balanceDao).updateEntity(argumentCaptor.capture());
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
-
-        assertBalanceEntityEquals(expected, argumentCaptor.getValue());
-    }
-
-    @Test
-    public void testDeleteDto_BeforeExistsPrevNotFixedThisNotFixedAfterNotExists() throws Exception {
-        Integer operationId = 1;
-        Integer accountId = 2;
-        Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
-        BigDecimal amount = new BigDecimal("1.25");
-
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
-
-        doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(null).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
@@ -839,34 +902,93 @@ public class OperationServiceTest {
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
 
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * Operation is deleted, this balance is updated, when:
+     * - this balance exists and is not fixed
+     * - no balance after this
+     * - previous balance exists and is not fixed
+     * - balance before previous exists
+     *
+     * @throws Exception - exception
+     */
     @Test
-    public void testDeleteDto_BeforeNotExistsPrevNotFixedThisNotFixedAfterExists() throws Exception {
+    public void testDeleteDto_BeforeExistPrevNotFixedThisNotFixedAfterNotExist() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate beforeDay = LocalDate.of(2017, 5, 3);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(null).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false)).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(beforeBalanceEntity).when(balanceDao).getEntityBefore(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
+        doReturn(1).when(operationDao).deleteEntity(operationId);
+
+        operationService.deleteDto(operationId);
+
+        BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
+        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+
+        verify(operationDao).getEntity(operationId);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
+        verify(balanceDao).getEntity(accountId, thisDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
+        verify(balanceDao).updateEntity(argumentCaptor.capture());
+        verify(operationDao).deleteEntity(operationId);
+        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
+
+        assertBalanceEntityEquals(expected, argumentCaptor.getValue());
+    }
+
+    /**
+     * Operation is deleted, previous balance is updated, when:
+     * - this balance exists and not fixed
+     * - balance after this exists
+     * - previous balance exists and not fixed
+     * - balance before previous does not exist
+     *
+     * @throws Exception - exception
+     */
+    @Test
+    public void testDeleteDto_BeforeNotExistPrevNotFixedThisNotFixedAfterExist() throws Exception {
+        Integer operationId = 1;
+        Integer accountId = 2;
+        Integer categoryId = 3;
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        LocalDate afterDay = LocalDate.of(2017, 5, 9);
+        BigDecimal amount = new BigDecimal("1.25");
+
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
+        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false);
+
+        doReturn(operationEntity).when(operationDao).getEntity(operationId);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
@@ -876,46 +998,60 @@ public class OperationServiceTest {
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verify(balanceDao).updateEntity(argumentCaptor.capture());
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
 
         assertBalanceEntityEquals(expected, argumentCaptor.getValue());
     }
 
+    /**
+     * Operation is deleted, no balance update, when:
+     * - this balance exists and not fixed
+     * - balance after this exists and not fixed
+     * - prev balance exists and not fixed
+     * - balance before prev exists and not fixed
+     *
+     * @throws Exception - exception
+     */
     @Test
-    public void testDeleteDto_BeforeExistsPrevNotFixedThisNotFixedAfterExists() throws Exception {
+    public void testDeleteDto_BeforeExistPrevNotFixedThisNotFixedAfterExist() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
-        LocalDate beforeDay = LocalDate.of(2017, 5, 4);
-        LocalDate prevDay = beforeDay.plusDays(1L);
-        LocalDate thisDay = prevDay.plusDays(1L);
-        LocalDate afterDay = thisDay.plusDays(1L);
+        LocalDate beforeDay = LocalDate.of(2017, 5, 3);
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        LocalDate afterDay = LocalDate.of(2017, 5, 9);
         BigDecimal amount = new BigDecimal("1.25");
 
-        OperationEntity operationEntity = new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note1");
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
+        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false);
 
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
-        doReturn(new BalanceEntity(accountId, beforeDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, beforeDay);
-        doReturn(new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false)).when(balanceDao).getEntity(accountId, prevDay);
-        doReturn(new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false)).when(balanceDao).getEntity(accountId, thisDay);
-        doReturn(new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false)).when(balanceDao).getEntity(accountId, afterDay);
+        doReturn(beforeBalanceEntity).when(balanceDao).getEntityBefore(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
+        doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
         operationService.deleteDto(operationId);
 
         verify(operationDao).getEntity(operationId);
-        verify(operationDao).deleteEntity(operationId);
-        verify(balanceDao).getEntity(accountId, beforeDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, afterDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
+        verify(operationDao).deleteEntity(operationId);
         verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, operationConverter);
     }
 

@@ -53,15 +53,22 @@ public class SummaryService implements ISummaryService {
         this.categoryConverter = categoryConverter;
     }
 
+    /**
+     * Outputs operations and account balances summary
+     *
+     * @param accountIds - set of account ids
+     * @param firstDay   - first day of report
+     * @param lastDay    - last day of report
+     * @return summary dto
+     */
     @Override
     public SummaryDto getSummaryDto(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
-        LocalDate previousDay = firstDay.minusDays(1L);
-
+        List<BalanceEntity> initialBalanceEntityList = balanceDao.getEntityList(accountIds, firstDay.minusDays(1L));
+        List<BalanceEntity> balanceEntityList = balanceDao.getEntityList(accountIds, firstDay, lastDay);
         List<OperationEntity> operationEntityList = operationDao.getEntityList(accountIds, firstDay, lastDay);
-        List<BalanceEntity> balanceEntityList = balanceDao.getEntityList(accountIds, previousDay, lastDay);
 
-        Set<Integer> categoryIds = operationEntityList.stream().map(OperationEntity::getCategoryId)
-                .collect(Collectors.toSet());
+        Set<Integer> categoryIds = operationEntityList
+                .stream().map(OperationEntity::getCategoryId).collect(Collectors.toSet());
 
         List<AccountEntity> accountEntityList = accountDao.getEntityList(accountIds);
         Map<Integer, Integer> accountIndexes = new HashMap<>();
@@ -75,19 +82,20 @@ public class SummaryService implements ISummaryService {
             categoryIndexes.put(categoryEntityList.get(index).getId(), index);
         }
 
+        BigDecimal prevBalancesSummary = initialBalanceEntityList
+                .stream().map(BalanceEntity::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<List<BigDecimal>> balances =
+                getBalances(initialBalanceEntityList, balanceEntityList, firstDay, lastDay, accountIndexes);
         List<List<BigDecimal>> amounts = getAmounts(operationEntityList, firstDay, lastDay, categoryIndexes);
-        List<List<BigDecimal>> balances = getBalances(balanceEntityList, previousDay, lastDay, accountIndexes);
 
         List<SummaryDto.SummaryDtoRow> summaryDtoRowList = new ArrayList<>();
-        BigDecimal prevBalancesSummary = balances.get(0).stream().reduce(BigDecimal.ZERO, BigDecimal::add);
         LocalDate day = firstDay;
         for (int index = 0; index < amounts.size(); index++) {
             List<BigDecimal> amountsRow = amounts.get(index);
+            List<BigDecimal> balancesRow = balances.get(index);
+
             BigDecimal amountsSummary = amountsRow.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            List<BigDecimal> balancesRow = balances.get(index + 1);
             BigDecimal balancesSummary = balancesRow.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-
             BigDecimal difference = balancesSummary.subtract(prevBalancesSummary).add(amountsSummary);
 
             summaryDtoRowList.add(new SummaryDto.SummaryDtoRow(day, difference, balancesRow, balancesSummary,
@@ -106,9 +114,19 @@ public class SummaryService implements ISummaryService {
         return summaryDto;
     }
 
-    private List<List<BigDecimal>> getAmounts(
-            List<OperationEntity> operationEntityList, LocalDate firstDay, LocalDate lastDay,
-            Map<Integer, Integer> categoryIndexes) {
+    /**
+     * Transforms list of operations into list of rows between first day and last day. If there are two operations of
+     * the same category in the same day, then amounts are summed
+     *
+     * @param operationEntityList - list of operations between these two days
+     * @param firstDay            - first day of amounts
+     * @param lastDay             - last day of amounts
+     * @param categoryIndexes     - category id to column index map
+     * @return amounts matrix
+     */
+    List<List<BigDecimal>> getAmounts(
+            List<OperationEntity> operationEntityList,
+            LocalDate firstDay, LocalDate lastDay, Map<Integer, Integer> categoryIndexes) {
         int height = (int) (ChronoUnit.DAYS.between(firstDay, lastDay) + 1);
         int width = categoryIndexes.size();
 
@@ -121,31 +139,54 @@ public class SummaryService implements ISummaryService {
         for (OperationEntity operationEntity : operationEntityList) {
             int y = (int) ChronoUnit.DAYS.between(firstDay, operationEntity.getDay());
             int x = categoryIndexes.get(operationEntity.getCategoryId());
-            List<BigDecimal> row = result.get(y);
-            BigDecimal amount = row.get(x);
-            amount = amount.add(operationEntity.getAmount());
-            row.set(x, amount);
+            List<BigDecimal> resultRow = result.get(y);
+            resultRow.set(x, resultRow.get(x).add(operationEntity.getAmount()));
         }
 
         return result;
     }
 
-    private List<List<BigDecimal>> getBalances(
-            List<BalanceEntity> balanceEntityList, LocalDate firstDay, LocalDate lastDay,
-            Map<Integer, Integer> accountIndexes) {
+    /**
+     * Transforms balance entity list to list of rows between first day and last day. When no balance for account was
+     * found for this day, then balance from previous day is taken into account. If no balance before a day not found,
+     * then it is filled with zero
+     *
+     * @param initialBalanceEntityList - list of balances just before first day
+     * @param balanceEntityList        - list of balances between fist day and last day
+     * @param firstDay                 - first day of balances
+     * @param lastDay                  - last day of balances
+     * @param accountIndexes           - account id to column index map
+     * @return balances matrix
+     */
+    List<List<BigDecimal>> getBalances(
+            List<BalanceEntity> initialBalanceEntityList, List<BalanceEntity> balanceEntityList,
+            LocalDate firstDay, LocalDate lastDay, Map<Integer, Integer> accountIndexes) {
         int height = (int) (ChronoUnit.DAYS.between(firstDay, lastDay) + 1);
         int width = accountIndexes.size();
 
-        // Generating amounts matrix and filling it with zeros
+        // Preparing initial matrix and filling with balances and nulls where balance does not exist
         List<List<BigDecimal>> result = Stream
-                .generate(() -> Stream.generate(() -> BigDecimal.ZERO).limit(width).collect(Collectors.toList()))
+                .generate(() -> Stream.generate(() -> (BigDecimal) null).limit(width).collect(Collectors.toList()))
                 .limit(height).collect(Collectors.toList());
-
-        // Summarizing results
         for (BalanceEntity balanceEntity : balanceEntityList) {
-            int y = (int) ChronoUnit.DAYS.between(firstDay, balanceEntity.getDay());
-            int x = accountIndexes.get(balanceEntity.getAccountId());
-            result.get(y).set(x, balanceEntity.getAmount());
+            result.get((int) ChronoUnit.DAYS.between(firstDay, balanceEntity.getDay()))
+                    .set(accountIndexes.get(balanceEntity.getAccountId()), balanceEntity.getAmount());
+        }
+
+        // Preparing previous row
+        List<BigDecimal> previousRow = Stream.generate(() -> BigDecimal.ZERO).limit(width).collect(Collectors.toList());
+        for (BalanceEntity balanceEntity : initialBalanceEntityList) {
+            previousRow.set(accountIndexes.get(balanceEntity.getAccountId()), balanceEntity.getAmount());
+        }
+
+        // Filling null positions with values from previous row
+        for (List<BigDecimal> resultRow : result) {
+            for (int index = 0; index < resultRow.size(); index++) {
+                if (resultRow.get(index) == null) {
+                    resultRow.set(index, previousRow.get(index));
+                }
+            }
+            previousRow = resultRow;
         }
 
         return result;

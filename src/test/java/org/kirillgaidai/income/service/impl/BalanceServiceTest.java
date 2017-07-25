@@ -58,8 +58,6 @@ public class BalanceServiceTest {
     public void testGetDto_BalanceNotFound() throws Exception {
         Integer accountId = 1;
         LocalDate thisDay = LocalDate.of(2017, 4, 12);
-        LocalDate prevDay = thisDay.minusDays(1L);
-        LocalDate nextDay = thisDay.plusDays(1L);
         AccountEntity accountEntity = new AccountEntity(accountId, 2, "01", "account1");
 
         doReturn(accountEntity).when(accountDao).getEntity(accountId);
@@ -69,9 +67,9 @@ public class BalanceServiceTest {
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).getEntity(accountId);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, prevDay);
-        verify(balanceDao).getEntity(accountId, nextDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verifyNoMoreInteractions(balanceDao, accountDao, balanceConverter);
     }
 
@@ -79,20 +77,20 @@ public class BalanceServiceTest {
     public void testGetDto_PrevBalanceFound() throws Exception {
         Integer accountId = 1;
         LocalDate thisDay = LocalDate.of(2017, 4, 12);
-        LocalDate prevDay = thisDay.minusDays(1L);
+        LocalDate prevDay = thisDay.minusDays(2L);
         BigDecimal amount = new BigDecimal("12.3");
         AccountEntity accountEntity = new AccountEntity(accountId, 2, "01", "account1");
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, amount, true);
 
         doReturn(accountEntity).when(accountDao).getEntity(accountId);
-        doReturn(prevBalanceEntity).when(balanceDao).getEntity(accountId, prevDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, amount, false);
         BalanceDto actual = balanceService.getDto(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).getEntity(accountId);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
         verifyNoMoreInteractions(balanceDao, accountDao, balanceConverter);
     }
@@ -101,23 +99,22 @@ public class BalanceServiceTest {
     public void testGetDto_NextBalanceFound() throws Exception {
         Integer accountId = 1;
         LocalDate thisDay = LocalDate.of(2017, 4, 12);
-        LocalDate prevDay = thisDay.minusDays(1L);
-        LocalDate nextDay = thisDay.plusDays(1L);
+        LocalDate nextDay = thisDay.plusDays(2L);
         BigDecimal amount = new BigDecimal("12.3");
         AccountEntity accountEntity = new AccountEntity(accountId, 2, "01", "account1");
         BalanceEntity nextBalanceEntity = new BalanceEntity(accountId, nextDay, amount, true);
 
         doReturn(accountEntity).when(accountDao).getEntity(accountId);
-        doReturn(nextBalanceEntity).when(balanceDao).getEntity(accountId, nextDay);
+        doReturn(nextBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, amount, false);
         BalanceDto actual = balanceService.getDto(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).getEntity(accountId);
-        verify(balanceDao).getEntity(accountId, prevDay);
+        verify(balanceDao).getEntityBefore(accountId, thisDay);
         verify(balanceDao).getEntity(accountId, thisDay);
-        verify(balanceDao).getEntity(accountId, nextDay);
+        verify(balanceDao).getEntityAfter(accountId, thisDay);
         verifyNoMoreInteractions(balanceDao, accountDao, balanceConverter);
     }
 

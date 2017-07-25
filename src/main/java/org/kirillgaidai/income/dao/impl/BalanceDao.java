@@ -38,13 +38,18 @@ public class BalanceDao implements IBalanceDao {
     }
 
     @Override
-    public List<BalanceEntity> getEntityList(Integer accountId, LocalDate firstDay, LocalDate lastDay) {
-        String sql = "SELECT account_id, day, amount, manual FROM balances " +
-                "WHERE (account_id = :account_id) AND (day BETWEEN :first_day AND :last_day) ORDER BY day DESC";
+    public List<BalanceEntity> getEntityList(Set<Integer> accountIds, LocalDate lastDay) {
+        if (accountIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        String sql = "SELECT b2.account_id, b2.day, b2.amount, b2.manual FROM balances AS b2 INNER JOIN (" +
+                "SELECT account_id, MAX(day) AS day FROM balances " +
+                "WHERE (account_id IN (:account_ids)) AND (day <= :last_day) GROUP BY account_id) AS b1 " +
+                "ON (b2.account_id = b1.account_id) AND (b2.day = b1.day) ORDER BY b2.account_id";
         Map<String, Object> params = new HashMap<>();
-        params.put("account_id", accountId);
-        params.put("first_day", Date.valueOf(firstDay));
-        params.put("last_day", Date.valueOf(lastDay));
+        params.put("account_ids", accountIds);
+        params.put("last_day", lastDay);
         return namedParameterJdbcTemplate.query(sql, params, balanceEntityRowMapper);
     }
 

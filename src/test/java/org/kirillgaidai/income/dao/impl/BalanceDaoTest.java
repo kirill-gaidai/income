@@ -89,16 +89,23 @@ public class BalanceDaoTest {
     }
 
     @Test
-    public void testGetEntityList_AccountIdInterval() throws Exception {
-        List<BalanceEntity> expected = Arrays.asList(orig.get(0), orig.get(1));
-        List<BalanceEntity> actual = balanceDao.getEntityList(ACCOUNT_ID_1, DAY_0, DAY_3);
+    public void testGetEntityList_LastThis() throws Exception {
+        List<BalanceEntity> expected = Arrays.asList(orig.get(1), orig.get(3));
+        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_1);
         assertBalanceEntityListEquals(expected, actual);
     }
 
     @Test
-    public void testGetEntityList_AccountIdIntervalEmpty() throws Exception {
+    public void testGetEntityList_LastEmpty() throws Exception {
         List<BalanceEntity> expected = Collections.emptyList();
-        List<BalanceEntity> actual = balanceDao.getEntityList(ACCOUNT_ID_1, DAY_3, DAY_3);
+        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_0);
+        assertBalanceEntityListEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetEntityList_LastBefore() throws Exception {
+        List<BalanceEntity> expected = Arrays.asList(orig.get(0), orig.get(2));
+        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_3);
         assertBalanceEntityListEquals(expected, actual);
     }
 
@@ -168,10 +175,10 @@ public class BalanceDaoTest {
     @Test
     public void testInsertEntity_Ok() throws Exception {
         BalanceEntity entity = new BalanceEntity(ACCOUNT_ID_1, DAY_3, new BigDecimal("0.8"), true);
-        List<BalanceEntity> expected = Arrays.asList(entity, orig.get(0), orig.get(1));
+        List<BalanceEntity> expected = Arrays.asList(orig.get(1), orig.get(0), entity);
         int affectedRows = balanceDao.insertEntity(entity);
         assertEquals(1, affectedRows);
-        List<BalanceEntity> actual = balanceDao.getEntityList(ACCOUNT_ID_1, DAY_1, DAY_3);
+        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1), DAY_1, DAY_3);
         assertBalanceEntityListEquals(expected, actual);
     }
 
