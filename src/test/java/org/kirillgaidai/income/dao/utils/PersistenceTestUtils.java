@@ -6,6 +6,8 @@ import org.kirillgaidai.income.dao.entity.CategoryEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -78,7 +80,7 @@ public class PersistenceTestUtils {
         assertEquals(expected.getAccountId(), actual.getAccountId());
         assertEquals(expected.getCategoryId(), actual.getCategoryId());
         assertEquals(expected.getDay(), actual.getDay());
-        assertEquals(0, expected.getAmount().compareTo(actual.getAmount()));
+        assertBigDecimalEquals(expected.getAmount(), actual.getAmount());
         assertEquals(expected.getNote(), actual.getNote());
     }
 
@@ -94,8 +96,26 @@ public class PersistenceTestUtils {
         assertNotNull(actual);
         assertEquals(expected.getAccountId(), actual.getAccountId());
         assertEquals(expected.getDay(), actual.getDay());
-        assertEquals(0, expected.getAmount().compareTo(actual.getAmount()));
+        assertBigDecimalEquals(expected.getAmount(), actual.getAmount());
         assertEquals(expected.getManual(), actual.getManual());
+    }
+
+    public static void assertBigDecimalEquals(BigDecimal expected, BigDecimal actual) {
+        int expectedScale = expected.scale();
+        int actualScale = actual.scale();
+        if (expectedScale < actualScale) {
+            expected = expected.setScale(actualScale, RoundingMode.HALF_UP);
+        } else if (actualScale < expectedScale) {
+            actual = actual.setScale(expectedScale, RoundingMode.HALF_UP);
+        }
+        assertEquals(expected, actual);
+    }
+
+    public static void assertBigDecimalListEquals(List<BigDecimal> expected, List<BigDecimal> actual) {
+        assertEquals(expected.size(), actual.size());
+        for (int index = 0; index < expected.size(); index++) {
+            assertBigDecimalEquals(expected.get(index), actual.get(index));
+        }
     }
 
 }

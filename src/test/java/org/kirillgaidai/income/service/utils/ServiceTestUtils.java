@@ -11,6 +11,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertBigDecimalEquals;
+import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertBigDecimalListEquals;
 
 public class ServiceTestUtils {
 
@@ -41,7 +43,7 @@ public class ServiceTestUtils {
         assertEquals(expected.getAccountId(), actual.getAccountId());
         assertEquals(expected.getAccountTitle(), actual.getAccountTitle());
         assertEquals(expected.getDay(), actual.getDay());
-        assertEquals(expected.getAmount(), actual.getAmount());
+        assertBigDecimalEquals(expected.getAmount(), actual.getAmount());
         assertEquals(expected.getManual(), actual.getManual());
     }
 
@@ -72,8 +74,8 @@ public class ServiceTestUtils {
         assertNotNull(actual);
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getCode(), actual.getCode());
-        assertEquals(expected.getAccuracy(), actual.getAccuracy());
         assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getAccuracy(), actual.getAccuracy());
     }
 
     public static void assertCurrencyDtoListEquals(List<CurrencyDto> expected, List<CurrencyDto> actual) {
@@ -92,7 +94,7 @@ public class ServiceTestUtils {
         assertEquals(expected.getCategoryId(), actual.getCategoryId());
         assertEquals(expected.getCategoryTitle(), actual.getCategoryTitle());
         assertEquals(expected.getDay(), actual.getDay());
-        assertEquals(expected.getAmount(), actual.getAmount());
+        assertBigDecimalEquals(expected.getAmount(), actual.getAmount());
         assertEquals(expected.getNote(), actual.getNote());
     }
 
@@ -106,11 +108,11 @@ public class ServiceTestUtils {
 
     public static void assertSummaryDtoRowEquals(SummaryDto.SummaryDtoRow expected, SummaryDto.SummaryDtoRow actual) {
         assertEquals(expected.getDay(), actual.getDay());
-        assertEquals(expected.getDifference(), actual.getDifference());
-        assertEquals(expected.getBalances(), actual.getBalances());
-        assertEquals(expected.getBalancesSummary(), actual.getBalancesSummary());
-        assertEquals(expected.getAmounts(), actual.getAmounts());
-        assertEquals(expected.getAmountsSummary(), actual.getAmountsSummary());
+        assertBigDecimalEquals(expected.getDifference(), actual.getDifference());
+        assertBigDecimalEquals(expected.getBalancesSummary(), actual.getBalancesSummary());
+        assertBigDecimalEquals(expected.getAmountsSummary(), actual.getAmountsSummary());
+        assertBigDecimalListEquals(expected.getBalances(), actual.getBalances());
+        assertBigDecimalListEquals(expected.getAmounts(), actual.getAmounts());
     }
 
     public static void assertSummaryDtoEquals(SummaryDto expected, SummaryDto actual) {

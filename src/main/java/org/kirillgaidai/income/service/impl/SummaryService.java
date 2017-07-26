@@ -7,6 +7,7 @@ import org.kirillgaidai.income.dao.entity.OperationEntity;
 import org.kirillgaidai.income.dao.intf.IAccountDao;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.dao.intf.ICategoryDao;
+import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.AccountDto;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class SummaryService implements ISummaryService {
     final private ICategoryDao categoryDao;
     final private IOperationDao operationDao;
     final private IBalanceDao balanceDao;
+    final private ICurrencyDao currencyDao;
     final private IGenericConverter<AccountEntity, AccountDto> accountConverter;
     final private IGenericConverter<CategoryEntity, CategoryDto> categoryConverter;
 
@@ -43,12 +46,14 @@ public class SummaryService implements ISummaryService {
             ICategoryDao categoryDao,
             IOperationDao operationDao,
             IBalanceDao balanceDao,
+            ICurrencyDao currencyDao,
             IGenericConverter<AccountEntity, AccountDto> accountConverter,
             IGenericConverter<CategoryEntity, CategoryDto> categoryConverter) {
         this.accountDao = accountDao;
         this.categoryDao = categoryDao;
         this.operationDao = operationDao;
         this.balanceDao = balanceDao;
+        this.currencyDao = currencyDao;
         this.accountConverter = accountConverter;
         this.categoryConverter = categoryConverter;
     }
@@ -75,6 +80,8 @@ public class SummaryService implements ISummaryService {
         for (int index = 0; index < accountEntityList.size(); index++) {
             accountIndexes.put(accountEntityList.get(index).getId(), index);
         }
+
+        int accuracy = currencyDao.getEntity(accountEntityList.get(0).getCurrencyId()).getAccuracy();
 
         List<CategoryEntity> categoryEntityList = categoryDao.getEntityList(categoryIds);
         Map<Integer, Integer> categoryIndexes = new HashMap<>();
@@ -111,6 +118,9 @@ public class SummaryService implements ISummaryService {
         summaryDto.setCategoryDtoList(categoryEntityList.stream().map(categoryConverter::convertToDto)
                 .collect(Collectors.toList()));
         summaryDto.setSummaryDtoRowList(summaryDtoRowList);
+
+        setAccuracy(summaryDto, accuracy);
+
         return summaryDto;
     }
 
@@ -190,6 +200,28 @@ public class SummaryService implements ISummaryService {
         }
 
         return result;
+    }
+
+    /**
+     * Sets accuracy for summary dto
+     *
+     * @param summaryDto - summary dto
+     * @param accuracy   - number or digits after period
+     */
+    void setAccuracy(SummaryDto summaryDto, int accuracy) {
+        for (SummaryDto.SummaryDtoRow row : summaryDto.getSummaryDtoRowList()) {
+            row.setDifference(row.getDifference().setScale(accuracy, RoundingMode.HALF_UP));
+            row.setBalancesSummary(row.getBalancesSummary().setScale(accuracy, RoundingMode.HALF_UP));
+            row.setAmountsSummary(row.getAmountsSummary().setScale(accuracy, RoundingMode.HALF_UP));
+            List<BigDecimal> balances = row.getBalances();
+            for (int index = 0; index < balances.size(); index++) {
+                balances.set(index, balances.get(index).setScale(accuracy, RoundingMode.HALF_UP));
+            }
+            List<BigDecimal> amounts = row.getAmounts();
+            for (int index = 0; index < amounts.size(); index++) {
+                amounts.set(index, amounts.get(index).setScale(accuracy, RoundingMode.HALF_UP));
+            }
+        }
     }
 
 }

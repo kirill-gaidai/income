@@ -4,14 +4,12 @@ import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.entity.CategoryEntity;
+import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
-import org.kirillgaidai.income.dao.impl.AccountDao;
-import org.kirillgaidai.income.dao.impl.BalanceDao;
-import org.kirillgaidai.income.dao.impl.CategoryDao;
-import org.kirillgaidai.income.dao.impl.OperationDao;
 import org.kirillgaidai.income.dao.intf.IAccountDao;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.dao.intf.ICategoryDao;
+import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.service.converter.AccountConverter;
 import org.kirillgaidai.income.service.converter.CategoryConverter;
@@ -37,14 +35,15 @@ import static org.mockito.Mockito.mock;
 
 public class SummaryServiceTest {
 
-    final private IOperationDao operationDao = mock(OperationDao.class);
-    final private ICategoryDao categoryDao = mock(CategoryDao.class);
-    final private IAccountDao accountDao = mock(AccountDao.class);
-    final private IBalanceDao balanceDao = mock(BalanceDao.class);
+    final private IOperationDao operationDao = mock(IOperationDao.class);
+    final private ICategoryDao categoryDao = mock(ICategoryDao.class);
+    final private IAccountDao accountDao = mock(IAccountDao.class);
+    final private IBalanceDao balanceDao = mock(IBalanceDao.class);
+    final private ICurrencyDao currencyDao = mock(ICurrencyDao.class);
     final private IGenericConverter<AccountEntity, AccountDto> accountConverter = mock(AccountConverter.class);
     final private IGenericConverter<CategoryEntity, CategoryDto> categoryConverter = mock(CategoryConverter.class);
-    final private SummaryService summaryService = new SummaryService(accountDao, categoryDao, operationDao, balanceDao,
-            accountConverter, categoryConverter);
+    final private SummaryService summaryService = new SummaryService(
+            accountDao, categoryDao, operationDao, balanceDao, currencyDao, accountConverter, categoryConverter);
 
     /**
      * Account sum is correct
@@ -55,6 +54,7 @@ public class SummaryServiceTest {
     public void testGetSummaryDto_AccountSumIsCorrect() throws Exception {
         LocalDate day = LocalDate.of(2017, 4, 10);
         Integer[] accountIds = new Integer[]{10, 11};
+        Integer currencyId = 31;
 
         Set<Integer> accountIdsSet = Sets.newSet(accountIds);
         List<BalanceEntity> initialBalanceEntityList = Arrays.asList(
@@ -66,22 +66,24 @@ public class SummaryServiceTest {
                 new BalanceEntity(accountIds[1], day, new BigDecimal("200"), false)
         );
         List<AccountEntity> accountEntityList = Arrays.asList(
-                new AccountEntity(accountIds[0], 31, "01", "account1"),
-                new AccountEntity(accountIds[1], 32, "02", "account2")
+                new AccountEntity(accountIds[0], currencyId, "01", "account1"),
+                new AccountEntity(accountIds[1], currencyId, "02", "account2")
         );
         List<AccountDto> accountDtoList = Arrays.asList(
-                new AccountDto(accountIds[0], 31, null, null, "01", "account1"),
-                new AccountDto(accountIds[1], 32, null, null, "02", "account2")
+                new AccountDto(accountIds[0], currencyId, null, null, "01", "account1"),
+                new AccountDto(accountIds[1], currencyId, null, null, "02", "account2")
         );
+        CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
         doReturn(accountEntityList).when(accountDao).getEntityList(accountIdsSet);
         doReturn(Collections.emptyList()).when(categoryDao).getEntityList(Collections.emptySet());
-        for (int index = 0; index < accountEntityList.size(); index++) {
-            doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
-        }
+        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
         doReturn(Collections.emptyList()).when(operationDao).getEntityList(accountIdsSet, day, day);
         doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day.minusDays(1L));
         doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day, day);
+        for (int index = 0; index < accountEntityList.size(); index++) {
+            doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
+        }
 
         SummaryDto expected = new SummaryDto(
                 accountDtoList,
@@ -109,6 +111,7 @@ public class SummaryServiceTest {
     public void testGetSummaryDto_OperationSumIsCorrect() throws Exception {
         LocalDate day = LocalDate.of(2017, 4, 10);
         Integer accountId = 10;
+        Integer currencyId = 31;
         Integer[] categoryIds = new Integer[]{20, 21};
 
         Set<Integer> accountIdsSet = Collections.singleton(accountId);
@@ -124,10 +127,10 @@ public class SummaryServiceTest {
                 new OperationEntity(2, accountId, categoryIds[1], day, new BigDecimal("30"), "note2")
         );
         List<AccountEntity> accountEntityList = Collections.singletonList(
-                new AccountEntity(accountId, 31, "01", "account1")
+                new AccountEntity(accountId, currencyId, "01", "account1")
         );
         List<AccountDto> accountDtoList = Collections.singletonList(
-                new AccountDto(accountId, 31, null, null, "01", "account1")
+                new AccountDto(accountId, currencyId, null, null, "01", "account1")
         );
         List<CategoryEntity> categoryEntityList = Arrays.asList(
                 new CategoryEntity(categoryIds[0], "01", "category1"),
@@ -137,16 +140,18 @@ public class SummaryServiceTest {
                 new CategoryDto(categoryIds[0], "01", "category1"),
                 new CategoryDto(categoryIds[1], "02", "category2")
         );
+        CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
         doReturn(accountEntityList).when(accountDao).getEntityList(accountIdsSet);
         doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIdsSet);
+        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
         doReturn(accountDtoList.get(0)).when(accountConverter).convertToDto(accountEntityList.get(0));
-        for (int index = 0; index < categoryEntityList.size(); index++) {
-            doReturn(categoryDtoList.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
-        }
         doReturn(operationEntityList).when(operationDao).getEntityList(accountIdsSet, day, day);
         doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day.minusDays(1L));
         doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day, day);
+        for (int index = 0; index < categoryEntityList.size(); index++) {
+            doReturn(categoryDtoList.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
+        }
 
         SummaryDto expected = new SummaryDto(
                 accountDtoList,
@@ -174,6 +179,7 @@ public class SummaryServiceTest {
     public void testGetSummaryDto_DifferenceIsCorrectBalance() throws Exception {
         LocalDate[] days = new LocalDate[]{LocalDate.of(2017, 4, 10), LocalDate.of(2017, 4, 11)};
         Integer accountId = 10;
+        Integer currencyId = 31;
 
         Set<Integer> accountIdsSet = Collections.singleton(accountId);
         List<BalanceEntity> initialBalanceEntityList = Collections.singletonList(
@@ -184,12 +190,14 @@ public class SummaryServiceTest {
                 new BalanceEntity(accountId, days[1], new BigDecimal("150"), false)
         );
         List<AccountEntity> accountEntityList = Collections.singletonList(
-                new AccountEntity(accountId, 31, "01", "account1")
+                new AccountEntity(accountId, currencyId, "01", "account1")
         );
         List<AccountDto> accountDtoList = Collections.singletonList(
-                new AccountDto(accountId, 31, null, null, "01", "account1")
+                new AccountDto(accountId, currencyId, null, null, "01", "account1")
         );
+        CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
+        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
         doReturn(Collections.emptyList()).when(operationDao).getEntityList(accountIdsSet, days[0], days[1]);
         doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdsSet, days[0].minusDays(1L));
         doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdsSet, days[0], days[1]);
@@ -233,6 +241,7 @@ public class SummaryServiceTest {
         LocalDate[] days = new LocalDate[]{LocalDate.of(2017, 4, 10), LocalDate.of(2017, 4, 11)};
         Integer accountId = 10;
         Integer categoryId = 20;
+        Integer currencyId = 31;
 
         Set<Integer> accountIdsSet = Collections.singleton(accountId);
         Set<Integer> categoryIdsSet = Collections.singleton(categoryId);
@@ -246,10 +255,10 @@ public class SummaryServiceTest {
                 new OperationEntity(1, accountId, categoryId, days[1], new BigDecimal("30"), "note1")
         );
         List<AccountEntity> accountEntityList = Collections.singletonList(
-                new AccountEntity(accountId, 31, "01", "account1")
+                new AccountEntity(accountId, currencyId, "01", "account1")
         );
         List<AccountDto> accountDtoList = Collections.singletonList(
-                new AccountDto(accountId, 31, null, null, "01", "account1")
+                new AccountDto(accountId, currencyId, null, null, "01", "account1")
         );
         List<CategoryEntity> categoryEntityList = Collections.singletonList(
                 new CategoryEntity(categoryId, "01", "category1")
@@ -257,9 +266,11 @@ public class SummaryServiceTest {
         List<CategoryDto> categoryDtoList = Collections.singletonList(
                 new CategoryDto(categoryId, "01", "category1")
         );
+        CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
         doReturn(accountEntityList).when(accountDao).getEntityList(accountIdsSet);
         doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIdsSet);
+        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
         doReturn(accountDtoList.get(0)).when(accountConverter).convertToDto(accountEntityList.get(0));
         doReturn(categoryDtoList.get(0)).when(categoryConverter).convertToDto(categoryEntityList.get(0));
         doReturn(operationEntityList).when(operationDao).getEntityList(accountIdsSet, days[0], days[1]);
@@ -301,6 +312,7 @@ public class SummaryServiceTest {
                 LocalDate.of(2017, 4, 10), LocalDate.of(2017, 4, 11), LocalDate.of(2017, 4, 12),
                 LocalDate.of(2017, 4, 13), LocalDate.of(2017, 4, 14), LocalDate.of(2017, 4, 15)
         };
+        Integer currencyId = 31;
 
         List<OperationEntity> operationEntityList = Arrays.asList(
                 new OperationEntity(1, accountIds[0], categoryIds[0], days[2], new BigDecimal("-100"), "note1"),
@@ -326,12 +338,12 @@ public class SummaryServiceTest {
                 new BalanceEntity(accountIds[1], days[5], new BigDecimal("150"), true)
         );
         List<AccountEntity> accountEntityList = Arrays.asList(
-                new AccountEntity(accountIds[0], 31, "01", "account1"),
-                new AccountEntity(accountIds[1], 32, "02", "account2")
+                new AccountEntity(accountIds[0], currencyId, "01", "account1"),
+                new AccountEntity(accountIds[1], currencyId, "02", "account2")
         );
         List<AccountDto> accountDtoList = Arrays.asList(
-                new AccountDto(accountIds[0], 31, null, null, "01", "account1"),
-                new AccountDto(accountIds[1], 32, null, null, "02", "account2")
+                new AccountDto(accountIds[0], currencyId, null, null, "01", "account1"),
+                new AccountDto(accountIds[1], currencyId, null, null, "02", "account2")
         );
         List<CategoryEntity> categoryEntityList = Arrays.asList(
                 new CategoryEntity(categoryIds[0], "01", "category1"),
@@ -343,21 +355,23 @@ public class SummaryServiceTest {
                 new CategoryDto(categoryIds[1], "02", "category2"),
                 new CategoryDto(categoryIds[2], "03", "category3")
         );
+        CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
         Set<Integer> accountIdSet = Sets.newSet(accountIds);
         Set<Integer> categoryIdSet = Sets.newSet(categoryIds);
 
         doReturn(accountEntityList).when(accountDao).getEntityList(accountIdSet);
-        for (int index = 0; index < accountEntityList.size(); index++) {
-            doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
-        }
         doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIdSet);
-        for (int index = 0; index < categoryEntityList.size(); index++) {
-            doReturn(categoryDtoList.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
-        }
+        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
         doReturn(operationEntityList).when(operationDao).getEntityList(accountIdSet, days[1], days[5]);
         doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdSet, days[0]);
         doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdSet, days[1], days[5]);
+        for (int index = 0; index < accountEntityList.size(); index++) {
+            doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
+        }
+        for (int index = 0; index < categoryEntityList.size(); index++) {
+            doReturn(categoryDtoList.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
+        }
 
         SummaryDto expected = new SummaryDto(
                 accountDtoList, categoryDtoList,
@@ -653,6 +667,53 @@ public class SummaryServiceTest {
                 .getBalances(initialBalanceEntityList, balanceEntityList, firstDay, lastDay, accountIndexes);
 
         assertEquals(expected, actual);
+    }
+
+    /**
+     * Setting accuracy is valid
+     *
+     * @throws Exception - exception
+     */
+    @Test
+    public void testSetAccuracy() throws Exception {
+        List<SummaryDto.SummaryDtoRow> expectedSummaryDtoRowList = Arrays.asList(
+                new SummaryDto.SummaryDtoRow(
+                        LocalDate.of(2017, 7, 1), new BigDecimal("10.0"),
+                        Arrays.asList(new BigDecimal("10.5"), new BigDecimal("10.4")), new BigDecimal("20.9"),
+                        Arrays.asList(new BigDecimal("0.0"), new BigDecimal("9.0")), new BigDecimal("9.0")
+                ),
+                new SummaryDto.SummaryDtoRow(
+                        LocalDate.of(2017, 7, 2), new BigDecimal("0.0"),
+                        Arrays.asList(new BigDecimal("10.2"), new BigDecimal("10.4")), new BigDecimal("20.9"),
+                        Arrays.asList(new BigDecimal("0.3"), new BigDecimal("0.0")), new BigDecimal("0.3")
+                )
+        );
+        List<SummaryDto.SummaryDtoRow> actualSummaryDtoRowList = Arrays.asList(
+                new SummaryDto.SummaryDtoRow(
+                        LocalDate.of(2017, 7, 1), new BigDecimal("10"),
+                        Arrays.asList(new BigDecimal("10.45"), new BigDecimal("10.44")),
+                        new BigDecimal("20.89"),
+                        Arrays.asList(BigDecimal.ZERO, new BigDecimal("9")), new BigDecimal("9")
+                ),
+                new SummaryDto.SummaryDtoRow(
+                        LocalDate.of(2017, 7, 2), BigDecimal.ZERO,
+                        Arrays.asList(new BigDecimal("10.15"), new BigDecimal("10.44")),
+                        new BigDecimal("20.89"),
+                        Arrays.asList(new BigDecimal("0.3"), BigDecimal.ZERO), new BigDecimal("0.3")
+                )
+        );
+        SummaryDto actual = new SummaryDto(null, null, actualSummaryDtoRowList);
+        summaryService.setAccuracy(actual, 1);
+        for (int index = 0; index < expectedSummaryDtoRowList.size(); index++) {
+            SummaryDto.SummaryDtoRow expectedSummaryDtoRow = expectedSummaryDtoRowList.get(index);
+            SummaryDto.SummaryDtoRow actualSummaryDtoRow = actualSummaryDtoRowList.get(index);
+            // Using assertEquals for BigDecimal to verify accuracy
+            assertEquals(expectedSummaryDtoRow.getDifference(), actualSummaryDtoRow.getDifference());
+            assertEquals(expectedSummaryDtoRow.getBalances(), actualSummaryDtoRow.getBalances());
+            assertEquals(expectedSummaryDtoRow.getBalancesSummary(), actualSummaryDtoRow.getBalancesSummary());
+            assertEquals(expectedSummaryDtoRow.getAmounts(), actualSummaryDtoRow.getAmounts());
+            assertEquals(expectedSummaryDtoRow.getAmountsSummary(), actualSummaryDtoRow.getAmountsSummary());
+        }
     }
 
 }
