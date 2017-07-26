@@ -18,6 +18,10 @@
             <td><form:input path="title"/></td>
         </tr>
         <tr>
+            <td><form:label path="accuracy">Accuracy</form:label></td>
+            <td><form:input path="accuracy"/></td>
+        </tr>
+        <tr>
             <td></td>
             <td><form:button>Save</form:button></td>
         </tr>

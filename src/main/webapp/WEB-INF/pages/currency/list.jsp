@@ -13,6 +13,7 @@
         <td>ID</td>
         <td>Code</td>
         <td>Title</td>
+        <td>Accuracy</td>
         <td>Actions</td>
     </tr>
     <c:forEach var="currency" items="${currencies}">
@@ -20,6 +21,7 @@
             <td>${currency.id}</td>
             <td>${currency.code}</td>
             <td>${currency.title}</td>
+            <td>${currency.accuracy}</td>
             <td>
                 <spring:url var="editUrl" value="/currency/edit/${currency.id}"/>
                 <spring:url var="deleteUrl" value="/currency/delete/${currency.id}"/>
