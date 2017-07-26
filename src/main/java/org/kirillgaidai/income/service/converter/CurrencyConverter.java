@@ -12,7 +12,7 @@ public class CurrencyConverter implements IGenericConverter<CurrencyEntity, Curr
         if (entity == null) {
             return null;
         }
-        return new CurrencyDto(entity.getId(), entity.getCode(), entity.getTitle());
+        return new CurrencyDto(entity.getId(), entity.getCode(), entity.getTitle(), entity.getAccuracy());
     }
 
     @Override
@@ -20,8 +20,7 @@ public class CurrencyConverter implements IGenericConverter<CurrencyEntity, Curr
         if (dto == null) {
             return null;
         }
-        // TODO: remove 4 after adding accuracy to dto
-        return new CurrencyEntity(dto.getId(), dto.getCode(), dto.getTitle(), 4);
+        return new CurrencyEntity(dto.getId(), dto.getCode(), dto.getTitle(), dto.getAccuracy());
     }
 
 }

@@ -38,9 +38,9 @@ public class CurrencyServiceTest {
                 new CurrencyEntity(3, "03", "category3", 4)
         );
         List<CurrencyDto> expected = Arrays.asList(
-                new CurrencyDto(1, "01", "category1"),
-                new CurrencyDto(2, "02", "category2"),
-                new CurrencyDto(3, "03", "category3")
+                new CurrencyDto(1, "01", "category1", 0),
+                new CurrencyDto(2, "02", "category2", 2),
+                new CurrencyDto(3, "03", "category3", 4)
         );
 
         doReturn(currencyEntityList).when(currencyDao).getEntityList();
@@ -77,8 +77,8 @@ public class CurrencyServiceTest {
                 new CurrencyEntity(2, "02", "category2", 2)
         );
         List<CurrencyDto> expected = Arrays.asList(
-                new CurrencyDto(1, "01", "category1"),
-                new CurrencyDto(2, "02", "category2")
+                new CurrencyDto(1, "01", "category1", 0),
+                new CurrencyDto(2, "02", "category2", 2)
         );
 
         doReturn(currencyEntityList).when(currencyDao).getEntityList(categoryIds);
@@ -132,7 +132,7 @@ public class CurrencyServiceTest {
     @Test
     public void testGetDto_Ok() throws Exception {
         CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
-        CurrencyDto expected = new CurrencyDto(1, "01", "category1");
+        CurrencyDto expected = new CurrencyDto(1, "01", "category1", 2);
 
         doReturn(currencyEntity).when(currencyDao).getEntity(1);
         doReturn(expected).when(currencyConverter).convertToDto(currencyEntity);
@@ -158,7 +158,7 @@ public class CurrencyServiceTest {
 
     @Test
     public void testSaveDto_Insert() throws Exception {
-        CurrencyDto categoryDto = new CurrencyDto(null, "01", "category1");
+        CurrencyDto categoryDto = new CurrencyDto(null, "01", "category1", 2);
         CurrencyEntity currencyEntity = new CurrencyEntity(null, "01", "category1", 2);
 
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
@@ -173,7 +173,7 @@ public class CurrencyServiceTest {
 
     @Test
     public void testSaveDto_UpdateNotFound() throws Exception {
-        CurrencyDto categoryDto = new CurrencyDto(1, "01", "category1");
+        CurrencyDto categoryDto = new CurrencyDto(1, "01", "category1", 2);
         CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
 
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
@@ -192,7 +192,7 @@ public class CurrencyServiceTest {
 
     @Test
     public void testSaveDto_Update() throws Exception {
-        CurrencyDto categoryDto = new CurrencyDto(1, "01", "category1");
+        CurrencyDto categoryDto = new CurrencyDto(1, "01", "category1", 2);
         CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
 
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);

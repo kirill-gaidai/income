@@ -61,6 +61,7 @@ public class PersistenceTestUtils {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getCode(), actual.getCode());
         assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getAccuracy(), actual.getAccuracy());
     }
 
     public static void assertOperationEntityListEquals(List<OperationEntity> expected, List<OperationEntity> actual) {

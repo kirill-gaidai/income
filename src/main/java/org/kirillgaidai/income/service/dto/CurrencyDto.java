@@ -5,14 +5,16 @@ public class CurrencyDto implements IGenericDto {
     private Integer id;
     private String code;
     private String title;
+    private Integer accuracy;
 
     public CurrencyDto() {
     }
 
-    public CurrencyDto(Integer id, String code, String title) {
+    public CurrencyDto(Integer id, String code, String title, Integer accuracy) {
         this.id = id;
         this.code = code;
         this.title = title;
+        this.accuracy = accuracy;
     }
 
     @Override
@@ -39,6 +41,14 @@ public class CurrencyDto implements IGenericDto {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Integer getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(Integer accuracy) {
+        this.accuracy = accuracy;
     }
 
 }

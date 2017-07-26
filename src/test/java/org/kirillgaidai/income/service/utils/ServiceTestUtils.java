@@ -72,6 +72,7 @@ public class ServiceTestUtils {
         assertNotNull(actual);
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getCode(), actual.getCode());
+        assertEquals(expected.getAccuracy(), actual.getAccuracy());
         assertEquals(expected.getTitle(), actual.getTitle());
     }
 
