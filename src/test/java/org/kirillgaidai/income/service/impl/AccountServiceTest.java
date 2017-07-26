@@ -42,7 +42,7 @@ public class AccountServiceTest {
                 new AccountEntity(2, 12, "02", "account2")
         );
         List<CurrencyEntity> currencyEntityList = Collections.singletonList(
-                new CurrencyEntity(11, "cc1", "currency1")
+                new CurrencyEntity(11, "cc1", "currency1", 2)
         );
         List<AccountDto> accountDtoList = Arrays.asList(
                 new AccountDto(1, 11, null, null, "01", "account1"),
@@ -78,8 +78,8 @@ public class AccountServiceTest {
                 new AccountEntity(3, 11, "03", "account3")
         );
         List<CurrencyEntity> currencyEntityList = Arrays.asList(
-                new CurrencyEntity(11, "cc1", "currency1"),
-                new CurrencyEntity(12, "cc2", "currency2")
+                new CurrencyEntity(11, "cc1", "currency1", 0),
+                new CurrencyEntity(12, "cc2", "currency2", 2)
         );
         List<AccountDto> accountDtoList = Arrays.asList(
                 new AccountDto(1, 11, null, null, "01", "account1"),
@@ -128,7 +128,7 @@ public class AccountServiceTest {
                 new AccountEntity(2, 12, "02", "account2")
         );
         List<CurrencyEntity> currencyEntityList = Collections.singletonList(
-                new CurrencyEntity(11, "cc1", "currency1")
+                new CurrencyEntity(11, "cc1", "currency1", 2)
         );
         List<AccountDto> accountDtoList = Arrays.asList(
                 new AccountDto(1, 11, null, null, "01", "Account 1"),
@@ -164,8 +164,8 @@ public class AccountServiceTest {
                 new AccountEntity(2, 12, "02", "account2")
         );
         List<CurrencyEntity> currencyEntityList = Arrays.asList(
-                new CurrencyEntity(11, "cc1", "currency1"),
-                new CurrencyEntity(12, "cc2", "currency2")
+                new CurrencyEntity(11, "cc1", "currency1", 0),
+                new CurrencyEntity(12, "cc2", "currency2", 2)
         );
         List<AccountDto> accountDtoList = Arrays.asList(
                 new AccountDto(1, 11, null, null, "01", "account1"),
@@ -256,7 +256,7 @@ public class AccountServiceTest {
     @Test
     public void testGetDtoById() throws Exception {
         AccountEntity accountEntity = new AccountEntity(1, 11, "01", "account1");
-        CurrencyEntity currencyEntity = new CurrencyEntity(11, "cc1", "currency1");
+        CurrencyEntity currencyEntity = new CurrencyEntity(11, "cc1", "currency1", 2);
         AccountDto accountDto = new AccountDto(1, 11, null, null, "01", "account1");
         doReturn(accountEntity).when(accountDao).getEntity(1);
         doReturn(currencyEntity).when(currencyDao).getEntity(11);

@@ -34,28 +34,29 @@ public class CurrencyDao implements ICurrencyDao {
 
     @Override
     public List<CurrencyEntity> getEntityList() {
-        String sql = "SELECT id, code, title FROM currencies ORDER BY title";
+        String sql = "SELECT id, code, title, accuracy FROM currencies ORDER BY title";
         return namedParameterJdbcTemplate.query(sql, currencyEntityRowMapper);
     }
 
     @Override
     public List<CurrencyEntity> getEntityList(Set<Integer> ids) {
-        String sql = "SELECT id, code, title FROM currencies WHERE id IN (:ids) ORDER BY title";
+        String sql = "SELECT id, code, title, accuracy FROM currencies WHERE id IN (:ids) ORDER BY title";
         return daoHelper.getEntityList(sql, ids, currencyEntityRowMapper);
     }
 
     @Override
     public CurrencyEntity getEntity(Integer id) {
-        String sql = "SELECT id, code, title FROM currencies WHERE id = :id";
+        String sql = "SELECT id, code, title, accuracy FROM currencies WHERE id = :id";
         return daoHelper.getEntity(sql, id, currencyEntityRowMapper);
     }
 
     @Override
     public int insertEntity(CurrencyEntity entity) {
-        String sql = "INSERT INTO currencies(code, title) VALUES(:code, :title)";
+        String sql = "INSERT INTO currencies(code, title, accuracy) VALUES(:code, :title, :accuracy)";
         Map<String, Object> params = new HashMap<>();
         params.put("code", entity.getCode());
         params.put("title", entity.getTitle());
+        params.put("accuracy", entity.getAccuracy());
         Integer id = daoHelper.insertEntity(sql, params);
         entity.setId(id);
         return 1;
@@ -63,11 +64,12 @@ public class CurrencyDao implements ICurrencyDao {
 
     @Override
     public int updateEntity(CurrencyEntity entity) {
-        String sql = "UPDATE currencies SET code = :code, title = :title WHERE id = :id";
+        String sql = "UPDATE currencies SET code = :code, title = :title, accuracy = :accuracy WHERE id = :id";
         Map<String, Object> params = new HashMap<>();
         params.put("id", entity.getId());
         params.put("code", entity.getCode());
         params.put("title", entity.getTitle());
+        params.put("accuracy", entity.getAccuracy());
         return namedParameterJdbcTemplate.update(sql, params);
     }
 

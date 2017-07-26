@@ -14,7 +14,7 @@ public class CurrencyConverterTest {
 
     @Test
     public void testConvertToDto_Ok() throws Exception {
-        CurrencyEntity entity = new CurrencyEntity(1, "cc1", "currency1");
+        CurrencyEntity entity = new CurrencyEntity(1, "cc1", "currency1", 2);
         CurrencyDto expected = new CurrencyDto(1, "cc1", "currency1");
         CurrencyDto actual = converter.convertToDto(entity);
         assertCurrencyDtoEquals(expected, actual);
@@ -29,7 +29,7 @@ public class CurrencyConverterTest {
     @Test
     public void testConvertToEntity_Ok() throws Exception {
         CurrencyDto dto = new CurrencyDto(1, "cc1", "currency1");
-        CurrencyEntity expected = new CurrencyEntity(1, "cc1", "currency1");
+        CurrencyEntity expected = new CurrencyEntity(1, "cc1", "currency1", 2);
         CurrencyEntity actual = converter.convertToEntity(dto);
         assertCurrencyEntityEquals(expected, actual);
     }

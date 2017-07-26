@@ -19,7 +19,8 @@ public class CurrencyEntityRowMapperTest {
         doReturn(1).when(resultSet).getInt("id");
         doReturn("cc1").when(resultSet).getString("code");
         doReturn("currency1").when(resultSet).getString("title");
-        CurrencyEntity expected = new CurrencyEntity(1, "cc1", "currency1");
+        doReturn(2).when(resultSet).getInt("accuracy");
+        CurrencyEntity expected = new CurrencyEntity(1, "cc1", "currency1", 2);
         CurrencyEntity actual = currencyEntityRowMapper.mapRow(resultSet, 1);
         assertCurrencyEntityEquals(expected, actual);
     }

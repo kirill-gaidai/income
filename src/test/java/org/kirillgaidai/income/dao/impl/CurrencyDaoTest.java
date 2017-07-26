@@ -29,9 +29,9 @@ import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCurre
 public class CurrencyDaoTest {
 
     final private List<CurrencyEntity> orig = Arrays.asList(
-            new CurrencyEntity(3, "cc1", "currency1"),
-            new CurrencyEntity(2, "cc2", "currency2"),
-            new CurrencyEntity(1, "cc3", "currency3")
+            new CurrencyEntity(3, "cc1", "currency1", 4),
+            new CurrencyEntity(2, "cc2", "currency2", 2),
+            new CurrencyEntity(1, "cc3", "currency3" ,0)
     );
 
     @Autowired
@@ -42,12 +42,13 @@ public class CurrencyDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        String sql = "INSERT INTO currencies(id, code, title) VALUES(:id, :code, :title)";
+        String sql = "INSERT INTO currencies(id, code, title, accuracy) VALUES(:id, :code, :title, :accuracy)";
         for (CurrencyEntity entity : orig) {
             Map<String, Object> params = new HashMap<>();
             params.put("id", entity.getId());
             params.put("code", entity.getCode());
             params.put("title", entity.getTitle());
+            params.put("accuracy", entity.getAccuracy());
             namedParameterJdbcTemplate.update(sql, params);
         }
     }
@@ -101,7 +102,7 @@ public class CurrencyDaoTest {
 
     @Test
     public void testInsertEntity_Ok() throws Exception {
-        CurrencyEntity entity = new CurrencyEntity(null, "cc4", "currency4");
+        CurrencyEntity entity = new CurrencyEntity(null, "cc4", "currency4", 2);
         List<CurrencyEntity> expected = Arrays.asList(orig.get(0), orig.get(1), orig.get(2), entity);
         int affectedRows = currencyDao.insertEntity(entity);
         assertEquals(1, affectedRows);
@@ -112,7 +113,7 @@ public class CurrencyDaoTest {
 
     @Test
     public void testUpdateEntity_Ok() throws Exception {
-        CurrencyEntity entity = new CurrencyEntity(3, "cc4", "currency4");
+        CurrencyEntity entity = new CurrencyEntity(3, "cc4", "currency4", 2);
         List<CurrencyEntity> expected = Arrays.asList(orig.get(1), orig.get(2), entity);
         int affectedRows = currencyDao.updateEntity(entity);
         assertEquals(1, affectedRows);
@@ -122,7 +123,7 @@ public class CurrencyDaoTest {
 
     @Test
     public void testUpdateEntity_NotFound() throws Exception {
-        CurrencyEntity entity = new CurrencyEntity(4, "cc4", "currency4");
+        CurrencyEntity entity = new CurrencyEntity(4, "cc4", "currency4", 2);
         int affectedRows = currencyDao.updateEntity(entity);
         assertEquals(0, affectedRows);
         List<CurrencyEntity> actual = currencyDao.getEntityList();

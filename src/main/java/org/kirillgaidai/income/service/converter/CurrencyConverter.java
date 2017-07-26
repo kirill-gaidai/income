@@ -20,7 +20,8 @@ public class CurrencyConverter implements IGenericConverter<CurrencyEntity, Curr
         if (dto == null) {
             return null;
         }
-        return new CurrencyEntity(dto.getId(), dto.getCode(), dto.getTitle());
+        // TODO: remove 4 after adding accuracy to dto
+        return new CurrencyEntity(dto.getId(), dto.getCode(), dto.getTitle(), 4);
     }
 
 }
