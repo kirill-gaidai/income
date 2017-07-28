@@ -3,7 +3,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <jsp:include page="/WEB-INF/pages/header.jsp"/>
 
@@ -73,6 +73,18 @@
             </td>
         </tr>
     </c:forEach>
+    <tr>
+        <td>${fn:length(summaryDto.summaryDtoRowList)}</td>
+        <td></td>
+        <c:forEach begin="1" end="${fn:length(summaryDto.accountDtoList)}">
+            <td></td>
+        </c:forEach>
+        <td></td>
+        <c:forEach items="${summaryDto.totalAmounts}" var="totalAmount">
+            <td>${totalAmount}</td>
+        </c:forEach>
+        <td>${summaryDto.totalAmountsSummary}</td>
+    </tr>
 </table>
 
 <jsp:include page="/WEB-INF/pages/footer.jsp"/>

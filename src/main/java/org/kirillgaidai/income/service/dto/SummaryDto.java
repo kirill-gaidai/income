@@ -9,15 +9,23 @@ public class SummaryDto {
     private List<AccountDto> accountDtoList;
     private List<CategoryDto> categoryDtoList;
     private List<SummaryDtoRow> summaryDtoRowList;
+    private List<BigDecimal> totalAmounts;
+    private BigDecimal totalAmountsSummary;
 
     public SummaryDto() {
     }
 
     public SummaryDto(
-            List<AccountDto> accountDtoList, List<CategoryDto> categoryDtoList, List<SummaryDtoRow> summaryDtoRowList) {
+            List<AccountDto> accountDtoList,
+            List<CategoryDto> categoryDtoList,
+            List<SummaryDtoRow> summaryDtoRowList,
+            List<BigDecimal> totalAmounts,
+            BigDecimal totalAmountsSummary) {
         this.accountDtoList = accountDtoList;
         this.categoryDtoList = categoryDtoList;
         this.summaryDtoRowList = summaryDtoRowList;
+        this.totalAmounts = totalAmounts;
+        this.totalAmountsSummary = totalAmountsSummary;
     }
 
     public List<AccountDto> getAccountDtoList() {
@@ -42,6 +50,22 @@ public class SummaryDto {
 
     public void setSummaryDtoRowList(List<SummaryDtoRow> summaryDtoRowList) {
         this.summaryDtoRowList = summaryDtoRowList;
+    }
+
+    public List<BigDecimal> getTotalAmounts() {
+        return totalAmounts;
+    }
+
+    public void setTotalAmounts(List<BigDecimal> totalAmounts) {
+        this.totalAmounts = totalAmounts;
+    }
+
+    public BigDecimal getTotalAmountsSummary() {
+        return totalAmountsSummary;
+    }
+
+    public void setTotalAmountsSummary(BigDecimal totalAmountsSummary) {
+        this.totalAmountsSummary = totalAmountsSummary;
     }
 
     public static class SummaryDtoRow {

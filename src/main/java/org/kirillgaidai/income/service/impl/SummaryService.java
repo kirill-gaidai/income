@@ -95,11 +95,21 @@ public class SummaryService implements ISummaryService {
                 getBalances(initialBalanceEntityList, balanceEntityList, firstDay, lastDay, accountIndexes);
         List<List<BigDecimal>> amounts = getAmounts(operationEntityList, firstDay, lastDay, categoryIndexes);
 
+        List<BigDecimal> totalAmounts =
+                Stream.generate(() -> BigDecimal.ZERO).limit(categoryIds.size()).collect(Collectors.toList());
+        BigDecimal totalAmountsSummary = BigDecimal.ZERO;
+
         List<SummaryDto.SummaryDtoRow> summaryDtoRowList = new ArrayList<>();
         LocalDate day = firstDay;
-        for (int index = 0; index < amounts.size(); index++) {
-            List<BigDecimal> amountsRow = amounts.get(index);
-            List<BigDecimal> balancesRow = balances.get(index);
+        for (int rowIndex = 0; rowIndex < amounts.size(); rowIndex++) {
+            List<BigDecimal> amountsRow = amounts.get(rowIndex);
+            List<BigDecimal> balancesRow = balances.get(rowIndex);
+
+            for (int columnIndex = 0; columnIndex < amountsRow.size(); columnIndex++) {
+                BigDecimal amount = amountsRow.get(columnIndex);
+                totalAmounts.set(columnIndex, totalAmounts.get(columnIndex).add(amount));
+                totalAmountsSummary = totalAmountsSummary.add(amount);
+            }
 
             BigDecimal amountsSummary = amountsRow.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal balancesSummary = balancesRow.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -118,6 +128,8 @@ public class SummaryService implements ISummaryService {
         summaryDto.setCategoryDtoList(categoryEntityList.stream().map(categoryConverter::convertToDto)
                 .collect(Collectors.toList()));
         summaryDto.setSummaryDtoRowList(summaryDtoRowList);
+        summaryDto.setTotalAmounts(totalAmounts);
+        summaryDto.setTotalAmountsSummary(totalAmountsSummary);
 
         setAccuracy(summaryDto, accuracy);
 
@@ -222,6 +234,13 @@ public class SummaryService implements ISummaryService {
                 amounts.set(index, amounts.get(index).setScale(accuracy, RoundingMode.HALF_UP));
             }
         }
+
+        List<BigDecimal> totalAmounts = summaryDto.getTotalAmounts();
+        for (int index = 0; index < totalAmounts.size(); index++) {
+            totalAmounts.set(index, totalAmounts.get(index).setScale(accuracy, RoundingMode.HALF_UP));
+        }
+
+        summaryDto.setTotalAmountsSummary(summaryDto.getTotalAmountsSummary().setScale(accuracy, RoundingMode.HALF_UP));
     }
 
 }

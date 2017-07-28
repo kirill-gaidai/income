@@ -94,7 +94,9 @@ public class SummaryServiceTest {
                         new BigDecimal("300"),
                         Collections.emptyList(),
                         BigDecimal.ZERO
-                ))
+                )),
+                Collections.emptyList(),
+                BigDecimal.ZERO
         );
 
         SummaryDto actual = summaryService.getSummaryDto(accountIdsSet, day, day);
@@ -162,7 +164,9 @@ public class SummaryServiceTest {
                         new BigDecimal("50"),
                         Arrays.asList(operationEntityList.get(0).getAmount(), operationEntityList.get(1).getAmount()),
                         new BigDecimal("50")
-                ))
+                )),
+                Arrays.asList(operationEntityList.get(0).getAmount(), operationEntityList.get(1).getAmount()),
+                operationEntityList.get(0).getAmount().add(operationEntityList.get(1).getAmount())
         );
 
         SummaryDto actual = summaryService.getSummaryDto(accountIdsSet, day, day);
@@ -223,7 +227,9 @@ public class SummaryServiceTest {
                                 Collections.emptyList(),
                                 BigDecimal.ZERO
                         )
-                )
+                ),
+                Collections.emptyList(),
+                BigDecimal.ZERO
         );
 
         SummaryDto actual = summaryService.getSummaryDto(accountIdsSet, days[0], days[1]);
@@ -291,7 +297,9 @@ public class SummaryServiceTest {
                                 Collections.singletonList(new BigDecimal("100")), new BigDecimal("100"),
                                 Collections.singletonList(new BigDecimal("30")), new BigDecimal("30")
                         )
-                )
+                ),
+                Collections.singletonList(new BigDecimal("30")),
+                new BigDecimal("30")
         );
 
         SummaryDto actual = summaryService.getSummaryDto(accountIdsSet, days[0], days[1]);
@@ -411,7 +419,9 @@ public class SummaryServiceTest {
                                 Arrays.asList(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
                                 BigDecimal.ZERO
                         )
-                )
+                ),
+                Arrays.asList(new BigDecimal("-100"), new BigDecimal("125"), new BigDecimal("25")),
+                new BigDecimal("50")
         );
 
         SummaryDto actual = summaryService.getSummaryDto(accountIdSet, days[1], days[5]);
@@ -564,7 +574,9 @@ public class SummaryServiceTest {
         Map<Integer, Integer> categoryIndexes = Collections.emptyMap();
 
         List<List<BigDecimal>> expected = Arrays.asList(
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList()
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList()
         );
 
         List<List<BigDecimal>> actual = summaryService
@@ -688,21 +700,23 @@ public class SummaryServiceTest {
                         Arrays.asList(new BigDecimal("0.3"), new BigDecimal("0.0")), new BigDecimal("0.3")
                 )
         );
+        List<BigDecimal> expectedTotalAmounts = Arrays.asList(new BigDecimal("0.3"), new BigDecimal("9.0"));
+        BigDecimal expectedTotalAmountsSummary = new BigDecimal("9.3");
         List<SummaryDto.SummaryDtoRow> actualSummaryDtoRowList = Arrays.asList(
                 new SummaryDto.SummaryDtoRow(
                         LocalDate.of(2017, 7, 1), new BigDecimal("10"),
-                        Arrays.asList(new BigDecimal("10.45"), new BigDecimal("10.44")),
-                        new BigDecimal("20.89"),
+                        Arrays.asList(new BigDecimal("10.45"), new BigDecimal("10.44")), new BigDecimal("20.89"),
                         Arrays.asList(BigDecimal.ZERO, new BigDecimal("9")), new BigDecimal("9")
                 ),
                 new SummaryDto.SummaryDtoRow(
                         LocalDate.of(2017, 7, 2), BigDecimal.ZERO,
-                        Arrays.asList(new BigDecimal("10.15"), new BigDecimal("10.44")),
-                        new BigDecimal("20.89"),
+                        Arrays.asList(new BigDecimal("10.15"), new BigDecimal("10.44")), new BigDecimal("20.89"),
                         Arrays.asList(new BigDecimal("0.3"), BigDecimal.ZERO), new BigDecimal("0.3")
                 )
         );
-        SummaryDto actual = new SummaryDto(null, null, actualSummaryDtoRowList);
+        List<BigDecimal> actualTotalAmounts = Arrays.asList(new BigDecimal("0.3"), new BigDecimal("9"));
+        SummaryDto actual =
+                new SummaryDto(null, null, actualSummaryDtoRowList, actualTotalAmounts, new BigDecimal("9.3"));
         summaryService.setAccuracy(actual, 1);
         for (int index = 0; index < expectedSummaryDtoRowList.size(); index++) {
             SummaryDto.SummaryDtoRow expectedSummaryDtoRow = expectedSummaryDtoRowList.get(index);
@@ -714,6 +728,8 @@ public class SummaryServiceTest {
             assertEquals(expectedSummaryDtoRow.getAmounts(), actualSummaryDtoRow.getAmounts());
             assertEquals(expectedSummaryDtoRow.getAmountsSummary(), actualSummaryDtoRow.getAmountsSummary());
         }
+        assertEquals(expectedTotalAmounts, actualTotalAmounts);
+        assertEquals(expectedTotalAmountsSummary, actual.getTotalAmountsSummary());
     }
 
 }

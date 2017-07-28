@@ -123,6 +123,8 @@ public class ServiceTestUtils {
         for (int index = 0; index < expectedRows.size(); index++) {
             assertSummaryDtoRowEquals(expectedRows.get(index), actualRows.get(index));
         }
+        assertBigDecimalListEquals(expected.getTotalAmounts(), actual.getTotalAmounts());
+        assertBigDecimalEquals(expected.getTotalAmountsSummary(), actual.getTotalAmountsSummary());
     }
 
 }
