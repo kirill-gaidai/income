@@ -5,6 +5,7 @@ import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.entity.CategoryEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
+import org.kirillgaidai.income.dao.entity.RateEntity;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -116,6 +117,23 @@ public class PersistenceTestUtils {
         for (int index = 0; index < expected.size(); index++) {
             assertBigDecimalEquals(expected.get(index), actual.get(index));
         }
+    }
+
+    public static void assertRateEntityListEquals(List<RateEntity> expected, List<RateEntity> actual) {
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for (int index = 0; index < expected.size(); index++) {
+            assertRateEntityEquals(expected.get(index), actual.get(index));
+        }
+    }
+
+    public static void assertRateEntityEquals(RateEntity expected, RateEntity actual) {
+        assertNotNull(actual);
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getCurrencyIdFrom(), actual.getCurrencyIdFrom());
+        assertEquals(expected.getCurrencyIdTo(), actual.getCurrencyIdTo());
+        assertEquals(expected.getDay(), actual.getDay());
+        assertBigDecimalEquals(expected.getValue(), actual.getValue());
     }
 
 }
