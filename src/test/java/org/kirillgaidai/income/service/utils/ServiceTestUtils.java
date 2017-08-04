@@ -5,6 +5,7 @@ import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.dto.CategoryDto;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
 import org.kirillgaidai.income.service.dto.OperationDto;
+import org.kirillgaidai.income.service.dto.RateDto;
 import org.kirillgaidai.income.service.dto.SummaryDto;
 
 import java.util.List;
@@ -125,6 +126,26 @@ public class ServiceTestUtils {
         }
         assertBigDecimalListEquals(expected.getTotalAmounts(), actual.getTotalAmounts());
         assertBigDecimalEquals(expected.getTotalAmountsSummary(), actual.getTotalAmountsSummary());
+    }
+
+    public static void assertRateDtoEquals(RateDto expected, RateDto actual) {
+        assertNotNull(actual);
+        assertEquals(expected.getFromCurrencyId(), actual.getFromCurrencyId());
+        assertEquals(expected.getFromCurrencyCode(), actual.getFromCurrencyCode());
+        assertEquals(expected.getFromCurrencyTitle(), actual.getFromCurrencyTitle());
+        assertEquals(expected.getToCurrencyId(), actual.getToCurrencyId());
+        assertEquals(expected.getToCurrencyCode(), actual.getToCurrencyCode());
+        assertEquals(expected.getToCurrencyTitle(), actual.getToCurrencyTitle());
+        assertEquals(expected.getDay(), actual.getDay());
+        assertBigDecimalEquals(expected.getValue(), actual.getValue());
+    }
+
+    public static void assertRateDtoListEquals(List<RateDto> expected, List<RateDto> actual) {
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for (int index = 0; index < expected.size(); index++) {
+            assertRateDtoEquals(expected.get(index), actual.get(index));
+        }
     }
 
 }
