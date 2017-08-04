@@ -3,9 +3,8 @@ package org.kirillgaidai.income.dao.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class RateEntity implements IGenericEntity {
+public class RateEntity {
 
-    private Integer id;
     private Integer currencyIdFrom;
     private Integer currencyIdTo;
     private LocalDate day;
@@ -14,22 +13,11 @@ public class RateEntity implements IGenericEntity {
     public RateEntity() {
     }
 
-    public RateEntity(Integer id, Integer currencyIdFrom, Integer currencyIdTo, LocalDate day, BigDecimal value) {
-        this.id = id;
+    public RateEntity(Integer currencyIdFrom, Integer currencyIdTo, LocalDate day, BigDecimal value) {
         this.currencyIdFrom = currencyIdFrom;
         this.currencyIdTo = currencyIdTo;
         this.day = day;
         this.value = value;
-    }
-
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Integer getCurrencyIdFrom() {

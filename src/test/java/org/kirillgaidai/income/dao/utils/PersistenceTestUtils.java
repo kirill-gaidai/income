@@ -129,7 +129,6 @@ public class PersistenceTestUtils {
 
     public static void assertRateEntityEquals(RateEntity expected, RateEntity actual) {
         assertNotNull(actual);
-        assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getCurrencyIdFrom(), actual.getCurrencyIdFrom());
         assertEquals(expected.getCurrencyIdTo(), actual.getCurrencyIdTo());
         assertEquals(expected.getDay(), actual.getDay());

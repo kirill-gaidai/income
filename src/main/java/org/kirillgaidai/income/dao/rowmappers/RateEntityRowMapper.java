@@ -12,7 +12,6 @@ public class RateEntityRowMapper implements RowMapper<RateEntity> {
     @Override
     public RateEntity mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         RateEntity result = new RateEntity();
-        result.setId(resultSet.getInt("id"));
         result.setCurrencyIdFrom(resultSet.getInt("currency_id_from"));
         result.setCurrencyIdTo(resultSet.getInt("currency_id_to"));
         Date day = resultSet.getDate("day");
