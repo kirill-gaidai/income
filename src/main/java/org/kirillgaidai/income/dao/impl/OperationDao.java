@@ -2,9 +2,9 @@ package org.kirillgaidai.income.dao.impl;
 
 import org.kirillgaidai.income.dao.entity.OperationEntity;
 import org.kirillgaidai.income.dao.intf.IOperationDao;
-import org.kirillgaidai.income.dao.rowmappers.OperationEntityRowMapper;
 import org.kirillgaidai.income.dao.util.DaoHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -21,13 +21,13 @@ public class OperationDao implements IOperationDao {
 
     final private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     final private DaoHelper daoHelper;
-    final private OperationEntityRowMapper operationEntityRowMapper;
+    final private RowMapper<OperationEntity> operationEntityRowMapper;
 
     @Autowired
     public OperationDao(
             NamedParameterJdbcTemplate namedParameterJdbcTemplate,
             DaoHelper daoHelper,
-            OperationEntityRowMapper operationEntityRowMapper) {
+            RowMapper<OperationEntity> operationEntityRowMapper) {
         super();
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.daoHelper = daoHelper;
