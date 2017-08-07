@@ -2,11 +2,13 @@ package org.kirillgaidai.income.dao.rowmappers;
 
 import org.kirillgaidai.income.dao.entity.RateEntity;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class RateEntityRowMapper implements RowMapper<RateEntity> {
 
     @Override
