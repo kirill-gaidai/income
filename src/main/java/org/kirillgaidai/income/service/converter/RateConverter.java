@@ -2,7 +2,9 @@ package org.kirillgaidai.income.service.converter;
 
 import org.kirillgaidai.income.dao.entity.RateEntity;
 import org.kirillgaidai.income.service.dto.RateDto;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RateConverter implements IGenericConverter<RateEntity, RateDto> {
 
     @Override
@@ -19,7 +21,7 @@ public class RateConverter implements IGenericConverter<RateEntity, RateDto> {
         if (dto == null) {
             return null;
         }
-        return new RateEntity(dto.getFromCurrencyId(), dto.getToCurrencyId(), dto.getDay(), dto.getValue());
+        return new RateEntity(dto.getCurrencyIdFrom(), dto.getCurrencyIdTo(), dto.getDay(), dto.getValue());
     }
 
 }

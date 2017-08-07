@@ -130,12 +130,12 @@ public class ServiceTestUtils {
 
     public static void assertRateDtoEquals(RateDto expected, RateDto actual) {
         assertNotNull(actual);
-        assertEquals(expected.getFromCurrencyId(), actual.getFromCurrencyId());
-        assertEquals(expected.getFromCurrencyCode(), actual.getFromCurrencyCode());
-        assertEquals(expected.getFromCurrencyTitle(), actual.getFromCurrencyTitle());
-        assertEquals(expected.getToCurrencyId(), actual.getToCurrencyId());
-        assertEquals(expected.getToCurrencyCode(), actual.getToCurrencyCode());
-        assertEquals(expected.getToCurrencyTitle(), actual.getToCurrencyTitle());
+        assertEquals(expected.getCurrencyIdFrom(), actual.getCurrencyIdFrom());
+        assertEquals(expected.getCurrencyCodeFrom(), actual.getCurrencyCodeFrom());
+        assertEquals(expected.getCurrencyTitleFrom(), actual.getCurrencyTitleFrom());
+        assertEquals(expected.getCurrencyIdTo(), actual.getCurrencyIdTo());
+        assertEquals(expected.getCurrencyCodeTo(), actual.getCurrencyCodeTo());
+        assertEquals(expected.getCurrencyTitleTo(), actual.getCurrencyTitleTo());
         assertEquals(expected.getDay(), actual.getDay());
         assertBigDecimalEquals(expected.getValue(), actual.getValue());
     }

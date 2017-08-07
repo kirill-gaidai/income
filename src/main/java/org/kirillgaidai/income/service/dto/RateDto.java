@@ -5,12 +5,12 @@ import java.time.LocalDate;
 
 public class RateDto {
 
-    private Integer fromCurrencyId;
-    private String fromCurrencyCode;
-    private String fromCurrencyTitle;
-    private Integer toCurrencyId;
-    private String toCurrencyCode;
-    private String toCurrencyTitle;
+    private Integer currencyIdFrom;
+    private String currencyCodeFrom;
+    private String currencyTitleFrom;
+    private Integer currencyIdTo;
+    private String currencyCodeTo;
+    private String currencyTitleTo;
     private LocalDate day;
     private BigDecimal value;
 
@@ -18,64 +18,64 @@ public class RateDto {
     }
 
     public RateDto(
-            Integer fromCurrencyId, String fromCurrencyCode, String fromCurrencyTitle, Integer toCurrencyId,
-            String toCurrencyCode, String toCurrencyTitle, LocalDate day, BigDecimal value) {
-        this.fromCurrencyId = fromCurrencyId;
-        this.fromCurrencyCode = fromCurrencyCode;
-        this.fromCurrencyTitle = fromCurrencyTitle;
-        this.toCurrencyId = toCurrencyId;
-        this.toCurrencyCode = toCurrencyCode;
-        this.toCurrencyTitle = toCurrencyTitle;
+            Integer currencyIdFrom, String currencyCodeFrom, String currencyTitleFrom, Integer currencyIdTo,
+            String currencyCodeTo, String currencyTitleTo, LocalDate day, BigDecimal value) {
+        this.currencyIdFrom = currencyIdFrom;
+        this.currencyCodeFrom = currencyCodeFrom;
+        this.currencyTitleFrom = currencyTitleFrom;
+        this.currencyIdTo = currencyIdTo;
+        this.currencyCodeTo = currencyCodeTo;
+        this.currencyTitleTo = currencyTitleTo;
         this.day = day;
         this.value = value;
     }
 
-    public Integer getFromCurrencyId() {
-        return fromCurrencyId;
+    public Integer getCurrencyIdFrom() {
+        return currencyIdFrom;
     }
 
-    public void setFromCurrencyId(Integer fromCurrencyId) {
-        this.fromCurrencyId = fromCurrencyId;
+    public void setCurrencyIdFrom(Integer currencyIdFrom) {
+        this.currencyIdFrom = currencyIdFrom;
     }
 
-    public String getFromCurrencyCode() {
-        return fromCurrencyCode;
+    public String getCurrencyCodeFrom() {
+        return currencyCodeFrom;
     }
 
-    public void setFromCurrencyCode(String fromCurrencyCode) {
-        this.fromCurrencyCode = fromCurrencyCode;
+    public void setCurrencyCodeFrom(String currencyCodeFrom) {
+        this.currencyCodeFrom = currencyCodeFrom;
     }
 
-    public String getFromCurrencyTitle() {
-        return fromCurrencyTitle;
+    public String getCurrencyTitleFrom() {
+        return currencyTitleFrom;
     }
 
-    public void setFromCurrencyTitle(String fromCurrencyTitle) {
-        this.fromCurrencyTitle = fromCurrencyTitle;
+    public void setCurrencyTitleFrom(String currencyTitleFrom) {
+        this.currencyTitleFrom = currencyTitleFrom;
     }
 
-    public Integer getToCurrencyId() {
-        return toCurrencyId;
+    public Integer getCurrencyIdTo() {
+        return currencyIdTo;
     }
 
-    public void setToCurrencyId(Integer toCurrencyId) {
-        this.toCurrencyId = toCurrencyId;
+    public void setCurrencyIdTo(Integer currencyIdTo) {
+        this.currencyIdTo = currencyIdTo;
     }
 
-    public String getToCurrencyCode() {
-        return toCurrencyCode;
+    public String getCurrencyCodeTo() {
+        return currencyCodeTo;
     }
 
-    public void setToCurrencyCode(String toCurrencyCode) {
-        this.toCurrencyCode = toCurrencyCode;
+    public void setCurrencyCodeTo(String currencyCodeTo) {
+        this.currencyCodeTo = currencyCodeTo;
     }
 
-    public String getToCurrencyTitle() {
-        return toCurrencyTitle;
+    public String getCurrencyTitleTo() {
+        return currencyTitleTo;
     }
 
-    public void setToCurrencyTitle(String toCurrencyTitle) {
-        this.toCurrencyTitle = toCurrencyTitle;
+    public void setCurrencyTitleTo(String currencyTitleTo) {
+        this.currencyTitleTo = currencyTitleTo;
     }
 
     public LocalDate getDay() {
