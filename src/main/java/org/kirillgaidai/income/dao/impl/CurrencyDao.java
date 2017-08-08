@@ -1,8 +1,11 @@
 package org.kirillgaidai.income.dao.impl;
 
+import org.apache.commons.logging.LogFactory;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.dao.util.DaoHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -16,6 +19,8 @@ import java.util.Set;
 
 @Repository
 public class CurrencyDao implements ICurrencyDao {
+
+    final private static Logger LOGGER = LoggerFactory.getLogger(CurrencyDao.class);
 
     final private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     final private DaoHelper daoHelper;
@@ -64,6 +69,8 @@ public class CurrencyDao implements ICurrencyDao {
 
     @Override
     public int updateEntity(CurrencyEntity entity) {
+        LOGGER.debug("Updating currency with id={}. Setting code={}, title={}, scale={}",
+                entity.getId(), entity.getCode(), entity.getTitle(), entity.getAccuracy());
         String sql = "UPDATE currencies SET code = :code, title = :title, accuracy = :accuracy WHERE id = :id";
         Map<String, Object> params = new HashMap<>();
         params.put("id", entity.getId());
@@ -75,6 +82,7 @@ public class CurrencyDao implements ICurrencyDao {
 
     @Override
     public int deleteEntity(Integer id) {
+        LOGGER.debug("Deleting currency with id={}", id);
         String sql = "DELETE FROM currencies WHERE id = :id";
         return namedParameterJdbcTemplate.update(sql, Collections.singletonMap("id", id));
     }
