@@ -2,7 +2,7 @@
 <Configuration monitorInterval="30">
 
     <Properties>
-        <Property name="logsFolder">d:/temp/logs</Property>
+        <Property name="logsFolder">logs</Property>
     </Properties>
 
     <!-- https://logging.apache.org/log4j/2.x/manual -->
