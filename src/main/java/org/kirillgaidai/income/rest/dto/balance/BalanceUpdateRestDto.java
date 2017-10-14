@@ -1,27 +1,33 @@
-package org.kirillgaidai.income.service.dto;
+package org.kirillgaidai.income.rest.dto.balance;
 
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.NumberFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class BalanceDto implements IGenericDto {
+public class BalanceUpdateRestDto {
 
+    @JsonProperty
+    @NotNull
+    @Min(1)
     private Integer accountId;
-    private String accountTitle;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonProperty
+    @NotNull
     private LocalDate day;
-    @NumberFormat(style = NumberFormat.Style.NUMBER)
+    @JsonProperty
+    @NotNull
     private BigDecimal amount;
+    @JsonProperty
+    @NotNull
     private Boolean manual;
 
-    public BalanceDto() {
+    public BalanceUpdateRestDto() {
     }
 
-    public BalanceDto(Integer accountId, String accountTitle, LocalDate day, BigDecimal amount, Boolean manual) {
+    public BalanceUpdateRestDto(Integer accountId, LocalDate day, BigDecimal amount, Boolean manual) {
         this.accountId = accountId;
-        this.accountTitle = accountTitle;
         this.day = day;
         this.amount = amount;
         this.manual = manual;
@@ -33,14 +39,6 @@ public class BalanceDto implements IGenericDto {
 
     public void setAccountId(Integer accountId) {
         this.accountId = accountId;
-    }
-
-    public String getAccountTitle() {
-        return accountTitle;
-    }
-
-    public void setAccountTitle(String accountTitle) {
-        this.accountTitle = accountTitle;
     }
 
     public LocalDate getDay() {

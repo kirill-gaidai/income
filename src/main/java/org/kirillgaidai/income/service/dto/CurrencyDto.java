@@ -17,12 +17,10 @@ public class CurrencyDto implements IGenericDto {
         this.accuracy = accuracy;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
 
-    @Override
     public void setId(Integer id) {
         this.id = id;
     }
