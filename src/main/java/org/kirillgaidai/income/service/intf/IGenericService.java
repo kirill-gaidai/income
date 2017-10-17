@@ -13,7 +13,7 @@ public interface IGenericService<T extends IGenericDto> {
 
     T get(Integer id);
 
-    void saveDto(T operationDto);
+    T saveDto(T operationDto);
 
     void deleteDto(Integer id);
 

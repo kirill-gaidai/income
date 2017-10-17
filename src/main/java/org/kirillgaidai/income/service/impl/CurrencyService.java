@@ -52,7 +52,7 @@ public class CurrencyService implements ICurrencyService {
     }
 
     @Override
-    public void saveDto(CurrencyDto currencyDto) {
+    public CurrencyDto saveDto(CurrencyDto currencyDto) {
         if (currencyDto == null) {
             throw new IncomeServiceCurrencyNotFoundException();
         }
@@ -60,12 +60,13 @@ public class CurrencyService implements ICurrencyService {
         if (currencyEntity.getId() == null) {
             currencyDao.insertEntity(currencyEntity);
             currencyDto.setId(currencyEntity.getId());
-            return;
+            return null;
         }
         int affectedRows = currencyDao.updateEntity(currencyEntity);
         if (affectedRows != 1) {
             throw new IncomeServiceCurrencyNotFoundException(currencyDto.getId());
         }
+        return null;
     }
 
     @Override

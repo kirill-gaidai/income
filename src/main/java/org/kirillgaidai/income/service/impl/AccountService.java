@@ -71,7 +71,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public void saveDto(AccountDto accountDto) {
+    public AccountDto saveDto(AccountDto accountDto) {
         if (accountDto == null) {
             throw new IncomeServiceAccountNotFoundException();
         }
@@ -80,13 +80,14 @@ public class AccountService implements IAccountService {
         if (accountDto.getId() == null) {
             accountDao.insertEntity(accountEntity);
             accountDto.setId(accountEntity.getId());
-            return;
+            return null;
         }
 
         int affectedRows = accountDao.updateEntity(accountEntity);
         if (affectedRows != 1) {
             throw new IncomeServiceAccountNotFoundException(accountDto.getId());
         }
+        return null;
     }
 
     @Override

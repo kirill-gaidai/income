@@ -52,7 +52,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public void saveDto(CategoryDto categoryDto) {
+    public CategoryDto saveDto(CategoryDto categoryDto) {
         if (categoryDto == null) {
             throw new IncomeServiceCategoryNotFoundException();
         }
@@ -60,12 +60,13 @@ public class CategoryService implements ICategoryService {
         if (categoryEntity.getId() == null) {
             categoryDao.insertEntity(categoryEntity);
             categoryDto.setId(categoryEntity.getId());
-            return;
+            return null;
         }
         int affectedRows = categoryDao.updateEntity(categoryEntity);
         if (affectedRows != 1) {
             throw new IncomeServiceCategoryNotFoundException(categoryDto.getId());
         }
+        return null;
     }
 
     @Override

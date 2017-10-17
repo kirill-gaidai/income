@@ -72,7 +72,7 @@ public class OperationService implements IOperationService {
      * @param operationDto - operation dto
      */
     @Override
-    public void saveDto(OperationDto operationDto) {
+    public OperationDto saveDto(OperationDto operationDto) {
         Integer accountId = operationDto.getAccountId();
         AccountEntity accountEntity = accountDao.getEntity(accountId);
         if (accountEntity == null) {
@@ -98,7 +98,7 @@ public class OperationService implements IOperationService {
                     new BalanceEntity(accountId, thisDay, prevBalanceEntity.getAmount().subtract(amount), false);
             balanceDao.insertEntity(newBalanceEntity);
             operationDao.insertEntity(operationEntity);
-            return;
+            return null;
         }
 
         // if balance for this day exists, but no balance before - calculating balance for previous day
@@ -107,13 +107,13 @@ public class OperationService implements IOperationService {
                     thisBalanceEntity.getAmount().add(amount), false);
             balanceDao.insertEntity(newBalanceEntity);
             operationDao.insertEntity(operationEntity);
-            return;
+            return null;
         }
 
         // if both balances exist, but fixed - no balance recalculation
         if (prevBalanceEntity.getManual() && thisBalanceEntity.getManual()) {
             operationDao.insertEntity(operationEntity);
-            return;
+            return null;
         }
 
         // After that point both balances (for this day and previous balance) exist
@@ -129,7 +129,7 @@ public class OperationService implements IOperationService {
                 balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
             }
             operationDao.insertEntity(operationEntity);
-            return;
+            return null;
         }
 
         // If this balance fixed, only balance for previous day may be recalculated
@@ -140,7 +140,7 @@ public class OperationService implements IOperationService {
                 balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
             }
             operationDao.insertEntity(operationEntity);
-            return;
+            return null;
         }
 
         // After that point no fixed balances at this or previous days
@@ -149,18 +149,19 @@ public class OperationService implements IOperationService {
         if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
             balanceDao.updateEntity(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
             operationDao.insertEntity(operationEntity);
-            return;
+            return null;
         }
 
         // If no balance before previous day then recalculating balance for previous day (adding)
         if (balanceDao.getEntityBefore(accountId, prevDay) == null) {
             balanceDao.updateEntity(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
             operationDao.insertEntity(operationEntity);
-            return;
+            return null;
         }
 
         // Balance recalculation in the middle is forbidden
         operationDao.insertEntity(operationEntity);
+        return null;
     }
 
     /**
