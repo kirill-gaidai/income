@@ -37,7 +37,7 @@ public class CurrencyController {
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/edit/{id}")
     public ModelAndView showCurrencyForm(@PathVariable("id") Integer id) {
-        CurrencyDto currencyDto = currencyService.getDto(id);
+        CurrencyDto currencyDto = currencyService.get(id);
         if (currencyDto == null) {
             throw new IncomeControllerNotFoundException("currency with id " + id + " not found");
         }

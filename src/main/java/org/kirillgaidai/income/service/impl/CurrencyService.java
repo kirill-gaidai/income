@@ -40,7 +40,7 @@ public class CurrencyService implements ICurrencyService {
     }
 
     @Override
-    public CurrencyDto getDto(Integer id) {
+    public CurrencyDto get(Integer id) {
         if (id == null) {
             throw new IncomeServiceCurrencyNotFoundException();
         }

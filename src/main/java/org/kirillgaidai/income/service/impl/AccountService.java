@@ -46,7 +46,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public AccountDto getDto(Integer id) {
+    public AccountDto get(Integer id) {
         if (id == null) {
             throw new IncomeServiceAccountNotFoundException();
         }

@@ -40,7 +40,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public CategoryDto getDto(Integer id) {
+    public CategoryDto get(Integer id) {
         if (id == null) {
             throw new IncomeServiceCategoryNotFoundException();
         }

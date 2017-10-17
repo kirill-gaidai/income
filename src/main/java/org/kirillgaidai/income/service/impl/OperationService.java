@@ -62,7 +62,7 @@ public class OperationService implements IOperationService {
     }
 
     @Override
-    public OperationDto getDto(Integer id) {
+    public OperationDto get(Integer id) {
         throw new UnsupportedOperationException();
     }
 

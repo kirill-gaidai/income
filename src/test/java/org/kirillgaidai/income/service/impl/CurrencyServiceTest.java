@@ -111,7 +111,7 @@ public class CurrencyServiceTest {
     @Test
     public void testGetDto_Null() throws Exception {
         try {
-            currencyService.getDto(null);
+            currencyService.get(null);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency not found", e.getMessage());
         }
@@ -121,7 +121,7 @@ public class CurrencyServiceTest {
     @Test
     public void testGetDto_NotFound() throws Exception {
         try {
-            currencyService.getDto(1);
+            currencyService.get(1);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 1 not found", e.getMessage());
         }
@@ -137,7 +137,7 @@ public class CurrencyServiceTest {
         doReturn(currencyEntity).when(currencyDao).getEntity(1);
         doReturn(expected).when(currencyConverter).convertToDto(currencyEntity);
 
-        CurrencyDto actual = currencyService.getDto(1);
+        CurrencyDto actual = currencyService.get(1);
 
         assertCurrencyDtoEquals(expected, actual);
 

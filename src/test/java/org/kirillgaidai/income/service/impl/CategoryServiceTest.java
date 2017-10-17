@@ -111,7 +111,7 @@ public class CategoryServiceTest {
     @Test
     public void testGetDto_Null() throws Exception {
         try {
-            categoryService.getDto(null);
+            categoryService.get(null);
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category not found", e.getMessage());
         }
@@ -121,7 +121,7 @@ public class CategoryServiceTest {
     @Test
     public void testGetDto_NotFound() throws Exception {
         try {
-            categoryService.getDto(1);
+            categoryService.get(1);
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category with id 1 not found", e.getMessage());
         }
@@ -137,7 +137,7 @@ public class CategoryServiceTest {
         doReturn(categoryEntity).when(categoryDao).getEntity(1);
         doReturn(expected).when(categoryConverter).convertToDto(categoryEntity);
 
-        CategoryDto actual = categoryService.getDto(1);
+        CategoryDto actual = categoryService.get(1);
 
         assertCategoryDtoEquals(expected, actual);
 

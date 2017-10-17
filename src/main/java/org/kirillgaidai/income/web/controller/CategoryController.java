@@ -37,7 +37,7 @@ public class CategoryController {
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
     public ModelAndView showCategoryForm(@PathVariable("id") Integer id) {
-        CategoryDto categoryDto = categoryService.getDto(id);
+        CategoryDto categoryDto = categoryService.get(id);
         if (categoryDto == null) {
             throw new IncomeControllerNotFoundException("category with id " + id + " not found");
         }

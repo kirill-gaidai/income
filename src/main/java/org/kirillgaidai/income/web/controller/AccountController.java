@@ -42,7 +42,7 @@ public class AccountController {
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
     public ModelAndView showAccountForm(@PathVariable("id") Integer id) {
-        AccountDto accountDto = accountService.getDto(id);
+        AccountDto accountDto = accountService.get(id);
         final ModelAndView modelAndView = new ModelAndView("account/form");
         modelAndView.addObject("currencies", currencyService.getList());
         modelAndView.addObject("account", accountDto);

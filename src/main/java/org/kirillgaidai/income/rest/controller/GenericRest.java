@@ -37,7 +37,7 @@ public abstract class GenericRest<
     @Override
     public GT get(Integer id) {
         LOGGER.debug("Getting entity");
-        return mapper.toRestDto(service.getDto(id));
+        return mapper.toRestDto(service.get(id));
     }
 
     @Override

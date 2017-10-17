@@ -208,7 +208,7 @@ public class AccountServiceTest {
     @Test
     public void testGetDto_Null() throws Exception {
         try {
-            accountService.getDto(null);
+            accountService.get(null);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account not found", e.getMessage());
         }
@@ -218,7 +218,7 @@ public class AccountServiceTest {
     @Test
     public void testGetDto_AccountEntityNotFound() throws Exception {
         try {
-            accountService.getDto(1);
+            accountService.get(1);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
@@ -231,7 +231,7 @@ public class AccountServiceTest {
         AccountEntity accountEntity = new AccountEntity(1, null, "01", "account1");
         doReturn(accountEntity).when(accountDao).getEntity(1);
         try {
-            accountService.getDto(1);
+            accountService.get(1);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency not found", e.getMessage());
         }
@@ -244,7 +244,7 @@ public class AccountServiceTest {
         AccountEntity accountEntity = new AccountEntity(1, 11, "01", "account1");
         doReturn(accountEntity).when(accountDao).getEntity(1);
         try {
-            accountService.getDto(1);
+            accountService.get(1);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 11 not found", e.getMessage());
         }
@@ -262,7 +262,7 @@ public class AccountServiceTest {
         doReturn(currencyEntity).when(currencyDao).getEntity(11);
         doReturn(accountDto).when(accountConverter).convertToDto(accountEntity);
         AccountDto expected = new AccountDto(1, 11, "cc1", "currency1", "01", "account1");
-        AccountDto actual = accountService.getDto(1);
+        AccountDto actual = accountService.get(1);
         assertAccountDtoEquals(expected, actual);
         verify(accountDao).getEntity(1);
         verify(currencyDao).getEntity(11);
