@@ -51,7 +51,7 @@ public class AccountController {
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String saveAccount(@Validated AccountDto accountDto) {
-        accountService.saveDto(accountDto);
+        accountService.save(accountDto);
         return "redirect:/account/list";
     }
 

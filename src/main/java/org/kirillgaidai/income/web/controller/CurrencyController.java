@@ -46,7 +46,7 @@ public class CurrencyController {
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String saveCategory(@Validated CurrencyDto currencyDto) {
-        currencyService.saveDto(currencyDto);
+        currencyService.save(currencyDto);
         return "redirect:/currency/list";
     }
 

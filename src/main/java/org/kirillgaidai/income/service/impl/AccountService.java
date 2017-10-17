@@ -71,7 +71,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public AccountDto saveDto(AccountDto accountDto) {
+    public AccountDto save(AccountDto accountDto) {
         if (accountDto == null) {
             throw new IncomeServiceAccountNotFoundException();
         }

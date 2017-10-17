@@ -59,7 +59,7 @@ public class OperationServiceTest {
                 amount, "note1");
 
         try {
-            operationService.saveDto(operationDto);
+            operationService.save(operationDto);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals(String.format("Account with id %d not found", accountId), e.getMessage());
         }
@@ -91,7 +91,7 @@ public class OperationServiceTest {
         doReturn(null).when(balanceDao).getEntity(accountId, thisDay);
 
         try {
-            operationService.saveDto(operationDto);
+            operationService.save(operationDto);
         } catch (IncomeServiceBalanceNotFoundException e) {
             assertEquals(String.format("Balance for account \"%s\" on %s not found", "account1", thisDay.toString()),
                     e.getMessage());
@@ -129,7 +129,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).insertEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -171,7 +171,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).insertEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         BalanceEntity expected = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -213,7 +213,7 @@ public class OperationServiceTest {
         doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
@@ -251,7 +251,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -297,7 +297,7 @@ public class OperationServiceTest {
         doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
@@ -336,7 +336,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         BalanceEntity expected = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -382,7 +382,7 @@ public class OperationServiceTest {
         doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);
@@ -420,7 +420,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -467,7 +467,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -514,7 +514,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         BalanceEntity expected = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -565,7 +565,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).insertEntity(operationEntity);
 
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
 
         verify(accountDao).getEntity(accountId);
         verify(operationConverter).convertToEntity(operationDto);

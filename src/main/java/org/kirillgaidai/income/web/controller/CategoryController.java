@@ -46,7 +46,7 @@ public class CategoryController {
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String saveCategory(@Validated CategoryDto categoryDto) {
-        categoryService.saveDto(categoryDto);
+        categoryService.save(categoryDto);
         return "redirect:/category/list";
     }
 

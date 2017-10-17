@@ -149,7 +149,7 @@ public class CurrencyServiceTest {
     @Test
     public void testSaveDto_Null() throws Exception {
         try {
-            currencyService.saveDto(null);
+            currencyService.save(null);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency not found", e.getMessage());
         }
@@ -164,7 +164,7 @@ public class CurrencyServiceTest {
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
         doReturn(1).when(currencyDao).insertEntity(currencyEntity);
 
-        currencyService.saveDto(categoryDto);
+        currencyService.save(categoryDto);
 
         verify(currencyConverter).convertToEntity(categoryDto);
         verify(currencyDao).insertEntity(currencyEntity);
@@ -180,7 +180,7 @@ public class CurrencyServiceTest {
         doReturn(0).when(currencyDao).updateEntity(currencyEntity);
 
         try {
-            currencyService.saveDto(categoryDto);
+            currencyService.save(categoryDto);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 1 not found", e.getMessage());
         }
@@ -198,7 +198,7 @@ public class CurrencyServiceTest {
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
         doReturn(1).when(currencyDao).updateEntity(currencyEntity);
 
-        currencyService.saveDto(categoryDto);
+        currencyService.save(categoryDto);
 
         verify(currencyConverter).convertToEntity(categoryDto);
         verify(currencyDao).updateEntity(currencyEntity);

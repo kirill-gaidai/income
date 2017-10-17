@@ -52,7 +52,7 @@ public class CurrencyService implements ICurrencyService {
     }
 
     @Override
-    public CurrencyDto saveDto(CurrencyDto currencyDto) {
+    public CurrencyDto save(CurrencyDto currencyDto) {
         if (currencyDto == null) {
             throw new IncomeServiceCurrencyNotFoundException();
         }

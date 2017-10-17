@@ -72,7 +72,7 @@ public class OperationService implements IOperationService {
      * @param operationDto - operation dto
      */
     @Override
-    public OperationDto saveDto(OperationDto operationDto) {
+    public OperationDto save(OperationDto operationDto) {
         Integer accountId = operationDto.getAccountId();
         AccountEntity accountEntity = accountDao.getEntity(accountId);
         if (accountEntity == null) {
