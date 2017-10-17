@@ -4,7 +4,7 @@ import org.kirillgaidai.income.exception.IncomeException;
 
 public class IncomeDaoException extends IncomeException {
 
-    public IncomeDaoException(final String message) {
+    public IncomeDaoException(String message) {
         super(message);
     }
 

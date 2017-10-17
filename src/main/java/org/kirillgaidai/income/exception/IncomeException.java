@@ -6,21 +6,19 @@ public class IncomeException extends RuntimeException {
         super();
     }
 
-    public IncomeException(final String message) {
+    public IncomeException(String message) {
         super(message);
     }
 
-    public IncomeException(final String message, final Throwable cause) {
+    public IncomeException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public IncomeException(final Throwable cause) {
+    public IncomeException(Throwable cause) {
         super(cause);
     }
 
-    public IncomeException(
-            final String message, final Throwable cause, final boolean enableSuppression,
-            final boolean writableStackTrace) {
+    public IncomeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
