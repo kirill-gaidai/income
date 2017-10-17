@@ -70,7 +70,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public void deleteDto(Integer id) {
+    public void delete(Integer id) {
         if (id == null) {
             throw new IncomeServiceCategoryNotFoundException();
         }

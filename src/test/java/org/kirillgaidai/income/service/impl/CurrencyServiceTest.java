@@ -208,7 +208,7 @@ public class CurrencyServiceTest {
     @Test
     public void testDeleteDto_Null() throws Exception {
         try {
-            currencyService.deleteDto(null);
+            currencyService.delete(null);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency not found", e.getMessage());
         }
@@ -219,7 +219,7 @@ public class CurrencyServiceTest {
     public void testDeleteDto_NotFound() throws Exception {
         doReturn(0).when(currencyDao).deleteEntity(1);
         try {
-            currencyService.deleteDto(1);
+            currencyService.delete(1);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 1 not found", e.getMessage());
         }
@@ -230,7 +230,7 @@ public class CurrencyServiceTest {
     @Test
     public void testDeleteDto_Ok() throws Exception {
         doReturn(1).when(currencyDao).deleteEntity(1);
-        currencyService.deleteDto(1);
+        currencyService.delete(1);
         verify(currencyDao).deleteEntity(1);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }

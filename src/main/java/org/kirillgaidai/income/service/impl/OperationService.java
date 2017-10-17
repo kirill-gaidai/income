@@ -170,7 +170,7 @@ public class OperationService implements IOperationService {
      * @param id - operation id
      */
     @Override
-    public void deleteDto(Integer id) {
+    public void delete(Integer id) {
         // Error in case operation with specified id is not found
         OperationEntity operationEntity = operationDao.getEntity(id);
         if (operationEntity == null) {

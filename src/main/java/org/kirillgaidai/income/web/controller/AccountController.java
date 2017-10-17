@@ -57,7 +57,7 @@ public class AccountController {
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     public String deleteAccount(@PathVariable("id") Integer id) {
-        accountService.deleteDto(id);
+        accountService.delete(id);
         return "redirect:/account/list";
     }
 

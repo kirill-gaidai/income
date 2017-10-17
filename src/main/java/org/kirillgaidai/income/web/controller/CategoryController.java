@@ -52,7 +52,7 @@ public class CategoryController {
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     public String deleteCategory(@PathVariable("id") Integer id) {
-        categoryService.deleteDto(id);
+        categoryService.delete(id);
         return "redirect:/category/list";
     }
 

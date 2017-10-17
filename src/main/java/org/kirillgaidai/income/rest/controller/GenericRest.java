@@ -59,7 +59,7 @@ public abstract class GenericRest<
     @Override
     public void delete(Integer id) {
         LOGGER.debug("Deleting entity");
-        service.deleteDto(id);
+        service.delete(id);
     }
 
 }

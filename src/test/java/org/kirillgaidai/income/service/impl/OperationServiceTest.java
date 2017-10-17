@@ -587,7 +587,7 @@ public class OperationServiceTest {
         Integer operationId = 1;
 
         try {
-            operationService.deleteDto(operationId);
+            operationService.delete(operationId);
         } catch (IncomeServiceOperationNotFoundException e) {
             assertEquals(String.format("Operation with id %d not found", operationId), e.getMessage());
         }
@@ -614,7 +614,7 @@ public class OperationServiceTest {
         doReturn(operationEntity).when(operationDao).getEntity(operationId);
 
         try {
-            operationService.deleteDto(operationId);
+            operationService.delete(operationId);
         } catch (IncomeServiceBalanceNotFoundException e) {
             assertEquals(String.format("Balance for account with id %d on %s not found", accountId, thisDay),
                     e.getMessage());
@@ -646,7 +646,7 @@ public class OperationServiceTest {
         doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
 
         try {
-            operationService.deleteDto(operationId);
+            operationService.delete(operationId);
         } catch (IncomeServiceBalanceNotFoundException e) {
             assertEquals(String.format("Balance for account with id %d on %s not found", accountId, thisDay),
                     e.getMessage());
@@ -686,7 +686,7 @@ public class OperationServiceTest {
         doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         verify(operationDao).getEntity(operationId);
         verify(balanceDao).getEntityBefore(accountId, thisDay);
@@ -724,7 +724,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("11.25"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -771,7 +771,7 @@ public class OperationServiceTest {
         doReturn(afterBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         verify(operationDao).getEntity(operationId);
         verify(balanceDao).getEntityBefore(accountId, thisDay);
@@ -810,7 +810,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         BalanceEntity expected = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -857,7 +857,7 @@ public class OperationServiceTest {
         doReturn(thisBalanceEntity).when(balanceDao).getEntity(accountId, thisDay);
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         verify(operationDao).getEntity(operationId);
         verify(balanceDao).getEntityBefore(accountId, prevDay);
@@ -896,7 +896,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -944,7 +944,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -992,7 +992,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         BalanceEntity expected = new BalanceEntity(accountId, prevDay, new BigDecimal("8.75"), false);
         ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
@@ -1044,7 +1044,7 @@ public class OperationServiceTest {
         doReturn(1).when(balanceDao).updateEntity(any(BalanceEntity.class));
         doReturn(1).when(operationDao).deleteEntity(operationId);
 
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
 
         verify(operationDao).getEntity(operationId);
         verify(balanceDao).getEntityBefore(accountId, prevDay);

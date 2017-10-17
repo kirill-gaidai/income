@@ -52,7 +52,7 @@ public class CurrencyController {
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     public String deleteCategory(@PathVariable("id") Integer id) {
-        currencyService.deleteDto(id);
+        currencyService.delete(id);
         return "redirect:/currency/list";
     }
 

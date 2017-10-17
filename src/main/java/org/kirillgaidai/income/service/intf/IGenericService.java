@@ -15,6 +15,6 @@ public interface IGenericService<T extends IGenericDto> {
 
     T save(T operationDto);
 
-    void deleteDto(Integer id);
+    void delete(Integer id);
 
 }
