@@ -47,10 +47,10 @@ public class OperationController {
 
         modelAndView.addObject("operationDto", operationService.getDto(accountIds, categoryId ,day));
         if (accountIds.size() != 1) {
-            modelAndView.addObject("accountDtoList", accountService.getDtoList(accountIds));
+            modelAndView.addObject("accountDtoList", accountService.getList(accountIds));
         }
         if (categoryId == null) {
-            modelAndView.addObject("categoryDtoList", categoryService.getDtoList());
+            modelAndView.addObject("categoryDtoList", categoryService.getList());
         }
 
         if (categoryId == null) {

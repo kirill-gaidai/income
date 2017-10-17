@@ -7,9 +7,9 @@ import java.util.Set;
 
 public interface IGenericService<T extends IGenericDto> {
 
-    List<T> getDtoList();
+    List<T> getList();
 
-    List<T> getDtoList(Set<Integer> ids);
+    List<T> getList(Set<Integer> ids);
 
     T getDto(Integer id);
 

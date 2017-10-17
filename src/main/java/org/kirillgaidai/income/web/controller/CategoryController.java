@@ -26,7 +26,7 @@ public class CategoryController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ModelAndView showCategories() {
-        return new ModelAndView("category/list", "categories", categoryService.getDtoList());
+        return new ModelAndView("category/list", "categories", categoryService.getList());
     }
 
     @RequestMapping(value = "/edit/new", method = RequestMethod.GET)

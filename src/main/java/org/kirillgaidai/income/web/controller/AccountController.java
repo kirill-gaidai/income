@@ -29,13 +29,13 @@ public class AccountController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ModelAndView showAccountsList() {
-        return new ModelAndView("account/list", "accounts", accountService.getDtoList());
+        return new ModelAndView("account/list", "accounts", accountService.getList());
     }
 
     @RequestMapping(value = "/edit/new", method = RequestMethod.GET)
     public ModelAndView showAccountForm() {
         final ModelAndView modelAndView = new ModelAndView("account/form");
-        modelAndView.addObject("currencies", currencyService.getDtoList());
+        modelAndView.addObject("currencies", currencyService.getList());
         modelAndView.addObject("account", new AccountDto());
         return modelAndView;
     }
@@ -44,7 +44,7 @@ public class AccountController {
     public ModelAndView showAccountForm(@PathVariable("id") Integer id) {
         AccountDto accountDto = accountService.getDto(id);
         final ModelAndView modelAndView = new ModelAndView("account/form");
-        modelAndView.addObject("currencies", currencyService.getDtoList());
+        modelAndView.addObject("currencies", currencyService.getList());
         modelAndView.addObject("account", accountDto);
         return modelAndView;
     }

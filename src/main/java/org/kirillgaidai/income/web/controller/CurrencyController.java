@@ -26,7 +26,7 @@ public class CurrencyController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ModelAndView showCurrencyList() {
-        return new ModelAndView("currency/list", "currencies", currencyService.getDtoList());
+        return new ModelAndView("currency/list", "currencies", currencyService.getList());
     }
 
     @RequestMapping(value = "/edit/new", method = RequestMethod.GET)

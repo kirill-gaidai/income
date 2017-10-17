@@ -41,14 +41,14 @@ public class CategoryRestTest {
                 new CategoryGetRestDto(3, "03", "title3")
         );
 
-        doReturn(categoryDtoList).when(service).getDtoList();
+        doReturn(categoryDtoList).when(service).getList();
         for (int index = 0; index < categoryDtoList.size(); index++) {
             doReturn(expected.get(index)).when(mapper).toRestDto(categoryDtoList.get(index));
         }
 
         List<CategoryGetRestDto> actual = rest.getList();
         assertEntityListEquals(expected, actual);
-        verify(service).getDtoList();
+        verify(service).getList();
         for (CategoryDto categoryDto : categoryDtoList) {
             verify(mapper).toRestDto(categoryDto);
         }
@@ -59,10 +59,10 @@ public class CategoryRestTest {
     public void testGetAll_Empty() throws Exception {
         List<CategoryDto> categoryDtoList = Collections.emptyList();
         List<CategoryGetRestDto> expected = Collections.emptyList();
-        doReturn(categoryDtoList).when(service).getDtoList();
+        doReturn(categoryDtoList).when(service).getList();
         List<CategoryGetRestDto> actual = rest.getList();
         assertEntityListEquals(expected, actual);
-        verify(service).getDtoList();
+        verify(service).getList();
         verifyNoMoreInteractions(service, mapper);
     }
 

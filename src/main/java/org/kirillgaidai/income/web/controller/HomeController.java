@@ -26,7 +26,7 @@ public class HomeController {
         LocalDate lastDay = LocalDate.now();
         LocalDate firstDay = lastDay.minusDays(10L);
 
-        List<AccountDto> accountDtoList = accountService.getDtoList();
+        List<AccountDto> accountDtoList = accountService.getList();
 
         ModelAndView modelAndView = new ModelAndView("index");
         modelAndView.addObject("lastDay", lastDay);

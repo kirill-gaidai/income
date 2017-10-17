@@ -57,7 +57,7 @@ public class AccountServiceTest {
         }
 
         try {
-            accountService.getDtoList();
+            accountService.getList();
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 12 not found", e.getMessage());
         }
@@ -99,7 +99,7 @@ public class AccountServiceTest {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }
 
-        List<AccountDto> actual = accountService.getDtoList();
+        List<AccountDto> actual = accountService.getList();
         assertAccountDtoListEquals(expected, actual);
 
         verify(accountDao).getEntityList();
@@ -114,7 +114,7 @@ public class AccountServiceTest {
     public void testGetDtoList_AllOkEmpty() throws Exception {
         doReturn(Collections.emptyList()).when(accountDao).getEntityList();
         List<AccountDto> expected = Collections.emptyList();
-        List<AccountDto> actual = accountService.getDtoList();
+        List<AccountDto> actual = accountService.getList();
         assertAccountDtoListEquals(expected, actual);
         verify(accountDao).getEntityList();
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
@@ -143,7 +143,7 @@ public class AccountServiceTest {
         }
 
         try {
-            accountService.getDtoList(accountIds);
+            accountService.getList(accountIds);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 12 not found", e.getMessage());
         }
@@ -183,7 +183,7 @@ public class AccountServiceTest {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }
 
-        List<AccountDto> actual = accountService.getDtoList(accountIds);
+        List<AccountDto> actual = accountService.getList(accountIds);
         assertAccountDtoListEquals(expected, actual);
 
         verify(accountDao).getEntityList(accountIds);
@@ -199,7 +199,7 @@ public class AccountServiceTest {
         Set<Integer> accountIds = Sets.newSet(1, 2);
         doReturn(Collections.emptyList()).when(accountDao).getEntityList(accountIds);
         List<AccountDto> expected = Collections.emptyList();
-        List<AccountDto> actual = accountService.getDtoList();
+        List<AccountDto> actual = accountService.getList();
         assertAccountDtoListEquals(expected, actual);
         verify(accountDao).getEntityList();
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);

@@ -36,12 +36,12 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public List<AccountDto> getDtoList() {
+    public List<AccountDto> getList() {
         return convertToDtoList(accountDao.getEntityList());
     }
 
     @Override
-    public List<AccountDto> getDtoList(Set<Integer> ids) {
+    public List<AccountDto> getList(Set<Integer> ids) {
         return convertToDtoList(accountDao.getEntityList(ids));
     }
 

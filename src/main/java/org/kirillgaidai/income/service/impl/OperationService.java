@@ -52,12 +52,12 @@ public class OperationService implements IOperationService {
     }
 
     @Override
-    public List<OperationDto> getDtoList() {
+    public List<OperationDto> getList() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<OperationDto> getDtoList(Set<Integer> ids) {
+    public List<OperationDto> getList(Set<Integer> ids) {
         throw new UnsupportedOperationException();
     }
 

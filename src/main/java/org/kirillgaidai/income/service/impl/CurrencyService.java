@@ -29,12 +29,12 @@ public class CurrencyService implements ICurrencyService {
     }
 
     @Override
-    public List<CurrencyDto> getDtoList() {
+    public List<CurrencyDto> getList() {
         return currencyDao.getEntityList().stream().map(currencyConverter::convertToDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<CurrencyDto> getDtoList(Set<Integer> ids) {
+    public List<CurrencyDto> getList(Set<Integer> ids) {
         return currencyDao.getEntityList(ids).stream().map(currencyConverter::convertToDto)
                 .collect(Collectors.toList());
     }

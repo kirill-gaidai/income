@@ -48,7 +48,7 @@ public class CurrencyServiceTest {
             doReturn(expected.get(index)).when(currencyConverter).convertToDto(currencyEntityList.get(index));
         }
 
-        List<CurrencyDto> actual = currencyService.getDtoList();
+        List<CurrencyDto> actual = currencyService.getList();
 
         assertCurrencyDtoListEquals(expected, actual);
         verify(currencyDao).getEntityList();
@@ -63,7 +63,7 @@ public class CurrencyServiceTest {
         List<CurrencyEntity> currencyEntityList = Collections.emptyList();
         List<CurrencyDto> expected = Collections.emptyList();
         doReturn(currencyEntityList).when(currencyDao).getEntityList();
-        List<CurrencyDto> actual = currencyService.getDtoList();
+        List<CurrencyDto> actual = currencyService.getList();
         assertCurrencyDtoListEquals(expected, actual);
         verify(currencyDao).getEntityList();
         verifyNoMoreInteractions(currencyDao, currencyConverter);
@@ -86,7 +86,7 @@ public class CurrencyServiceTest {
             doReturn(expected.get(index)).when(currencyConverter).convertToDto(currencyEntityList.get(index));
         }
 
-        List<CurrencyDto> actual = currencyService.getDtoList(categoryIds);
+        List<CurrencyDto> actual = currencyService.getList(categoryIds);
 
         assertCurrencyDtoListEquals(expected, actual);
         verify(currencyDao).getEntityList(categoryIds);
@@ -102,7 +102,7 @@ public class CurrencyServiceTest {
         List<CurrencyEntity> currencyEntityList = Collections.emptyList();
         List<CurrencyDto> expected = Collections.emptyList();
         doReturn(currencyEntityList).when(currencyDao).getEntityList(categoryIds);
-        List<CurrencyDto> actual = currencyService.getDtoList(categoryIds);
+        List<CurrencyDto> actual = currencyService.getList(categoryIds);
         assertCurrencyDtoListEquals(expected, actual);
         verify(currencyDao).getEntityList(categoryIds);
         verifyNoMoreInteractions(currencyDao, currencyConverter);

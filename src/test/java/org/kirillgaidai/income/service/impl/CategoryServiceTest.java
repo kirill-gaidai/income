@@ -48,7 +48,7 @@ public class CategoryServiceTest {
             doReturn(expected.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
         }
 
-        List<CategoryDto> actual = categoryService.getDtoList();
+        List<CategoryDto> actual = categoryService.getList();
 
         assertCategoryDtoListEquals(expected, actual);
         verify(categoryDao).getEntityList();
@@ -63,7 +63,7 @@ public class CategoryServiceTest {
         List<CategoryEntity> categoryEntityList = Collections.emptyList();
         List<CategoryDto> expected = Collections.emptyList();
         doReturn(categoryEntityList).when(categoryDao).getEntityList();
-        List<CategoryDto> actual = categoryService.getDtoList();
+        List<CategoryDto> actual = categoryService.getList();
         assertCategoryDtoListEquals(expected, actual);
         verify(categoryDao).getEntityList();
         verifyNoMoreInteractions(categoryDao, categoryConverter);
@@ -86,7 +86,7 @@ public class CategoryServiceTest {
             doReturn(expected.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
         }
 
-        List<CategoryDto> actual = categoryService.getDtoList(categoryIds);
+        List<CategoryDto> actual = categoryService.getList(categoryIds);
 
         assertCategoryDtoListEquals(expected, actual);
         verify(categoryDao).getEntityList(categoryIds);
@@ -102,7 +102,7 @@ public class CategoryServiceTest {
         List<CategoryEntity> categoryEntityList = Collections.emptyList();
         List<CategoryDto> expected = Collections.emptyList();
         doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIds);
-        List<CategoryDto> actual = categoryService.getDtoList(categoryIds);
+        List<CategoryDto> actual = categoryService.getList(categoryIds);
         assertCategoryDtoListEquals(expected, actual);
         verify(categoryDao).getEntityList(categoryIds);
         verifyNoMoreInteractions(categoryDao, categoryConverter);

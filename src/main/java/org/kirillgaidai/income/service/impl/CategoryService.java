@@ -29,12 +29,12 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public List<CategoryDto> getDtoList() {
+    public List<CategoryDto> getList() {
         return categoryDao.getEntityList().stream().map(categoryConverter::convertToDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<CategoryDto> getDtoList(Set<Integer> ids) {
+    public List<CategoryDto> getList(Set<Integer> ids) {
         return categoryDao.getEntityList(ids).stream().map(categoryConverter::convertToDto)
                 .collect(Collectors.toList());
     }

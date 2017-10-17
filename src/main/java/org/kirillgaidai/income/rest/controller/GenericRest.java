@@ -31,7 +31,7 @@ public abstract class GenericRest<
     @Override
     public List<GT> getList() {
         LOGGER.debug("Getting entity list");
-        return service.getDtoList().stream().map(mapper::toRestDto).collect(Collectors.toList());
+        return service.getList().stream().map(mapper::toRestDto).collect(Collectors.toList());
     }
 
     @Override
