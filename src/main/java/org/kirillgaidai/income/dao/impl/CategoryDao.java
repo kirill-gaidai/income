@@ -39,13 +39,13 @@ public class CategoryDao implements ICategoryDao {
     }
 
     @Override
-    public List<CategoryEntity> getEntityList(final Set<Integer> ids) {
+    public List<CategoryEntity> getEntityList(Set<Integer> ids) {
         String sql = "SELECT id, sort, title FROM categories WHERE id IN (:ids) ORDER BY sort";
         return daoHelper.getEntityList(sql, ids, categoryEntityRowMapper);
     }
 
     @Override
-    public CategoryEntity getEntity(final Integer id) {
+    public CategoryEntity getEntity(Integer id) {
         String sql = "SELECT id, sort, title FROM categories WHERE :id = id";
         return daoHelper.getEntity(sql, id, categoryEntityRowMapper);
     }

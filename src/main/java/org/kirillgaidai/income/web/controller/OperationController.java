@@ -72,7 +72,7 @@ public class OperationController {
             @RequestParam("return_account_id") Set<Integer> returnAccountIds,
             @RequestParam("return_first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnFirstDay,
             @RequestParam("return_last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnLastDay) {
-        operationService.saveDto(operationDto);
+        operationService.save(operationDto);
         StringBuilder result = new StringBuilder("redirect:/summary")
                 .append("?first_day=").append(returnFirstDay)
                 .append("&last_day=").append(returnLastDay);
@@ -88,7 +88,7 @@ public class OperationController {
             @RequestParam("return_account_id") Set<Integer> returnAccountIds,
             @RequestParam("return_first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnFirstDay,
             @RequestParam("return_last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnLastDay) {
-        operationService.deleteDto(operationId);
+        operationService.delete(operationId);
         StringBuilder result = new StringBuilder("redirect:/summary")
                 .append("?first_day=").append(returnFirstDay)
                 .append("&last_day=").append(returnLastDay);

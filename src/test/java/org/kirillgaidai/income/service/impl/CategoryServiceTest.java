@@ -149,7 +149,7 @@ public class CategoryServiceTest {
     @Test
     public void testSaveDto_Null() throws Exception {
         try {
-            categoryService.saveDto(null);
+            categoryService.save(null);
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category not found", e.getMessage());
         }
@@ -164,7 +164,7 @@ public class CategoryServiceTest {
         doReturn(categoryEntity).when(categoryConverter).convertToEntity(categoryDto);
         doReturn(1).when(categoryDao).insertEntity(categoryEntity);
 
-        categoryService.saveDto(categoryDto);
+        categoryService.save(categoryDto);
 
         verify(categoryConverter).convertToEntity(categoryDto);
         verify(categoryDao).insertEntity(categoryEntity);
@@ -180,7 +180,7 @@ public class CategoryServiceTest {
         doReturn(0).when(categoryDao).updateEntity(categoryEntity);
 
         try {
-            categoryService.saveDto(categoryDto);
+            categoryService.save(categoryDto);
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category with id 1 not found", e.getMessage());
         }
@@ -198,7 +198,7 @@ public class CategoryServiceTest {
         doReturn(categoryEntity).when(categoryConverter).convertToEntity(categoryDto);
         doReturn(1).when(categoryDao).updateEntity(categoryEntity);
 
-        categoryService.saveDto(categoryDto);
+        categoryService.save(categoryDto);
 
         verify(categoryConverter).convertToEntity(categoryDto);
         verify(categoryDao).updateEntity(categoryEntity);
@@ -208,7 +208,7 @@ public class CategoryServiceTest {
     @Test
     public void testDeleteDto_Null() throws Exception {
         try {
-            categoryService.deleteDto(null);
+            categoryService.delete(null);
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category not found", e.getMessage());
         }
@@ -219,7 +219,7 @@ public class CategoryServiceTest {
     public void testDeleteDto_NotFound() throws Exception {
         doReturn(0).when(categoryDao).deleteEntity(1);
         try {
-            categoryService.deleteDto(1);
+            categoryService.delete(1);
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category with id 1 not found", e.getMessage());
         }
@@ -230,7 +230,7 @@ public class CategoryServiceTest {
     @Test
     public void testDeleteDto_Ok() throws Exception {
         doReturn(1).when(categoryDao).deleteEntity(1);
-        categoryService.deleteDto(1);
+        categoryService.delete(1);
         verify(categoryDao).deleteEntity(1);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }

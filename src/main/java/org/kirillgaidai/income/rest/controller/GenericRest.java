@@ -44,7 +44,7 @@ public abstract class GenericRest<
     public GT create(CT newRestDto) {
         LOGGER.debug("Creating entity");
         ST dto = mapper.toDto(newRestDto);
-        service.saveDto(dto);
+        service.save(dto);
         return mapper.toRestDto(dto);
     }
 
@@ -52,14 +52,14 @@ public abstract class GenericRest<
     public GT update(UT restDto) {
         LOGGER.debug("Updating entity");
         ST dto = mapper.toDto(restDto);
-        service.saveDto(dto);
+        service.save(dto);
         return mapper.toRestDto(dto);
     }
 
     @Override
     public void delete(Integer id) {
         LOGGER.debug("Deleting entity");
-        service.deleteDto(id);
+        service.delete(id);
     }
 
 }

@@ -273,7 +273,7 @@ public class AccountServiceTest {
     @Test
     public void testSaveDto_Null() throws Exception {
         try {
-            accountService.saveDto(null);
+            accountService.save(null);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account not found", e.getMessage());
         }
@@ -286,7 +286,7 @@ public class AccountServiceTest {
         AccountEntity accountEntity = new AccountEntity(null, 2, "01", "account1");
         doReturn(accountEntity).when(accountConverter).convertToEntity(accountDto);
         doReturn(1).when(accountDao).insertEntity(accountEntity);
-        accountService.saveDto(accountDto);
+        accountService.save(accountDto);
         verify(accountConverter).convertToEntity(accountDto);
         verify(accountDao).insertEntity(accountEntity);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
@@ -298,7 +298,7 @@ public class AccountServiceTest {
         AccountEntity accountEntity = new AccountEntity(1, 2, "01", "account1");
         doReturn(accountEntity).when(accountConverter).convertToEntity(accountDto);
         doReturn(1).when(accountDao).updateEntity(accountEntity);
-        accountService.saveDto(accountDto);
+        accountService.save(accountDto);
         verify(accountConverter).convertToEntity(accountDto);
         verify(accountDao).updateEntity(accountEntity);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
@@ -311,7 +311,7 @@ public class AccountServiceTest {
         doReturn(accountEntity).when(accountConverter).convertToEntity(accountDto);
         doReturn(0).when(accountDao).updateEntity(accountEntity);
         try {
-            accountService.saveDto(accountDto);
+            accountService.save(accountDto);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
@@ -323,7 +323,7 @@ public class AccountServiceTest {
     @Test
     public void testDeleteDto_Null() throws Exception {
         try {
-            accountService.deleteDto(null);
+            accountService.delete(null);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account not found", e.getMessage());
         }
@@ -334,7 +334,7 @@ public class AccountServiceTest {
     public void testDeleteDto_NotFound() throws Exception {
         doReturn(0).when(accountDao).deleteEntity(1);
         try {
-            accountService.deleteDto(1);
+            accountService.delete(1);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
@@ -345,7 +345,7 @@ public class AccountServiceTest {
     @Test
     public void testDeleteDto_Ok() throws Exception {
         doReturn(1).when(accountDao).deleteEntity(1);
-        accountService.deleteDto(1);
+        accountService.delete(1);
         verify(accountDao).deleteEntity(1);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }

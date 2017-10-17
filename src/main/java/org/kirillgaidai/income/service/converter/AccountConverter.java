@@ -16,7 +16,7 @@ public class AccountConverter implements IGenericConverter<AccountEntity, Accoun
     }
 
     @Override
-    public AccountEntity convertToEntity(final AccountDto dto) {
+    public AccountEntity convertToEntity(AccountDto dto) {
         if (dto == null) {
             return null;
         }

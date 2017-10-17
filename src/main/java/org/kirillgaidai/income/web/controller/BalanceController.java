@@ -21,8 +21,7 @@ public class BalanceController {
     final private IBalanceService balanceService;
 
     @Autowired
-    public BalanceController(
-            final IBalanceService balanceService) {
+    public BalanceController(IBalanceService balanceService) {
         this.balanceService = balanceService;
     }
 

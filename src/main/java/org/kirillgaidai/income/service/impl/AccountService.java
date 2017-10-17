@@ -71,7 +71,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public AccountDto saveDto(AccountDto accountDto) {
+    public AccountDto save(AccountDto accountDto) {
         if (accountDto == null) {
             throw new IncomeServiceAccountNotFoundException();
         }
@@ -91,7 +91,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public void deleteDto(Integer id) {
+    public void delete(Integer id) {
         if (id == null) {
             throw new IncomeServiceAccountNotFoundException();
         }

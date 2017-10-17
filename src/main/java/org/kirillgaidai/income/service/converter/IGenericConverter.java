@@ -5,8 +5,8 @@ import org.kirillgaidai.income.service.dto.IGenericDto;
 
 public interface IGenericConverter<E extends IGenericEntity, D extends IGenericDto> {
 
-    D convertToDto(final E entity);
+    D convertToDto(E entity);
 
-    E convertToEntity(final D dto);
+    E convertToEntity(D dto);
 
 }

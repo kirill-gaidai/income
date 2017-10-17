@@ -52,7 +52,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public CategoryDto saveDto(CategoryDto categoryDto) {
+    public CategoryDto save(CategoryDto categoryDto) {
         if (categoryDto == null) {
             throw new IncomeServiceCategoryNotFoundException();
         }
@@ -70,7 +70,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public void deleteDto(Integer id) {
+    public void delete(Integer id) {
         if (id == null) {
             throw new IncomeServiceCategoryNotFoundException();
         }

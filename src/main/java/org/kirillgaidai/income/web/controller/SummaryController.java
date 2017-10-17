@@ -18,8 +18,7 @@ public class SummaryController {
     final private ISummaryService summaryService;
 
     @Autowired
-    public SummaryController(
-            final ISummaryService summaryService) {
+    public SummaryController(ISummaryService summaryService) {
         this.summaryService = summaryService;
     }
 

@@ -72,7 +72,7 @@ public class OperationService implements IOperationService {
      * @param operationDto - operation dto
      */
     @Override
-    public OperationDto saveDto(OperationDto operationDto) {
+    public OperationDto save(OperationDto operationDto) {
         Integer accountId = operationDto.getAccountId();
         AccountEntity accountEntity = accountDao.getEntity(accountId);
         if (accountEntity == null) {
@@ -170,7 +170,7 @@ public class OperationService implements IOperationService {
      * @param id - operation id
      */
     @Override
-    public void deleteDto(Integer id) {
+    public void delete(Integer id) {
         // Error in case operation with specified id is not found
         OperationEntity operationEntity = operationDao.getEntity(id);
         if (operationEntity == null) {

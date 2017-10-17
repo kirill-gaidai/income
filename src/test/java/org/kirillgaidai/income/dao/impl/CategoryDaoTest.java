@@ -140,7 +140,7 @@ public class CategoryDaoTest {
 
     @Test
     public void testDeleteEntity_NotFound() throws Exception {
-        final int affectedRows = categoryDao.deleteEntity(0);
+        int affectedRows = categoryDao.deleteEntity(0);
         assertEquals(0, affectedRows);
         List<CategoryEntity> actual = categoryDao.getEntityList();
         assertCategoryEntityListEquals(orig, actual);

@@ -34,7 +34,7 @@ public class AccountController {
 
     @RequestMapping(value = "/edit/new", method = RequestMethod.GET)
     public ModelAndView showAccountForm() {
-        final ModelAndView modelAndView = new ModelAndView("account/form");
+        ModelAndView modelAndView = new ModelAndView("account/form");
         modelAndView.addObject("currencies", currencyService.getList());
         modelAndView.addObject("account", new AccountDto());
         return modelAndView;
@@ -43,7 +43,7 @@ public class AccountController {
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
     public ModelAndView showAccountForm(@PathVariable("id") Integer id) {
         AccountDto accountDto = accountService.get(id);
-        final ModelAndView modelAndView = new ModelAndView("account/form");
+        ModelAndView modelAndView = new ModelAndView("account/form");
         modelAndView.addObject("currencies", currencyService.getList());
         modelAndView.addObject("account", accountDto);
         return modelAndView;
@@ -51,13 +51,13 @@ public class AccountController {
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String saveAccount(@Validated AccountDto accountDto) {
-        accountService.saveDto(accountDto);
+        accountService.save(accountDto);
         return "redirect:/account/list";
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     public String deleteAccount(@PathVariable("id") Integer id) {
-        accountService.deleteDto(id);
+        accountService.delete(id);
         return "redirect:/account/list";
     }
 
