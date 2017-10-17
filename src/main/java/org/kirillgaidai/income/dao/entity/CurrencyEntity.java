@@ -17,12 +17,10 @@ public class CurrencyEntity implements IGenericEntity {
         this.accuracy = accuracy;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
 
-    @Override
     public void setId(Integer id) {
         this.id = id;
     }

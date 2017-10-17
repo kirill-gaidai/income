@@ -17,12 +17,10 @@ public class AccountEntity implements IGenericEntity {
         this.title = title;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
 
-    @Override
     public void setId(Integer id) {
         this.id = id;
     }
