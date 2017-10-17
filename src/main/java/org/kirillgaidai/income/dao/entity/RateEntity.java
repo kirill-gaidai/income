@@ -3,7 +3,7 @@ package org.kirillgaidai.income.dao.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class RateEntity {
+public class RateEntity implements IGenericEntity {
 
     private Integer currencyIdFrom;
     private Integer currencyIdTo;

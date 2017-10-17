@@ -3,7 +3,7 @@ package org.kirillgaidai.income.service.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class RateDto {
+public class RateDto implements IGenericDto {
 
     private Integer currencyIdFrom;
     private String currencyCodeFrom;

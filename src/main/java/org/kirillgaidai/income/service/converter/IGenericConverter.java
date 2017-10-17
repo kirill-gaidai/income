@@ -1,6 +1,9 @@
 package org.kirillgaidai.income.service.converter;
 
-public interface IGenericConverter<E, D> {
+import org.kirillgaidai.income.dao.entity.IGenericEntity;
+import org.kirillgaidai.income.service.dto.IGenericDto;
+
+public interface IGenericConverter<E extends IGenericEntity, D extends IGenericDto> {
 
     D convertToDto(final E entity);
 
