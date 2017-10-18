@@ -3,7 +3,12 @@ package org.kirillgaidai.income.dao.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class OperationEntity implements IGenericEntity {
+/**
+ * Operation entity
+ *
+ * @author Kirill Gaidai
+ */
+public class OperationEntity implements ISerialEntity {
 
     private Integer id;
     private Integer accountId;
@@ -25,10 +30,12 @@ public class OperationEntity implements IGenericEntity {
         this.note = note;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

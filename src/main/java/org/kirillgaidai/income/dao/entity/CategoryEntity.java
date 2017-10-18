@@ -1,6 +1,11 @@
 package org.kirillgaidai.income.dao.entity;
 
-public class CategoryEntity implements IGenericEntity {
+/**
+ * Category entity
+ *
+ * @author Kirill Gaidai
+ */
+public class CategoryEntity implements ISerialEntity {
 
     private Integer id;
     private String sort;
@@ -15,10 +20,12 @@ public class CategoryEntity implements IGenericEntity {
         this.title = title;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

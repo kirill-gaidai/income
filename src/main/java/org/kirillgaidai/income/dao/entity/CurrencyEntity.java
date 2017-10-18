@@ -1,6 +1,11 @@
 package org.kirillgaidai.income.dao.entity;
 
-public class CurrencyEntity implements IGenericEntity {
+/**
+ * Currency entity
+ *
+ * @author Kirill Gaidai
+ */
+public class CurrencyEntity implements ISerialEntity {
 
     private Integer id;
     private String code;
@@ -17,10 +22,12 @@ public class CurrencyEntity implements IGenericEntity {
         this.accuracy = accuracy;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

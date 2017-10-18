@@ -1,6 +1,11 @@
 package org.kirillgaidai.income.dao.entity;
 
-public class AccountEntity implements IGenericEntity {
+/**
+ * Account entity
+ *
+ * @author Kirill Gaidai
+ */
+public class AccountEntity implements ISerialEntity {
 
     private Integer id;
     private Integer currencyId;
@@ -17,10 +22,12 @@ public class AccountEntity implements IGenericEntity {
         this.title = title;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }
