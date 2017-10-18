@@ -13,7 +13,7 @@ public interface ISerialDao<T extends ISerialEntity> extends IGenericDao<T> {
      * @param ids - entity ids set
      * @return entity list
      */
-    List<T> getEntityList(Set<Integer> ids);
+    List<T> getList(Set<Integer> ids);
 
     /**
      * Returns entity with specified id from DB
@@ -21,7 +21,15 @@ public interface ISerialDao<T extends ISerialEntity> extends IGenericDao<T> {
      * @param id - entity id
      * @return entity
      */
-    T getEntity(Integer id);
+    T get(Integer id);
+
+    /**
+     * Creates new entity in DB and sets id
+     *
+     * @param entity - new entity
+     * @return number of inserted rows
+     */
+    int insert(T entity);
 
     /**
      * Deletes entity from DB by its id
@@ -29,6 +37,6 @@ public interface ISerialDao<T extends ISerialEntity> extends IGenericDao<T> {
      * @param id - entity id
      * @return number of deleted rows
      */
-    int deleteEntity(Integer id);
+    int delete(Integer id);
 
 }

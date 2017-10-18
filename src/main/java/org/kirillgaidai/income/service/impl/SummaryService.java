@@ -68,22 +68,22 @@ public class SummaryService implements ISummaryService {
      */
     @Override
     public SummaryDto getSummaryDto(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
-        List<BalanceEntity> initialBalanceEntityList = balanceDao.getEntityList(accountIds, firstDay.minusDays(1L));
-        List<BalanceEntity> balanceEntityList = balanceDao.getEntityList(accountIds, firstDay, lastDay);
+        List<BalanceEntity> initialBalanceEntityList = balanceDao.getList(accountIds, firstDay.minusDays(1L));
+        List<BalanceEntity> balanceEntityList = balanceDao.getList(accountIds, firstDay, lastDay);
         List<OperationEntity> operationEntityList = operationDao.getEntityList(accountIds, firstDay, lastDay);
 
         Set<Integer> categoryIds = operationEntityList
                 .stream().map(OperationEntity::getCategoryId).collect(Collectors.toSet());
 
-        List<AccountEntity> accountEntityList = accountDao.getEntityList(accountIds);
+        List<AccountEntity> accountEntityList = accountDao.getList(accountIds);
         Map<Integer, Integer> accountIndexes = new HashMap<>();
         for (int index = 0; index < accountEntityList.size(); index++) {
             accountIndexes.put(accountEntityList.get(index).getId(), index);
         }
 
-        int accuracy = currencyDao.getEntity(accountEntityList.get(0).getCurrencyId()).getAccuracy();
+        int accuracy = currencyDao.get(accountEntityList.get(0).getCurrencyId()).getAccuracy();
 
-        List<CategoryEntity> categoryEntityList = categoryDao.getEntityList(categoryIds);
+        List<CategoryEntity> categoryEntityList = categoryDao.getList(categoryIds);
         Map<Integer, Integer> categoryIndexes = new HashMap<>();
         for (int index = 0; index < categoryEntityList.size(); index++) {
             categoryIndexes.put(categoryEntityList.get(index).getId(), index);

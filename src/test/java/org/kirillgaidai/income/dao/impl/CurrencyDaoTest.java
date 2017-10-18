@@ -61,7 +61,7 @@ public class CurrencyDaoTest {
     @Test
     public void testGetEntityList_All() throws Exception {
         List<CurrencyEntity> expected = Arrays.asList(orig.get(0), orig.get(1), orig.get(2));
-        List<CurrencyEntity> actual = currencyDao.getEntityList();
+        List<CurrencyEntity> actual = currencyDao.getList();
         assertCurrencyEntityListEquals(expected, actual);
     }
 
@@ -69,34 +69,34 @@ public class CurrencyDaoTest {
     public void testGetEntityList_AllEmpty() throws Exception {
         namedParameterJdbcTemplate.update("DELETE FROM currencies", Collections.emptyMap());
         List<CurrencyEntity> expected = Collections.emptyList();
-        List<CurrencyEntity> actual = currencyDao.getEntityList();
+        List<CurrencyEntity> actual = currencyDao.getList();
         assertCurrencyEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_Ids() throws Exception {
         List<CurrencyEntity> expected = Arrays.asList(orig.get(0), orig.get(1));
-        List<CurrencyEntity> actual = currencyDao.getEntityList(Sets.newSet(3, 2));
+        List<CurrencyEntity> actual = currencyDao.getList(Sets.newSet(3, 2));
         assertCurrencyEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_IdsEmpty() throws Exception {
         List<CurrencyEntity> expected = Collections.emptyList();
-        List<CurrencyEntity> actual = currencyDao.getEntityList(Sets.newSet(0));
+        List<CurrencyEntity> actual = currencyDao.getList(Sets.newSet(0));
         assertCurrencyEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_Ok() throws Exception {
         CurrencyEntity expected = orig.get(0);
-        CurrencyEntity actual = currencyDao.getEntity(3);
+        CurrencyEntity actual = currencyDao.get(3);
         assertCurrencyEntityEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_NotFound() throws Exception {
-        CurrencyEntity actual = currencyDao.getEntity(0);
+        CurrencyEntity actual = currencyDao.get(0);
         assertNull(actual);
     }
 
@@ -104,10 +104,10 @@ public class CurrencyDaoTest {
     public void testInsertEntity_Ok() throws Exception {
         CurrencyEntity entity = new CurrencyEntity(null, "cc4", "currency4", 2);
         List<CurrencyEntity> expected = Arrays.asList(orig.get(0), orig.get(1), orig.get(2), entity);
-        int affectedRows = currencyDao.insertEntity(entity);
+        int affectedRows = currencyDao.insert(entity);
         assertEquals(1, affectedRows);
         assertEquals(Integer.valueOf(4), entity.getId());
-        List<CurrencyEntity> actual = currencyDao.getEntityList();
+        List<CurrencyEntity> actual = currencyDao.getList();
         assertCurrencyEntityListEquals(expected, actual);
     }
 
@@ -115,35 +115,35 @@ public class CurrencyDaoTest {
     public void testUpdateEntity_Ok() throws Exception {
         CurrencyEntity entity = new CurrencyEntity(3, "cc4", "currency4", 2);
         List<CurrencyEntity> expected = Arrays.asList(orig.get(1), orig.get(2), entity);
-        int affectedRows = currencyDao.updateEntity(entity);
+        int affectedRows = currencyDao.update(entity);
         assertEquals(1, affectedRows);
-        List<CurrencyEntity> actual = currencyDao.getEntityList();
+        List<CurrencyEntity> actual = currencyDao.getList();
         assertCurrencyEntityListEquals(expected, actual);
     }
 
     @Test
     public void testUpdateEntity_NotFound() throws Exception {
         CurrencyEntity entity = new CurrencyEntity(4, "cc4", "currency4", 2);
-        int affectedRows = currencyDao.updateEntity(entity);
+        int affectedRows = currencyDao.update(entity);
         assertEquals(0, affectedRows);
-        List<CurrencyEntity> actual = currencyDao.getEntityList();
+        List<CurrencyEntity> actual = currencyDao.getList();
         assertCurrencyEntityListEquals(orig, actual);
     }
 
     @Test
     public void testDeleteEntity_Ok() throws Exception {
         List<CurrencyEntity> expected = Arrays.asList(orig.get(1), orig.get(2));
-        int affectedRows = currencyDao.deleteEntity(3);
+        int affectedRows = currencyDao.delete(3);
         assertEquals(1, affectedRows);
-        List<CurrencyEntity> actual = currencyDao.getEntityList();
+        List<CurrencyEntity> actual = currencyDao.getList();
         assertCurrencyEntityListEquals(expected, actual);
     }
 
     @Test
     public void testDeleteEntity_NotFound() throws Exception {
-        int affectedRows = currencyDao.deleteEntity(0);
+        int affectedRows = currencyDao.delete(0);
         assertEquals(0, affectedRows);
-        List<CurrencyEntity> actual = currencyDao.getEntityList();
+        List<CurrencyEntity> actual = currencyDao.getList();
         assertCurrencyEntityListEquals(orig, actual);
     }
 

@@ -33,12 +33,12 @@ public class RateService implements IRateService {
     @Override
     public List<RateDto> getDtoList(
             Integer currencyIdFrom, Integer currencyIdTo, LocalDate firstDay, LocalDate lastDay) {
-        CurrencyEntity currencyEntityFrom = currencyDao.getEntity(currencyIdFrom);
+        CurrencyEntity currencyEntityFrom = currencyDao.get(currencyIdFrom);
         if (currencyEntityFrom == null) {
             throw new IncomeServiceCurrencyNotFoundException(currencyIdFrom);
         }
 
-        CurrencyEntity currencyEntityTo = currencyDao.getEntity(currencyIdTo);
+        CurrencyEntity currencyEntityTo = currencyDao.get(currencyIdTo);
         if (currencyEntityTo == null) {
             throw new IncomeServiceCurrencyNotFoundException(currencyIdTo);
         }
@@ -66,12 +66,12 @@ public class RateService implements IRateService {
 
     @Override
     public RateDto getDto(Integer currencyIdFrom, Integer currencyIdTo, LocalDate day) {
-        CurrencyEntity currencyEntityFrom = currencyDao.getEntity(currencyIdFrom);
+        CurrencyEntity currencyEntityFrom = currencyDao.get(currencyIdFrom);
         if (currencyEntityFrom == null) {
             throw new IncomeServiceCurrencyNotFoundException(currencyIdFrom);
         }
 
-        CurrencyEntity currencyEntityTo = currencyDao.getEntity(currencyIdTo);
+        CurrencyEntity currencyEntityTo = currencyDao.get(currencyIdTo);
         if (currencyEntityTo == null) {
             throw new IncomeServiceCurrencyNotFoundException(currencyIdTo);
         }

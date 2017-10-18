@@ -75,12 +75,12 @@ public class SummaryServiceTest {
         );
         CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
-        doReturn(accountEntityList).when(accountDao).getEntityList(accountIdsSet);
-        doReturn(Collections.emptyList()).when(categoryDao).getEntityList(Collections.emptySet());
-        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
+        doReturn(accountEntityList).when(accountDao).getList(accountIdsSet);
+        doReturn(Collections.emptyList()).when(categoryDao).getList(Collections.emptySet());
+        doReturn(currencyEntity).when(currencyDao).get(currencyId);
         doReturn(Collections.emptyList()).when(operationDao).getEntityList(accountIdsSet, day, day);
-        doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day.minusDays(1L));
-        doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day, day);
+        doReturn(initialBalanceEntityList).when(balanceDao).getList(accountIdsSet, day.minusDays(1L));
+        doReturn(balanceEntityList).when(balanceDao).getList(accountIdsSet, day, day);
         for (int index = 0; index < accountEntityList.size(); index++) {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }
@@ -144,13 +144,13 @@ public class SummaryServiceTest {
         );
         CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
-        doReturn(accountEntityList).when(accountDao).getEntityList(accountIdsSet);
-        doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIdsSet);
-        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
+        doReturn(accountEntityList).when(accountDao).getList(accountIdsSet);
+        doReturn(categoryEntityList).when(categoryDao).getList(categoryIdsSet);
+        doReturn(currencyEntity).when(currencyDao).get(currencyId);
         doReturn(accountDtoList.get(0)).when(accountConverter).convertToDto(accountEntityList.get(0));
         doReturn(operationEntityList).when(operationDao).getEntityList(accountIdsSet, day, day);
-        doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day.minusDays(1L));
-        doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdsSet, day, day);
+        doReturn(initialBalanceEntityList).when(balanceDao).getList(accountIdsSet, day.minusDays(1L));
+        doReturn(balanceEntityList).when(balanceDao).getList(accountIdsSet, day, day);
         for (int index = 0; index < categoryEntityList.size(); index++) {
             doReturn(categoryDtoList.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
         }
@@ -201,12 +201,12 @@ public class SummaryServiceTest {
         );
         CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
-        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
+        doReturn(currencyEntity).when(currencyDao).get(currencyId);
         doReturn(Collections.emptyList()).when(operationDao).getEntityList(accountIdsSet, days[0], days[1]);
-        doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdsSet, days[0].minusDays(1L));
-        doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdsSet, days[0], days[1]);
-        doReturn(accountEntityList).when(accountDao).getEntityList(accountIdsSet);
-        doReturn(Collections.emptyList()).when(categoryDao).getEntityList(Collections.emptySet());
+        doReturn(initialBalanceEntityList).when(balanceDao).getList(accountIdsSet, days[0].minusDays(1L));
+        doReturn(balanceEntityList).when(balanceDao).getList(accountIdsSet, days[0], days[1]);
+        doReturn(accountEntityList).when(accountDao).getList(accountIdsSet);
+        doReturn(Collections.emptyList()).when(categoryDao).getList(Collections.emptySet());
         doReturn(accountDtoList.get(0)).when(accountConverter).convertToDto(accountEntityList.get(0));
 
         SummaryDto expected = new SummaryDto(
@@ -274,14 +274,14 @@ public class SummaryServiceTest {
         );
         CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, "CC1", "currency1", 2);
 
-        doReturn(accountEntityList).when(accountDao).getEntityList(accountIdsSet);
-        doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIdsSet);
-        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
+        doReturn(accountEntityList).when(accountDao).getList(accountIdsSet);
+        doReturn(categoryEntityList).when(categoryDao).getList(categoryIdsSet);
+        doReturn(currencyEntity).when(currencyDao).get(currencyId);
         doReturn(accountDtoList.get(0)).when(accountConverter).convertToDto(accountEntityList.get(0));
         doReturn(categoryDtoList.get(0)).when(categoryConverter).convertToDto(categoryEntityList.get(0));
         doReturn(operationEntityList).when(operationDao).getEntityList(accountIdsSet, days[0], days[1]);
-        doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdsSet, days[0].minusDays(1L));
-        doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdsSet, days[0], days[1]);
+        doReturn(initialBalanceEntityList).when(balanceDao).getList(accountIdsSet, days[0].minusDays(1L));
+        doReturn(balanceEntityList).when(balanceDao).getList(accountIdsSet, days[0], days[1]);
 
         SummaryDto expected = new SummaryDto(
                 accountDtoList,
@@ -368,12 +368,12 @@ public class SummaryServiceTest {
         Set<Integer> accountIdSet = Sets.newSet(accountIds);
         Set<Integer> categoryIdSet = Sets.newSet(categoryIds);
 
-        doReturn(accountEntityList).when(accountDao).getEntityList(accountIdSet);
-        doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIdSet);
-        doReturn(currencyEntity).when(currencyDao).getEntity(currencyId);
+        doReturn(accountEntityList).when(accountDao).getList(accountIdSet);
+        doReturn(categoryEntityList).when(categoryDao).getList(categoryIdSet);
+        doReturn(currencyEntity).when(currencyDao).get(currencyId);
         doReturn(operationEntityList).when(operationDao).getEntityList(accountIdSet, days[1], days[5]);
-        doReturn(initialBalanceEntityList).when(balanceDao).getEntityList(accountIdSet, days[0]);
-        doReturn(balanceEntityList).when(balanceDao).getEntityList(accountIdSet, days[1], days[5]);
+        doReturn(initialBalanceEntityList).when(balanceDao).getList(accountIdSet, days[0]);
+        doReturn(balanceEntityList).when(balanceDao).getList(accountIdSet, days[1], days[5]);
         for (int index = 0; index < accountEntityList.size(); index++) {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }

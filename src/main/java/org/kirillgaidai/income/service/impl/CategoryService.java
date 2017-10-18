@@ -30,12 +30,12 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public List<CategoryDto> getList() {
-        return categoryDao.getEntityList().stream().map(categoryConverter::convertToDto).collect(Collectors.toList());
+        return categoryDao.getList().stream().map(categoryConverter::convertToDto).collect(Collectors.toList());
     }
 
     @Override
     public List<CategoryDto> getList(Set<Integer> ids) {
-        return categoryDao.getEntityList(ids).stream().map(categoryConverter::convertToDto)
+        return categoryDao.getList(ids).stream().map(categoryConverter::convertToDto)
                 .collect(Collectors.toList());
     }
 
@@ -44,7 +44,7 @@ public class CategoryService implements ICategoryService {
         if (id == null) {
             throw new IncomeServiceCategoryNotFoundException();
         }
-        CategoryEntity categoryEntity = categoryDao.getEntity(id);
+        CategoryEntity categoryEntity = categoryDao.get(id);
         if (categoryEntity == null) {
             throw new IncomeServiceCategoryNotFoundException(id);
         }
@@ -58,11 +58,11 @@ public class CategoryService implements ICategoryService {
         }
         CategoryEntity categoryEntity = categoryConverter.convertToEntity(categoryDto);
         if (categoryEntity.getId() == null) {
-            categoryDao.insertEntity(categoryEntity);
+            categoryDao.insert(categoryEntity);
             categoryDto.setId(categoryEntity.getId());
             return null;
         }
-        int affectedRows = categoryDao.updateEntity(categoryEntity);
+        int affectedRows = categoryDao.update(categoryEntity);
         if (affectedRows != 1) {
             throw new IncomeServiceCategoryNotFoundException(categoryDto.getId());
         }
@@ -74,7 +74,7 @@ public class CategoryService implements ICategoryService {
         if (id == null) {
             throw new IncomeServiceCategoryNotFoundException();
         }
-        int affectedRows = categoryDao.deleteEntity(id);
+        int affectedRows = categoryDao.delete(id);
         if (affectedRows != 1) {
             throw new IncomeServiceCategoryNotFoundException(id);
         }

@@ -17,31 +17,15 @@ public interface IGenericDao<T extends IGenericEntity> {
      *
      * @return entity list
      */
-    List<T> getEntityList();
+    List<T> getList();
 
     /**
-     * Returns entities with specified ids from DB
-     *
-     * @param ids - entity ids set
-     * @return entity list
-     */
-    List<T> getEntityList(Set<Integer> ids);
-
-    /**
-     * Returns entity with specified id from DB
-     *
-     * @param id - entity id
-     * @return entity
-     */
-    T getEntity(Integer id);
-
-    /**
-     * Creates new entity in DB and sets its id
+     * Creates new entity in DB
      *
      * @param entity - new entity
      * @return number of inserted rows
      */
-    int insertEntity(T entity);
+    int insert(T entity);
 
     /**
      * Updates entity with specified in DB
@@ -49,14 +33,6 @@ public interface IGenericDao<T extends IGenericEntity> {
      * @param entity - entity
      * @return number of updated rows
      */
-    int updateEntity(T entity);
-
-    /**
-     * Deletes entity from DB by its id
-     *
-     * @param id - entity id
-     * @return number of deleted rows
-     */
-    int deleteEntity(Integer id);
+    int update(T entity);
 
 }

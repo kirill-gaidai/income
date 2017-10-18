@@ -52,8 +52,8 @@ public class RateServiceTest {
                         lastDay, new BigDecimal("1.25"))
         );
 
-        doReturn(currencyEntityFrom).when(currencyDao).getEntity(currencyIdFrom);
-        doReturn(currencyEntityTo).when(currencyDao).getEntity(currencyIdTo);
+        doReturn(currencyEntityFrom).when(currencyDao).get(currencyIdFrom);
+        doReturn(currencyEntityTo).when(currencyDao).get(currencyIdTo);
         doReturn(rateEntityList).when(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (int index = 0; index < rateEntityList.size(); index++) {
             doReturn(rateDtoList.get(index)).when(rateConverter).convertToDto(rateEntityList.get(index));
@@ -71,8 +71,8 @@ public class RateServiceTest {
 
         assertRateDtoListEquals(expected, actual);
 
-        verify(currencyDao).getEntity(currencyIdFrom);
-        verify(currencyDao).getEntity(currencyIdTo);
+        verify(currencyDao).get(currencyIdFrom);
+        verify(currencyDao).get(currencyIdTo);
         verify(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (RateEntity aRateEntityList : rateEntityList) {
             verify(rateConverter).convertToDto(aRateEntityList);
@@ -90,8 +90,8 @@ public class RateServiceTest {
         CurrencyEntity currencyEntityTo = new CurrencyEntity(currencyIdTo, "cc2", "currency2", 2);
         List<RateEntity> rateEntityList = Collections.emptyList();
 
-        doReturn(currencyEntityFrom).when(currencyDao).getEntity(currencyIdFrom);
-        doReturn(currencyEntityTo).when(currencyDao).getEntity(currencyIdTo);
+        doReturn(currencyEntityFrom).when(currencyDao).get(currencyIdFrom);
+        doReturn(currencyEntityTo).when(currencyDao).get(currencyIdTo);
         doReturn(rateEntityList).when(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
 
         List<RateDto> expected = Arrays.asList(
@@ -107,8 +107,8 @@ public class RateServiceTest {
 
         assertRateDtoListEquals(expected, actual);
 
-        verify(currencyDao).getEntity(currencyIdFrom);
-        verify(currencyDao).getEntity(currencyIdTo);
+        verify(currencyDao).get(currencyIdFrom);
+        verify(currencyDao).get(currencyIdTo);
         verify(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         verifyNoMoreInteractions(currencyDao, rateDao, rateConverter);
     }
@@ -132,8 +132,8 @@ public class RateServiceTest {
                         lastDay, new BigDecimal("1.25"))
         );
 
-        doReturn(currencyEntityFrom).when(currencyDao).getEntity(currencyIdFrom);
-        doReturn(currencyEntityTo).when(currencyDao).getEntity(currencyIdTo);
+        doReturn(currencyEntityFrom).when(currencyDao).get(currencyIdFrom);
+        doReturn(currencyEntityTo).when(currencyDao).get(currencyIdTo);
         doReturn(rateEntityList).when(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (int index = 0; index < rateEntityList.size(); index++) {
             doReturn(rateDtoList.get(index)).when(rateConverter).convertToDto(rateEntityList.get(index));
@@ -151,8 +151,8 @@ public class RateServiceTest {
 
         assertRateDtoListEquals(expected, actual);
 
-        verify(currencyDao).getEntity(currencyIdFrom);
-        verify(currencyDao).getEntity(currencyIdTo);
+        verify(currencyDao).get(currencyIdFrom);
+        verify(currencyDao).get(currencyIdTo);
         verify(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (RateEntity aRateEntityList : rateEntityList) {
             verify(rateConverter).convertToDto(aRateEntityList);
@@ -179,8 +179,8 @@ public class RateServiceTest {
                         LocalDate.of(2017, 8, 2), new BigDecimal("1.24"))
         );
 
-        doReturn(currencyEntityFrom).when(currencyDao).getEntity(currencyIdFrom);
-        doReturn(currencyEntityTo).when(currencyDao).getEntity(currencyIdTo);
+        doReturn(currencyEntityFrom).when(currencyDao).get(currencyIdFrom);
+        doReturn(currencyEntityTo).when(currencyDao).get(currencyIdTo);
         doReturn(rateEntityList).when(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (int index = 0; index < rateEntityList.size(); index++) {
             doReturn(rateDtoList.get(index)).when(rateConverter).convertToDto(rateEntityList.get(index));
@@ -198,8 +198,8 @@ public class RateServiceTest {
 
         assertRateDtoListEquals(expected, actual);
 
-        verify(currencyDao).getEntity(currencyIdFrom);
-        verify(currencyDao).getEntity(currencyIdTo);
+        verify(currencyDao).get(currencyIdFrom);
+        verify(currencyDao).get(currencyIdTo);
         verify(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (RateEntity aRateEntityList : rateEntityList) {
             verify(rateConverter).convertToDto(aRateEntityList);
@@ -226,8 +226,8 @@ public class RateServiceTest {
                         lastDay, new BigDecimal("1.25"))
         );
 
-        doReturn(currencyEntityFrom).when(currencyDao).getEntity(currencyIdFrom);
-        doReturn(currencyEntityTo).when(currencyDao).getEntity(currencyIdTo);
+        doReturn(currencyEntityFrom).when(currencyDao).get(currencyIdFrom);
+        doReturn(currencyEntityTo).when(currencyDao).get(currencyIdTo);
         doReturn(rateEntityList).when(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (int index = 0; index < rateEntityList.size(); index++) {
             doReturn(rateDtoList.get(index)).when(rateConverter).convertToDto(rateEntityList.get(index));
@@ -245,8 +245,8 @@ public class RateServiceTest {
 
         assertRateDtoListEquals(expected, actual);
 
-        verify(currencyDao).getEntity(currencyIdFrom);
-        verify(currencyDao).getEntity(currencyIdTo);
+        verify(currencyDao).get(currencyIdFrom);
+        verify(currencyDao).get(currencyIdTo);
         verify(rateDao).getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay);
         for (RateEntity aRateEntityList : rateEntityList) {
             verify(rateConverter).convertToDto(aRateEntityList);
@@ -266,8 +266,8 @@ public class RateServiceTest {
         RateEntity rateEntity = new RateEntity(currencyIdFrom, currencyIdTo, day, value);
         RateDto rateDto = new RateDto(currencyIdFrom, null, null, currencyIdTo, null, null, day, value);
 
-        doReturn(currencyEntityFrom).when(currencyDao).getEntity(currencyIdFrom);
-        doReturn(currencyEntityTo).when(currencyDao).getEntity(currencyIdTo);
+        doReturn(currencyEntityFrom).when(currencyDao).get(currencyIdFrom);
+        doReturn(currencyEntityTo).when(currencyDao).get(currencyIdTo);
         doReturn(rateEntity).when(rateDao).getEntity(currencyIdFrom, currencyIdTo, day);
         doReturn(rateDto).when(rateConverter).convertToDto(rateEntity);
 
@@ -277,8 +277,8 @@ public class RateServiceTest {
 
         assertRateDtoEquals(expected, actual);
 
-        verify(currencyDao).getEntity(currencyIdFrom);
-        verify(currencyDao).getEntity(currencyIdTo);
+        verify(currencyDao).get(currencyIdFrom);
+        verify(currencyDao).get(currencyIdTo);
         verify(rateDao).getEntity(currencyIdFrom, currencyIdTo, day);
         verify(rateConverter).convertToDto(rateEntity);
         verifyNoMoreInteractions(currencyDao, rateDao, rateConverter);
@@ -292,8 +292,8 @@ public class RateServiceTest {
         CurrencyEntity currencyEntityFrom = new CurrencyEntity(currencyIdFrom, "cc1", "currency1", 2);
         CurrencyEntity currencyEntityTo = new CurrencyEntity(currencyIdTo, "cc2", "currency2", 2);
 
-        doReturn(currencyEntityFrom).when(currencyDao).getEntity(currencyIdFrom);
-        doReturn(currencyEntityTo).when(currencyDao).getEntity(currencyIdTo);
+        doReturn(currencyEntityFrom).when(currencyDao).get(currencyIdFrom);
+        doReturn(currencyEntityTo).when(currencyDao).get(currencyIdTo);
 
         RateDto expected = new RateDto(currencyIdFrom, "cc1", "currency1",
                 currencyIdTo, "cc2", "currency2", day, BigDecimal.ZERO);
@@ -301,8 +301,8 @@ public class RateServiceTest {
 
         assertRateDtoEquals(expected, actual);
 
-        verify(currencyDao).getEntity(currencyIdFrom);
-        verify(currencyDao).getEntity(currencyIdTo);
+        verify(currencyDao).get(currencyIdFrom);
+        verify(currencyDao).get(currencyIdTo);
         verify(rateDao).getEntity(currencyIdFrom, currencyIdTo, day);
         verifyNoMoreInteractions(currencyDao, rateDao, rateConverter);
     }

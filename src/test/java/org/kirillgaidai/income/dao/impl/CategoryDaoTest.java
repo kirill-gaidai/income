@@ -60,7 +60,7 @@ public class CategoryDaoTest {
     @Test
     public void testGetEntityList_All() throws Exception {
         List<CategoryEntity> expected = Arrays.asList(orig.get(0), orig.get(1), orig.get(2));
-        List<CategoryEntity> actual = categoryDao.getEntityList();
+        List<CategoryEntity> actual = categoryDao.getList();
         assertCategoryEntityListEquals(expected, actual);
     }
 
@@ -68,34 +68,34 @@ public class CategoryDaoTest {
     public void testGetEntityList_AllEmpty() throws Exception {
         namedParameterJdbcTemplate.update("DELETE FROM categories", Collections.emptyMap());
         List<CategoryEntity> expected = Collections.emptyList();
-        List<CategoryEntity> actual = categoryDao.getEntityList();
+        List<CategoryEntity> actual = categoryDao.getList();
         assertCategoryEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_Ids() throws Exception {
         List<CategoryEntity> expected = Arrays.asList(orig.get(0), orig.get(1));
-        List<CategoryEntity> actual = categoryDao.getEntityList(Sets.newSet(3, 2));
+        List<CategoryEntity> actual = categoryDao.getList(Sets.newSet(3, 2));
         assertCategoryEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_IdsEmpty() throws Exception {
         List<CategoryEntity> expected = Collections.emptyList();
-        List<CategoryEntity> actual = categoryDao.getEntityList(Sets.newSet(0));
+        List<CategoryEntity> actual = categoryDao.getList(Sets.newSet(0));
         assertCategoryEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_Ok() throws Exception {
         CategoryEntity expected = orig.get(0);
-        CategoryEntity actual = categoryDao.getEntity(3);
+        CategoryEntity actual = categoryDao.get(3);
         assertCategoryEntityEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_NotFound() throws Exception {
-        CategoryEntity actual = categoryDao.getEntity(0);
+        CategoryEntity actual = categoryDao.get(0);
         Assert.assertNull(actual);
     }
 
@@ -103,10 +103,10 @@ public class CategoryDaoTest {
     public void testInsertEntity_Ok() throws Exception {
         CategoryEntity entity = new CategoryEntity(null, "04", "category4");
         List<CategoryEntity> expected = Arrays.asList(orig.get(0), orig.get(1), orig.get(2), entity);
-        int affectedRows = categoryDao.insertEntity(entity);
+        int affectedRows = categoryDao.insert(entity);
         assertEquals(1, affectedRows);
         assertEquals(Integer.valueOf(4), entity.getId());
-        List<CategoryEntity> actual = categoryDao.getEntityList();
+        List<CategoryEntity> actual = categoryDao.getList();
         assertCategoryEntityListEquals(expected, actual);
     }
 
@@ -114,35 +114,35 @@ public class CategoryDaoTest {
     public void testUpdateEntity_Ok() throws Exception {
         CategoryEntity entity = new CategoryEntity(3, "04", "category4");
         List<CategoryEntity> expected = Arrays.asList(orig.get(1), orig.get(2), entity);
-        int affectedRows = categoryDao.updateEntity(entity);
+        int affectedRows = categoryDao.update(entity);
         assertEquals(1, affectedRows);
-        List<CategoryEntity> actual = categoryDao.getEntityList();
+        List<CategoryEntity> actual = categoryDao.getList();
         assertCategoryEntityListEquals(expected, actual);
     }
 
     @Test
     public void testUpdateEntity_NotFound() throws Exception {
         CategoryEntity entity = new CategoryEntity(4, "04", "category4");
-        int affectedRows = categoryDao.updateEntity(entity);
+        int affectedRows = categoryDao.update(entity);
         assertEquals(0, affectedRows);
-        List<CategoryEntity> actual = categoryDao.getEntityList();
+        List<CategoryEntity> actual = categoryDao.getList();
         assertCategoryEntityListEquals(orig, actual);
     }
 
     @Test
     public void testDeleteEntity_Ok() throws Exception {
         List<CategoryEntity> expected = Arrays.asList(orig.get(1), orig.get(2));
-        int affectedRows = categoryDao.deleteEntity(3);
+        int affectedRows = categoryDao.delete(3);
         assertEquals(1, affectedRows);
-        List<CategoryEntity> actual = categoryDao.getEntityList();
+        List<CategoryEntity> actual = categoryDao.getList();
         assertCategoryEntityListEquals(expected, actual);
     }
 
     @Test
     public void testDeleteEntity_NotFound() throws Exception {
-        final int affectedRows = categoryDao.deleteEntity(0);
+        final int affectedRows = categoryDao.delete(0);
         assertEquals(0, affectedRows);
-        List<CategoryEntity> actual = categoryDao.getEntityList();
+        List<CategoryEntity> actual = categoryDao.getList();
         assertCategoryEntityListEquals(orig, actual);
     }
 

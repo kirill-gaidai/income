@@ -76,7 +76,7 @@ public class BalanceDaoTest {
 
     @Test
     public void testGetEntityList_All() throws Exception {
-        List<BalanceEntity> actual = balanceDao.getEntityList();
+        List<BalanceEntity> actual = balanceDao.getList();
         assertBalanceEntityListEquals(orig, actual);
     }
 
@@ -84,28 +84,28 @@ public class BalanceDaoTest {
     public void testGetEntityList_AllEmpty() throws Exception {
         namedParameterJdbcTemplate.update("DELETE FROM balances", Collections.emptyMap());
         List<BalanceEntity> expected = Collections.emptyList();
-        List<BalanceEntity> actual = balanceDao.getEntityList();
+        List<BalanceEntity> actual = balanceDao.getList();
         assertBalanceEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_LastThis() throws Exception {
         List<BalanceEntity> expected = Arrays.asList(orig.get(1), orig.get(3));
-        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_1);
+        List<BalanceEntity> actual = balanceDao.getList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_1);
         assertBalanceEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_LastEmpty() throws Exception {
         List<BalanceEntity> expected = Collections.emptyList();
-        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_0);
+        List<BalanceEntity> actual = balanceDao.getList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_0);
         assertBalanceEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_LastBefore() throws Exception {
         List<BalanceEntity> expected = Arrays.asList(orig.get(0), orig.get(2));
-        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_3);
+        List<BalanceEntity> actual = balanceDao.getList(Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2), DAY_3);
         assertBalanceEntityListEquals(expected, actual);
     }
 
@@ -113,7 +113,7 @@ public class BalanceDaoTest {
     public void testGetEntityList_AccountIdsInterval() throws Exception {
         List<BalanceEntity> expected = Arrays.asList(orig.get(0), orig.get(2));
         Set<Integer> accountIds = Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2);
-        List<BalanceEntity> actual = balanceDao.getEntityList(accountIds, DAY_2, DAY_3);
+        List<BalanceEntity> actual = balanceDao.getList(accountIds, DAY_2, DAY_3);
         assertBalanceEntityListEquals(expected, actual);
     }
 
@@ -121,7 +121,7 @@ public class BalanceDaoTest {
     public void testGetEntityList_AccountIdsEmptyIntervalEmpty() throws Exception {
         List<BalanceEntity> expected = Collections.emptyList();
         Set<Integer> accountIds = Collections.emptySet();
-        List<BalanceEntity> actual = balanceDao.getEntityList(accountIds, DAY_0, DAY_3);
+        List<BalanceEntity> actual = balanceDao.getList(accountIds, DAY_0, DAY_3);
         assertBalanceEntityListEquals(expected, actual);
     }
 
@@ -129,20 +129,20 @@ public class BalanceDaoTest {
     public void testGetEntityList_AccountIdsIntervalEmpty() throws Exception {
         List<BalanceEntity> expected = Collections.emptyList();
         Set<Integer> accountIds = Sets.newSet(ACCOUNT_ID_1, ACCOUNT_ID_2);
-        List<BalanceEntity> actual = balanceDao.getEntityList(accountIds, DAY_3, DAY_3);
+        List<BalanceEntity> actual = balanceDao.getList(accountIds, DAY_3, DAY_3);
         assertBalanceEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_Ok() throws Exception {
         BalanceEntity expected = orig.get(1);
-        BalanceEntity actual = balanceDao.getEntity(ACCOUNT_ID_1, DAY_1);
+        BalanceEntity actual = balanceDao.get(ACCOUNT_ID_1, DAY_1);
         assertBalanceEntityEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_NotFound() throws Exception {
-        BalanceEntity actual = balanceDao.getEntity(ACCOUNT_ID_1, DAY_0);
+        BalanceEntity actual = balanceDao.get(ACCOUNT_ID_1, DAY_0);
         assertNull(actual);
     }
 
@@ -176,9 +176,9 @@ public class BalanceDaoTest {
     public void testInsertEntity_Ok() throws Exception {
         BalanceEntity entity = new BalanceEntity(ACCOUNT_ID_1, DAY_3, new BigDecimal("0.8"), true);
         List<BalanceEntity> expected = Arrays.asList(orig.get(1), orig.get(0), entity);
-        int affectedRows = balanceDao.insertEntity(entity);
+        int affectedRows = balanceDao.insert(entity);
         assertEquals(1, affectedRows);
-        List<BalanceEntity> actual = balanceDao.getEntityList(Sets.newSet(ACCOUNT_ID_1), DAY_1, DAY_3);
+        List<BalanceEntity> actual = balanceDao.getList(Sets.newSet(ACCOUNT_ID_1), DAY_1, DAY_3);
         assertBalanceEntityListEquals(expected, actual);
     }
 
@@ -188,35 +188,35 @@ public class BalanceDaoTest {
         List<BalanceEntity> expected = new ArrayList<>();
         expected.add(entity);
         expected.addAll(orig.subList(1, orig.size()));
-        int affectedRows = balanceDao.updateEntity(entity);
+        int affectedRows = balanceDao.update(entity);
         assertEquals(1, affectedRows);
-        List<BalanceEntity> actual = balanceDao.getEntityList();
+        List<BalanceEntity> actual = balanceDao.getList();
         assertBalanceEntityListEquals(expected, actual);
     }
 
     @Test
     public void testUpdateEntity_NotFound() throws Exception {
         BalanceEntity entity = new BalanceEntity(ACCOUNT_ID_1, DAY_0, new BigDecimal("0.8"), false);
-        int affectedRows = balanceDao.updateEntity(entity);
+        int affectedRows = balanceDao.update(entity);
         assertEquals(0, affectedRows);
-        List<BalanceEntity> actual = balanceDao.getEntityList();
+        List<BalanceEntity> actual = balanceDao.getList();
         assertBalanceEntityListEquals(orig, actual);
     }
 
     @Test
     public void testDeleteEntity_Ok() throws Exception {
         List<BalanceEntity> expected = orig.subList(1, orig.size());
-        int affectedRows = balanceDao.deleteEntity(ACCOUNT_ID_1, DAY_2);
+        int affectedRows = balanceDao.delete(ACCOUNT_ID_1, DAY_2);
         assertEquals(1, affectedRows);
-        List<BalanceEntity> actual = balanceDao.getEntityList();
+        List<BalanceEntity> actual = balanceDao.getList();
         assertBalanceEntityListEquals(expected, actual);
     }
 
     @Test
     public void testDeleteEntity_NotFound() throws Exception {
-        int affectedRows = balanceDao.deleteEntity(ACCOUNT_ID_1, DAY_0);
+        int affectedRows = balanceDao.delete(ACCOUNT_ID_1, DAY_0);
         assertEquals(0, affectedRows);
-        List<BalanceEntity> actual = balanceDao.getEntityList();
+        List<BalanceEntity> actual = balanceDao.getList();
         assertBalanceEntityListEquals(orig, actual);
     }
 

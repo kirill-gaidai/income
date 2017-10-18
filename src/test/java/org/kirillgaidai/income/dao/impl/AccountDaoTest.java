@@ -61,7 +61,7 @@ public class AccountDaoTest {
     @Test
     public void testGetEntityList_All() throws Exception {
         List<AccountEntity> expected = Arrays.asList(orig.get(0), orig.get(1), orig.get(2));
-        List<AccountEntity> actual = accountDao.getEntityList();
+        List<AccountEntity> actual = accountDao.getList();
         assertAccountEntityListEquals(expected, actual);
     }
 
@@ -69,34 +69,34 @@ public class AccountDaoTest {
     public void testGetEntityList_AllEmpty() throws Exception {
         namedParameterJdbcTemplate.update("DELETE FROM accounts", Collections.emptyMap());
         List<AccountEntity> expected = Collections.emptyList();
-        List<AccountEntity> actual = accountDao.getEntityList();
+        List<AccountEntity> actual = accountDao.getList();
         assertAccountEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_Ids() throws Exception {
         List<AccountEntity> expected = Arrays.asList(orig.get(0), orig.get(1));
-        List<AccountEntity> actual = accountDao.getEntityList(Sets.newSet(3, 2));
+        List<AccountEntity> actual = accountDao.getList(Sets.newSet(3, 2));
         assertAccountEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntityList_IdsEmpty() throws Exception {
         List<AccountEntity> expected = Collections.emptyList();
-        List<AccountEntity> actual = accountDao.getEntityList(Sets.newSet(0));
+        List<AccountEntity> actual = accountDao.getList(Sets.newSet(0));
         assertAccountEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_Ok() throws Exception {
         AccountEntity expected = orig.get(0);
-        AccountEntity actual = accountDao.getEntity(3);
+        AccountEntity actual = accountDao.get(3);
         assertAccountEntityEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_NotFound() throws Exception {
-        AccountEntity actual = accountDao.getEntity(0);
+        AccountEntity actual = accountDao.get(0);
         assertNull(actual);
     }
 
@@ -104,10 +104,10 @@ public class AccountDaoTest {
     public void testInsertEntity_Ok() throws Exception {
         AccountEntity entity = new AccountEntity(null, 8, "04", "account4");
         List<AccountEntity> expected = Arrays.asList(orig.get(0), orig.get(1), orig.get(2), entity);
-        int affectedRows = accountDao.insertEntity(entity);
+        int affectedRows = accountDao.insert(entity);
         assertEquals(1, affectedRows);
         assertEquals(Integer.valueOf(4), entity.getId());
-        List<AccountEntity> actual = accountDao.getEntityList();
+        List<AccountEntity> actual = accountDao.getList();
         assertAccountEntityListEquals(expected, actual);
     }
 
@@ -115,35 +115,35 @@ public class AccountDaoTest {
     public void testUpdateEntity_Ok() throws Exception {
         AccountEntity entity = new AccountEntity(3, 8, "04", "account4");
         List<AccountEntity> expected = Arrays.asList(orig.get(1), orig.get(2), entity);
-        int affectedRows = accountDao.updateEntity(entity);
+        int affectedRows = accountDao.update(entity);
         assertEquals(1, affectedRows);
-        List<AccountEntity> actual = accountDao.getEntityList();
+        List<AccountEntity> actual = accountDao.getList();
         assertAccountEntityListEquals(expected, actual);
     }
 
     @Test
     public void testUpdateEntity_NotFound() throws Exception {
         AccountEntity entity = new AccountEntity(4, 8, "04", "account4");
-        int affectedRows = accountDao.updateEntity(entity);
+        int affectedRows = accountDao.update(entity);
         assertEquals(0, affectedRows);
-        List<AccountEntity> actual = accountDao.getEntityList();
+        List<AccountEntity> actual = accountDao.getList();
         assertAccountEntityListEquals(orig, actual);
     }
 
     @Test
     public void testDeleteEntity_Ok() throws Exception {
         List<AccountEntity> expected = Arrays.asList(orig.get(1), orig.get(2));
-        int affectedRows = accountDao.deleteEntity(3);
+        int affectedRows = accountDao.delete(3);
         assertEquals(1, affectedRows);
-        List<AccountEntity> actual = accountDao.getEntityList();
+        List<AccountEntity> actual = accountDao.getList();
         assertAccountEntityListEquals(expected, actual);
     }
 
     @Test
     public void testDeleteEntity_NotFound() throws Exception {
-        int affectedRows = accountDao.deleteEntity(0);
+        int affectedRows = accountDao.delete(0);
         assertEquals(0, affectedRows);
-        List<AccountEntity> actual = accountDao.getEntityList();
+        List<AccountEntity> actual = accountDao.getList();
         assertAccountEntityListEquals(orig, actual);
     }
 

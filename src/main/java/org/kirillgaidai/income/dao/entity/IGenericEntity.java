@@ -1,7 +1,7 @@
 package org.kirillgaidai.income.dao.entity;
 
 /**
- * Generic entity interface. Generic entity has id
+ * Generic entity interface
  *
  * @author Kirill Gaidai
  */

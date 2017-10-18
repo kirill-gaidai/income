@@ -85,7 +85,7 @@ public class OperationDaoTest {
 
     @Test
     public void testGetEntityList_All() throws Exception {
-        List<OperationEntity> actual = operationDao.getEntityList();
+        List<OperationEntity> actual = operationDao.getList();
         assertOperationEntityListEquals(orig, actual);
     }
 
@@ -93,7 +93,7 @@ public class OperationDaoTest {
     public void testGetEntityList_AllEmpty() throws Exception {
         namedParameterJdbcTemplate.update("DELETE FROM operations", Collections.emptyMap());
         List<OperationEntity> expected = Collections.emptyList();
-        List<OperationEntity> actual = operationDao.getEntityList();
+        List<OperationEntity> actual = operationDao.getList();
         assertOperationEntityListEquals(expected, actual);
     }
 
@@ -101,7 +101,7 @@ public class OperationDaoTest {
     public void testGetEntity_Ids() throws Exception {
         Set<Integer> ids = Sets.newSet(2, 7);
         List<OperationEntity> expected = Arrays.asList(orig.get(1), orig.get(6));
-        List<OperationEntity> actual = operationDao.getEntityList(ids);
+        List<OperationEntity> actual = operationDao.getList(ids);
         assertOperationEntityListEquals(expected, actual);
     }
 
@@ -109,20 +109,20 @@ public class OperationDaoTest {
     public void testGetEntity_IdsEmpty() throws Exception {
         Set<Integer> ids = Sets.newSet(0, -1);
         List<OperationEntity> expected = Collections.emptyList();
-        List<OperationEntity> actual = operationDao.getEntityList(ids);
+        List<OperationEntity> actual = operationDao.getList(ids);
         assertOperationEntityListEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_Ok() throws Exception {
         OperationEntity expected = orig.get(0);
-        OperationEntity actual = operationDao.getEntity(1);
+        OperationEntity actual = operationDao.get(1);
         assertOperationEntityEquals(expected, actual);
     }
 
     @Test
     public void testGetEntity_NotFound() throws Exception {
-        OperationEntity entity = operationDao.getEntity(0);
+        OperationEntity entity = operationDao.get(0);
         assertNull(entity);
     }
 
@@ -130,11 +130,11 @@ public class OperationDaoTest {
     public void testInsertEntity_Ok() throws Exception {
         OperationEntity entity = new OperationEntity(null, ACCOUNT_ID_2, CATEGORY_ID_2, DAY_2, new BigDecimal("409.6"),
                 "Note 13");
-        int affectedRows = operationDao.insertEntity(entity);
+        int affectedRows = operationDao.insert(entity);
         assertEquals(1, affectedRows);
         List<OperationEntity> expected = new ArrayList<>(orig);
         expected.add(entity);
-        List<OperationEntity> actual = operationDao.getEntityList();
+        List<OperationEntity> actual = operationDao.getList();
         assertOperationEntityListEquals(expected, actual);
     }
 
@@ -144,12 +144,12 @@ public class OperationDaoTest {
                 "Note 13");
         OperationEntity expectedEntity = new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1,
                 new BigDecimal("409.6"), "Note 13");
-        int affectedRows = operationDao.updateEntity(entity);
+        int affectedRows = operationDao.update(entity);
         assertEquals(1, affectedRows);
         List<OperationEntity> expected = new ArrayList<>();
         expected.add(expectedEntity);
         expected.addAll(orig.subList(1, 12));
-        List<OperationEntity> actual = operationDao.getEntityList();
+        List<OperationEntity> actual = operationDao.getList();
         assertOperationEntityListEquals(expected, actual);
     }
 
@@ -157,26 +157,26 @@ public class OperationDaoTest {
     public void testUpdateEntity_NotFound() throws Exception {
         OperationEntity entity = new OperationEntity(0, ACCOUNT_ID_2, CATEGORY_ID_2, DAY_2, new BigDecimal("409.6"),
                 "Note 13");
-        int affectedRows = operationDao.updateEntity(entity);
+        int affectedRows = operationDao.update(entity);
         assertEquals(0, affectedRows);
-        List<OperationEntity> actual = operationDao.getEntityList();
+        List<OperationEntity> actual = operationDao.getList();
         assertOperationEntityListEquals(orig, actual);
     }
 
     @Test
     public void testDeleteEntity_Ok() throws Exception {
-        int affectedRows = operationDao.deleteEntity(1);
+        int affectedRows = operationDao.delete(1);
         assertEquals(1, affectedRows);
         List<OperationEntity> expected = orig.subList(1, 12);
-        List<OperationEntity> actual = operationDao.getEntityList();
+        List<OperationEntity> actual = operationDao.getList();
         assertOperationEntityListEquals(expected, actual);
     }
 
     @Test
     public void testDeleteEntity_NotFound() throws Exception {
-        int affectedRows = operationDao.deleteEntity(0);
+        int affectedRows = operationDao.delete(0);
         assertEquals(0, affectedRows);
-        List<OperationEntity> actual = operationDao.getEntityList();
+        List<OperationEntity> actual = operationDao.getList();
         assertOperationEntityListEquals(orig, actual);
     }
 

@@ -6,24 +6,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-public interface IBalanceDao {
+public interface IBalanceDao extends IGenericDao<BalanceEntity> {
 
-    List<BalanceEntity> getEntityList();
+    List<BalanceEntity> getList(Set<Integer> accountIds, LocalDate lastDay);
 
-    List<BalanceEntity> getEntityList(Set<Integer> accountIds, LocalDate lastDay);
+    List<BalanceEntity> getList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay);
 
-    List<BalanceEntity> getEntityList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay);
-
-    BalanceEntity getEntity(Integer accountId, LocalDate day);
+    BalanceEntity get(Integer accountId, LocalDate day);
 
     BalanceEntity getEntityBefore(Integer accountId, LocalDate day);
 
     BalanceEntity getEntityAfter(Integer accountId, LocalDate day);
 
-    int insertEntity(BalanceEntity entity);
-
-    int updateEntity(BalanceEntity entity);
-
-    int deleteEntity(Integer accountId, LocalDate day);
+    int delete(Integer accountId, LocalDate day);
 
 }

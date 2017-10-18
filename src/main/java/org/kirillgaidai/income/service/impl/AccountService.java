@@ -37,12 +37,12 @@ public class AccountService implements IAccountService {
 
     @Override
     public List<AccountDto> getList() {
-        return convertToDtoList(accountDao.getEntityList());
+        return convertToDtoList(accountDao.getList());
     }
 
     @Override
     public List<AccountDto> getList(Set<Integer> ids) {
-        return convertToDtoList(accountDao.getEntityList(ids));
+        return convertToDtoList(accountDao.getList(ids));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class AccountService implements IAccountService {
             throw new IncomeServiceAccountNotFoundException();
         }
 
-        AccountEntity accountEntity = accountDao.getEntity(id);
+        AccountEntity accountEntity = accountDao.get(id);
         if (accountEntity == null) {
             throw new IncomeServiceAccountNotFoundException(id);
         }
@@ -59,7 +59,7 @@ public class AccountService implements IAccountService {
             throw new IncomeServiceCurrencyNotFoundException();
         }
 
-        CurrencyEntity currencyEntity = currencyDao.getEntity(accountEntity.getCurrencyId());
+        CurrencyEntity currencyEntity = currencyDao.get(accountEntity.getCurrencyId());
         if (currencyEntity == null) {
             throw new IncomeServiceCurrencyNotFoundException(accountEntity.getCurrencyId());
         }
@@ -78,12 +78,12 @@ public class AccountService implements IAccountService {
 
         AccountEntity accountEntity = accountConverter.convertToEntity(accountDto);
         if (accountDto.getId() == null) {
-            accountDao.insertEntity(accountEntity);
+            accountDao.insert(accountEntity);
             accountDto.setId(accountEntity.getId());
             return null;
         }
 
-        int affectedRows = accountDao.updateEntity(accountEntity);
+        int affectedRows = accountDao.update(accountEntity);
         if (affectedRows != 1) {
             throw new IncomeServiceAccountNotFoundException(accountDto.getId());
         }
@@ -96,7 +96,7 @@ public class AccountService implements IAccountService {
             throw new IncomeServiceAccountNotFoundException();
         }
 
-        int affectedRows = accountDao.deleteEntity(id);
+        int affectedRows = accountDao.delete(id);
         if (affectedRows != 1) {
             throw new IncomeServiceAccountNotFoundException(id);
         }
@@ -111,7 +111,7 @@ public class AccountService implements IAccountService {
                 .collect(Collectors.toList());
         Set<Integer> currencyIds = accountEntityList.stream().map(AccountEntity::getCurrencyId)
                 .collect(Collectors.toSet());
-        Map<Integer, CurrencyEntity> currencyEntityMap = currencyDao.getEntityList(currencyIds).stream()
+        Map<Integer, CurrencyEntity> currencyEntityMap = currencyDao.getList(currencyIds).stream()
                 .collect(Collectors.toMap(CurrencyEntity::getId, currencyEntity -> currencyEntity));
         accountDtoList.forEach(accountDto -> {
             Integer currencyId = accountDto.getCurrencyId();

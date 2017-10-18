@@ -43,7 +43,7 @@ public class CategoryServiceTest {
                 new CategoryDto(3, "03", "category3")
         );
 
-        doReturn(categoryEntityList).when(categoryDao).getEntityList();
+        doReturn(categoryEntityList).when(categoryDao).getList();
         for (int index = 0; index < categoryEntityList.size(); index++) {
             doReturn(expected.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
         }
@@ -51,7 +51,7 @@ public class CategoryServiceTest {
         List<CategoryDto> actual = categoryService.getList();
 
         assertCategoryDtoListEquals(expected, actual);
-        verify(categoryDao).getEntityList();
+        verify(categoryDao).getList();
         for (CategoryEntity categoryEntity : categoryEntityList) {
             verify(categoryConverter).convertToDto(categoryEntity);
         }
@@ -62,10 +62,10 @@ public class CategoryServiceTest {
     public void testGetDtoList_AllEmpty() throws Exception {
         List<CategoryEntity> categoryEntityList = Collections.emptyList();
         List<CategoryDto> expected = Collections.emptyList();
-        doReturn(categoryEntityList).when(categoryDao).getEntityList();
+        doReturn(categoryEntityList).when(categoryDao).getList();
         List<CategoryDto> actual = categoryService.getList();
         assertCategoryDtoListEquals(expected, actual);
-        verify(categoryDao).getEntityList();
+        verify(categoryDao).getList();
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 
@@ -81,7 +81,7 @@ public class CategoryServiceTest {
                 new CategoryDto(2, "02", "category2")
         );
 
-        doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIds);
+        doReturn(categoryEntityList).when(categoryDao).getList(categoryIds);
         for (int index = 0; index < categoryEntityList.size(); index++) {
             doReturn(expected.get(index)).when(categoryConverter).convertToDto(categoryEntityList.get(index));
         }
@@ -89,7 +89,7 @@ public class CategoryServiceTest {
         List<CategoryDto> actual = categoryService.getList(categoryIds);
 
         assertCategoryDtoListEquals(expected, actual);
-        verify(categoryDao).getEntityList(categoryIds);
+        verify(categoryDao).getList(categoryIds);
         for (CategoryEntity categoryEntity : categoryEntityList) {
             verify(categoryConverter).convertToDto(categoryEntity);
         }
@@ -101,10 +101,10 @@ public class CategoryServiceTest {
         Set<Integer> categoryIds = Sets.newSet(1, 2);
         List<CategoryEntity> categoryEntityList = Collections.emptyList();
         List<CategoryDto> expected = Collections.emptyList();
-        doReturn(categoryEntityList).when(categoryDao).getEntityList(categoryIds);
+        doReturn(categoryEntityList).when(categoryDao).getList(categoryIds);
         List<CategoryDto> actual = categoryService.getList(categoryIds);
         assertCategoryDtoListEquals(expected, actual);
-        verify(categoryDao).getEntityList(categoryIds);
+        verify(categoryDao).getList(categoryIds);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 
@@ -125,7 +125,7 @@ public class CategoryServiceTest {
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category with id 1 not found", e.getMessage());
         }
-        verify(categoryDao).getEntity(1);
+        verify(categoryDao).get(1);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 
@@ -134,14 +134,14 @@ public class CategoryServiceTest {
         CategoryEntity categoryEntity = new CategoryEntity(1, "01", "category1");
         CategoryDto expected = new CategoryDto(1, "01", "category1");
 
-        doReturn(categoryEntity).when(categoryDao).getEntity(1);
+        doReturn(categoryEntity).when(categoryDao).get(1);
         doReturn(expected).when(categoryConverter).convertToDto(categoryEntity);
 
         CategoryDto actual = categoryService.get(1);
 
         assertCategoryDtoEquals(expected, actual);
 
-        verify(categoryDao).getEntity(1);
+        verify(categoryDao).get(1);
         verify(categoryConverter).convertToDto(categoryEntity);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
@@ -162,12 +162,12 @@ public class CategoryServiceTest {
         CategoryEntity categoryEntity = new CategoryEntity(null, "01", "category1");
 
         doReturn(categoryEntity).when(categoryConverter).convertToEntity(categoryDto);
-        doReturn(1).when(categoryDao).insertEntity(categoryEntity);
+        doReturn(1).when(categoryDao).insert(categoryEntity);
 
         categoryService.save(categoryDto);
 
         verify(categoryConverter).convertToEntity(categoryDto);
-        verify(categoryDao).insertEntity(categoryEntity);
+        verify(categoryDao).insert(categoryEntity);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 
@@ -177,7 +177,7 @@ public class CategoryServiceTest {
         CategoryEntity categoryEntity = new CategoryEntity(1, "01", "category1");
 
         doReturn(categoryEntity).when(categoryConverter).convertToEntity(categoryDto);
-        doReturn(0).when(categoryDao).updateEntity(categoryEntity);
+        doReturn(0).when(categoryDao).update(categoryEntity);
 
         try {
             categoryService.save(categoryDto);
@@ -186,7 +186,7 @@ public class CategoryServiceTest {
         }
 
         verify(categoryConverter).convertToEntity(categoryDto);
-        verify(categoryDao).updateEntity(categoryEntity);
+        verify(categoryDao).update(categoryEntity);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 
@@ -196,12 +196,12 @@ public class CategoryServiceTest {
         CategoryEntity categoryEntity = new CategoryEntity(1, "01", "category1");
 
         doReturn(categoryEntity).when(categoryConverter).convertToEntity(categoryDto);
-        doReturn(1).when(categoryDao).updateEntity(categoryEntity);
+        doReturn(1).when(categoryDao).update(categoryEntity);
 
         categoryService.save(categoryDto);
 
         verify(categoryConverter).convertToEntity(categoryDto);
-        verify(categoryDao).updateEntity(categoryEntity);
+        verify(categoryDao).update(categoryEntity);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 
@@ -217,21 +217,21 @@ public class CategoryServiceTest {
 
     @Test
     public void testDeleteDto_NotFound() throws Exception {
-        doReturn(0).when(categoryDao).deleteEntity(1);
+        doReturn(0).when(categoryDao).delete(1);
         try {
             categoryService.delete(1);
         } catch (IncomeServiceCategoryNotFoundException e) {
             assertEquals("Category with id 1 not found", e.getMessage());
         }
-        verify(categoryDao).deleteEntity(1);
+        verify(categoryDao).delete(1);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 
     @Test
     public void testDeleteDto_Ok() throws Exception {
-        doReturn(1).when(categoryDao).deleteEntity(1);
+        doReturn(1).when(categoryDao).delete(1);
         categoryService.delete(1);
-        verify(categoryDao).deleteEntity(1);
+        verify(categoryDao).delete(1);
         verifyNoMoreInteractions(categoryDao, categoryConverter);
     }
 

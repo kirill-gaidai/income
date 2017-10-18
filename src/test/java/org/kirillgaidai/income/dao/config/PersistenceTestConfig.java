@@ -24,7 +24,6 @@ import org.kirillgaidai.income.dao.rowmappers.CategoryEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.CurrencyEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.OperationEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.RateEntityRowMapper;
-import org.kirillgaidai.income.dao.util.DaoHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.RowMapper;
@@ -48,11 +47,6 @@ public class PersistenceTestConfig {
     @Bean
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(getDataSource());
-    }
-
-    @Bean
-    public DaoHelper daoHelper() {
-        return new DaoHelper(namedParameterJdbcTemplate());
     }
 
     @Bean
@@ -87,7 +81,7 @@ public class PersistenceTestConfig {
 
     @Bean
     public IAccountDao accountDao() {
-        return new AccountDao(namedParameterJdbcTemplate(), daoHelper(), accountEntityRowMapper());
+        return new AccountDao(namedParameterJdbcTemplate(), accountEntityRowMapper());
     }
 
     @Bean
@@ -97,17 +91,17 @@ public class PersistenceTestConfig {
 
     @Bean
     public ICategoryDao categoryDao() {
-        return new CategoryDao(namedParameterJdbcTemplate(), daoHelper(), categoryEntityRowMapper());
+        return new CategoryDao(namedParameterJdbcTemplate(), categoryEntityRowMapper());
     }
 
     @Bean
     public ICurrencyDao currencyDao() {
-        return new CurrencyDao(namedParameterJdbcTemplate(), daoHelper(), currencyEntityRowMapper());
+        return new CurrencyDao(namedParameterJdbcTemplate(), currencyEntityRowMapper());
     }
 
     @Bean
     public IOperationDao operationDao() {
-        return new OperationDao(namedParameterJdbcTemplate(), daoHelper(), operationEntityRowMapper());
+        return new OperationDao(namedParameterJdbcTemplate(), operationEntityRowMapper());
     }
 
     @Bean

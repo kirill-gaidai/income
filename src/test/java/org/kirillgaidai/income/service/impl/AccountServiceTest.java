@@ -50,8 +50,8 @@ public class AccountServiceTest {
         );
         Set<Integer> currencyIds = Sets.newSet(11, 12);
 
-        doReturn(accountEntityList).when(accountDao).getEntityList();
-        doReturn(currencyEntityList).when(currencyDao).getEntityList(currencyIds);
+        doReturn(accountEntityList).when(accountDao).getList();
+        doReturn(currencyEntityList).when(currencyDao).getList(currencyIds);
         for (int index = 0; index < accountDtoList.size(); index++) {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }
@@ -62,8 +62,8 @@ public class AccountServiceTest {
             assertEquals("Currency with id 12 not found", e.getMessage());
         }
 
-        verify(accountDao).getEntityList();
-        verify(currencyDao).getEntityList(currencyIds);
+        verify(accountDao).getList();
+        verify(currencyDao).getList(currencyIds);
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(accountConverter).convertToDto(anAccountEntityList);
         }
@@ -93,8 +93,8 @@ public class AccountServiceTest {
                 new AccountDto(3, 11, "cc1", "currency1", "03", "account3")
         );
 
-        doReturn(accountEntityList).when(accountDao).getEntityList();
-        doReturn(currencyEntityList).when(currencyDao).getEntityList(currencyIds);
+        doReturn(accountEntityList).when(accountDao).getList();
+        doReturn(currencyEntityList).when(currencyDao).getList(currencyIds);
         for (int index = 0; index < accountDtoList.size(); index++) {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }
@@ -102,8 +102,8 @@ public class AccountServiceTest {
         List<AccountDto> actual = accountService.getList();
         assertAccountDtoListEquals(expected, actual);
 
-        verify(accountDao).getEntityList();
-        verify(currencyDao).getEntityList(currencyIds);
+        verify(accountDao).getList();
+        verify(currencyDao).getList(currencyIds);
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(accountConverter).convertToDto(anAccountEntityList);
         }
@@ -112,11 +112,11 @@ public class AccountServiceTest {
 
     @Test
     public void testGetDtoList_AllOkEmpty() throws Exception {
-        doReturn(Collections.emptyList()).when(accountDao).getEntityList();
+        doReturn(Collections.emptyList()).when(accountDao).getList();
         List<AccountDto> expected = Collections.emptyList();
         List<AccountDto> actual = accountService.getList();
         assertAccountDtoListEquals(expected, actual);
-        verify(accountDao).getEntityList();
+        verify(accountDao).getList();
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
@@ -136,8 +136,8 @@ public class AccountServiceTest {
         );
         Set<Integer> currencyIds = Sets.newSet(11, 12);
 
-        doReturn(accountEntityList).when(accountDao).getEntityList(accountIds);
-        doReturn(currencyEntityList).when(currencyDao).getEntityList(currencyIds);
+        doReturn(accountEntityList).when(accountDao).getList(accountIds);
+        doReturn(currencyEntityList).when(currencyDao).getList(currencyIds);
         for (int index = 0; index < accountEntityList.size(); index++) {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }
@@ -148,8 +148,8 @@ public class AccountServiceTest {
             assertEquals("Currency with id 12 not found", e.getMessage());
         }
 
-        verify(accountDao).getEntityList(accountIds);
-        verify(currencyDao).getEntityList(currencyIds);
+        verify(accountDao).getList(accountIds);
+        verify(currencyDao).getList(currencyIds);
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(accountConverter).convertToDto(anAccountEntityList);
         }
@@ -177,8 +177,8 @@ public class AccountServiceTest {
                 new AccountDto(2, 12, "cc2", "currency2", "02", "account2")
         );
 
-        doReturn(accountEntityList).when(accountDao).getEntityList(accountIds);
-        doReturn(currencyEntityList).when(currencyDao).getEntityList(currencyIds);
+        doReturn(accountEntityList).when(accountDao).getList(accountIds);
+        doReturn(currencyEntityList).when(currencyDao).getList(currencyIds);
         for (int index = 0; index < accountDtoList.size(); index++) {
             doReturn(accountDtoList.get(index)).when(accountConverter).convertToDto(accountEntityList.get(index));
         }
@@ -186,8 +186,8 @@ public class AccountServiceTest {
         List<AccountDto> actual = accountService.getList(accountIds);
         assertAccountDtoListEquals(expected, actual);
 
-        verify(accountDao).getEntityList(accountIds);
-        verify(currencyDao).getEntityList(currencyIds);
+        verify(accountDao).getList(accountIds);
+        verify(currencyDao).getList(currencyIds);
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(accountConverter).convertToDto(anAccountEntityList);
         }
@@ -197,11 +197,11 @@ public class AccountServiceTest {
     @Test
     public void testGetDtoList_IdsEmpty() throws Exception {
         Set<Integer> accountIds = Sets.newSet(1, 2);
-        doReturn(Collections.emptyList()).when(accountDao).getEntityList(accountIds);
+        doReturn(Collections.emptyList()).when(accountDao).getList(accountIds);
         List<AccountDto> expected = Collections.emptyList();
         List<AccountDto> actual = accountService.getList();
         assertAccountDtoListEquals(expected, actual);
-        verify(accountDao).getEntityList();
+        verify(accountDao).getList();
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
@@ -222,34 +222,34 @@ public class AccountServiceTest {
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
-        verify(accountDao).getEntity(1);
+        verify(accountDao).get(1);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
     @Test
     public void testGetDto_CurrencyIdIsNull() throws Exception {
         AccountEntity accountEntity = new AccountEntity(1, null, "01", "account1");
-        doReturn(accountEntity).when(accountDao).getEntity(1);
+        doReturn(accountEntity).when(accountDao).get(1);
         try {
             accountService.get(1);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency not found", e.getMessage());
         }
-        verify(accountDao).getEntity(1);
+        verify(accountDao).get(1);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
     @Test
     public void testGetDtoById_CurrencyEntityNotFound() throws Exception {
         AccountEntity accountEntity = new AccountEntity(1, 11, "01", "account1");
-        doReturn(accountEntity).when(accountDao).getEntity(1);
+        doReturn(accountEntity).when(accountDao).get(1);
         try {
             accountService.get(1);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 11 not found", e.getMessage());
         }
-        verify(accountDao).getEntity(1);
-        verify(currencyDao).getEntity(11);
+        verify(accountDao).get(1);
+        verify(currencyDao).get(11);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
@@ -258,14 +258,14 @@ public class AccountServiceTest {
         AccountEntity accountEntity = new AccountEntity(1, 11, "01", "account1");
         CurrencyEntity currencyEntity = new CurrencyEntity(11, "cc1", "currency1", 2);
         AccountDto accountDto = new AccountDto(1, 11, null, null, "01", "account1");
-        doReturn(accountEntity).when(accountDao).getEntity(1);
-        doReturn(currencyEntity).when(currencyDao).getEntity(11);
+        doReturn(accountEntity).when(accountDao).get(1);
+        doReturn(currencyEntity).when(currencyDao).get(11);
         doReturn(accountDto).when(accountConverter).convertToDto(accountEntity);
         AccountDto expected = new AccountDto(1, 11, "cc1", "currency1", "01", "account1");
         AccountDto actual = accountService.get(1);
         assertAccountDtoEquals(expected, actual);
-        verify(accountDao).getEntity(1);
-        verify(currencyDao).getEntity(11);
+        verify(accountDao).get(1);
+        verify(currencyDao).get(11);
         verify(accountConverter).convertToDto(accountEntity);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
@@ -285,10 +285,10 @@ public class AccountServiceTest {
         AccountDto accountDto = new AccountDto(null, 2, "cc1", "currency1", "01", "account1");
         AccountEntity accountEntity = new AccountEntity(null, 2, "01", "account1");
         doReturn(accountEntity).when(accountConverter).convertToEntity(accountDto);
-        doReturn(1).when(accountDao).insertEntity(accountEntity);
+        doReturn(1).when(accountDao).insert(accountEntity);
         accountService.save(accountDto);
         verify(accountConverter).convertToEntity(accountDto);
-        verify(accountDao).insertEntity(accountEntity);
+        verify(accountDao).insert(accountEntity);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
@@ -297,10 +297,10 @@ public class AccountServiceTest {
         AccountDto accountDto = new AccountDto(1, 2, "cc1", "currency1", "01", "account1");
         AccountEntity accountEntity = new AccountEntity(1, 2, "01", "account1");
         doReturn(accountEntity).when(accountConverter).convertToEntity(accountDto);
-        doReturn(1).when(accountDao).updateEntity(accountEntity);
+        doReturn(1).when(accountDao).update(accountEntity);
         accountService.save(accountDto);
         verify(accountConverter).convertToEntity(accountDto);
-        verify(accountDao).updateEntity(accountEntity);
+        verify(accountDao).update(accountEntity);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
@@ -309,14 +309,14 @@ public class AccountServiceTest {
         AccountDto accountDto = new AccountDto(1, 2, "cc1", "currency1", "01", "account1");
         AccountEntity accountEntity = new AccountEntity(1, 2, "01", "account1");
         doReturn(accountEntity).when(accountConverter).convertToEntity(accountDto);
-        doReturn(0).when(accountDao).updateEntity(accountEntity);
+        doReturn(0).when(accountDao).update(accountEntity);
         try {
             accountService.save(accountDto);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
         verify(accountConverter).convertToEntity(accountDto);
-        verify(accountDao).updateEntity(accountEntity);
+        verify(accountDao).update(accountEntity);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
@@ -332,21 +332,21 @@ public class AccountServiceTest {
 
     @Test
     public void testDeleteDto_NotFound() throws Exception {
-        doReturn(0).when(accountDao).deleteEntity(1);
+        doReturn(0).when(accountDao).delete(1);
         try {
             accountService.delete(1);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
-        verify(accountDao).deleteEntity(1);
+        verify(accountDao).delete(1);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 
     @Test
     public void testDeleteDto_Ok() throws Exception {
-        doReturn(1).when(accountDao).deleteEntity(1);
+        doReturn(1).when(accountDao).delete(1);
         accountService.delete(1);
-        verify(accountDao).deleteEntity(1);
+        verify(accountDao).delete(1);
         verifyNoMoreInteractions(accountDao, currencyDao, accountConverter);
     }
 

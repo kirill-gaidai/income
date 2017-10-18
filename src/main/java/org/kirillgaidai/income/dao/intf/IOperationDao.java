@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-public interface IOperationDao extends IGenericDao<OperationEntity> {
+public interface IOperationDao extends ISerialDao<OperationEntity> {
 
     List<OperationEntity> getEntityList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay);
 

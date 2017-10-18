@@ -17,28 +17,17 @@ import java.util.Map;
 import java.util.Set;
 
 @Repository
-public class BalanceDao implements IBalanceDao {
-
-    final private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    final private RowMapper<BalanceEntity> balanceEntityRowMapper;
+public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao {
 
     @Autowired
     public BalanceDao(
             NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-            RowMapper<BalanceEntity> balanceEntityRowMapper) {
-        super();
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.balanceEntityRowMapper = balanceEntityRowMapper;
+            RowMapper<BalanceEntity> rowMapper) {
+        super(namedParameterJdbcTemplate, rowMapper);
     }
 
     @Override
-    public List<BalanceEntity> getEntityList() {
-        String sql = "SELECT account_id, day, amount, manual FROM balances ORDER BY account_id, day DESC";
-        return namedParameterJdbcTemplate.query(sql, Collections.emptyMap(), balanceEntityRowMapper);
-    }
-
-    @Override
-    public List<BalanceEntity> getEntityList(Set<Integer> accountIds, LocalDate lastDay) {
+    public List<BalanceEntity> getList(Set<Integer> accountIds, LocalDate lastDay) {
         if (accountIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -50,11 +39,11 @@ public class BalanceDao implements IBalanceDao {
         Map<String, Object> params = new HashMap<>();
         params.put("account_ids", accountIds);
         params.put("last_day", Date.valueOf(lastDay));
-        return namedParameterJdbcTemplate.query(sql, params, balanceEntityRowMapper);
+        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
     }
 
     @Override
-    public List<BalanceEntity> getEntityList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
+    public List<BalanceEntity> getList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
         if (accountIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -66,18 +55,18 @@ public class BalanceDao implements IBalanceDao {
         params.put("account_ids", accountIds);
         params.put("first_day", Date.valueOf(firstDay));
         params.put("last_day", Date.valueOf(lastDay));
-        return namedParameterJdbcTemplate.query(sql, params, balanceEntityRowMapper);
+        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
     }
 
     @Override
-    public BalanceEntity getEntity(Integer accountId, LocalDate day) {
+    public BalanceEntity get(Integer accountId, LocalDate day) {
         String sql = "SELECT account_id, day, amount, MANUAL FROM balances " +
                 "WHERE (account_id = :account_id) AND (day = :day)";
         Map<String, Object> params = new HashMap<>();
         params.put("account_id", accountId);
         params.put("day", Date.valueOf(day));
         try {
-            return namedParameterJdbcTemplate.queryForObject(sql, params, balanceEntityRowMapper);
+            return namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -91,7 +80,7 @@ public class BalanceDao implements IBalanceDao {
         params.put("account_id", accountId);
         params.put("day", Date.valueOf(day));
         try {
-            return namedParameterJdbcTemplate.queryForObject(sql, params, balanceEntityRowMapper);
+            return namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -105,43 +94,51 @@ public class BalanceDao implements IBalanceDao {
         params.put("account_id", accountId);
         params.put("day", Date.valueOf(day));
         try {
-            return namedParameterJdbcTemplate.queryForObject(sql, params, balanceEntityRowMapper);
+            return namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
     @Override
-    public int insertEntity(BalanceEntity entity) {
-        String sql = "INSERT INTO balances(account_id, day, amount, manual) " +
-                "VALUES(:account_id, :day, :amount, :manual)";
-        Map<String, Object> params = new HashMap<>();
-        params.put("account_id", entity.getAccountId());
-        params.put("day", Date.valueOf(entity.getDay()));
-        params.put("amount", entity.getAmount());
-        params.put("manual", entity.getManual());
-        return namedParameterJdbcTemplate.update(sql, params);
-    }
-
-    @Override
-    public int updateEntity(BalanceEntity entity) {
-        String sql = "UPDATE balances SET amount = :amount, manual = :manual " +
-                "WHERE (account_id = :account_id) AND (day = :day)";
-        Map<String, Object> params = new HashMap<>();
-        params.put("account_id", entity.getAccountId());
-        params.put("day", Date.valueOf(entity.getDay()));
-        params.put("amount", entity.getAmount());
-        params.put("manual", entity.getManual());
-        return namedParameterJdbcTemplate.update(sql, params);
-    }
-
-    @Override
-    public int deleteEntity(Integer accountId, LocalDate day) {
+    public int delete(Integer accountId, LocalDate day) {
         String sql = "DELETE FROM balances WHERE (account_id = :account_id) AND (day = :day)";
         Map<String, Object> params = new HashMap<>();
         params.put("account_id", accountId);
         params.put("day", Date.valueOf(day));
         return namedParameterJdbcTemplate.update(sql, params);
+    }
+
+    @Override
+    protected String getGetListSql() {
+        return "SELECT account_id, day, amount, manual FROM balances ORDER BY account_id, day DESC";
+    }
+
+    @Override
+    protected String getInsertSql() {
+        return "INSERT INTO balances(account_id, day, amount, manual) " +
+                "VALUES(:account_id, :day, :amount, :manual)";
+    }
+
+    @Override
+    protected Map<String, Object> getInsertParamsMap(BalanceEntity entity) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("account_id", entity.getAccountId());
+        params.put("day", Date.valueOf(entity.getDay()));
+        params.put("amount", entity.getAmount());
+        params.put("manual", entity.getManual());
+        return params;
+    }
+
+    @Override
+    protected String getUpdateSql() {
+        return "UPDATE balances SET amount = :amount, manual = :manual " +
+                "WHERE (account_id = :account_id) AND (day = :day)";
+    }
+
+    @Override
+    protected Map<String, Object> getUpdateParamsMap(BalanceEntity entity) {
+        return getInsertParamsMap(entity);
     }
 
 }

@@ -30,12 +30,12 @@ public class CurrencyService implements ICurrencyService {
 
     @Override
     public List<CurrencyDto> getList() {
-        return currencyDao.getEntityList().stream().map(currencyConverter::convertToDto).collect(Collectors.toList());
+        return currencyDao.getList().stream().map(currencyConverter::convertToDto).collect(Collectors.toList());
     }
 
     @Override
     public List<CurrencyDto> getList(Set<Integer> ids) {
-        return currencyDao.getEntityList(ids).stream().map(currencyConverter::convertToDto)
+        return currencyDao.getList(ids).stream().map(currencyConverter::convertToDto)
                 .collect(Collectors.toList());
     }
 
@@ -44,7 +44,7 @@ public class CurrencyService implements ICurrencyService {
         if (id == null) {
             throw new IncomeServiceCurrencyNotFoundException();
         }
-        CurrencyEntity currencyEntity = currencyDao.getEntity(id);
+        CurrencyEntity currencyEntity = currencyDao.get(id);
         if (currencyEntity == null) {
             throw new IncomeServiceCurrencyNotFoundException(id);
         }
@@ -58,11 +58,11 @@ public class CurrencyService implements ICurrencyService {
         }
         CurrencyEntity currencyEntity = currencyConverter.convertToEntity(currencyDto);
         if (currencyEntity.getId() == null) {
-            currencyDao.insertEntity(currencyEntity);
+            currencyDao.insert(currencyEntity);
             currencyDto.setId(currencyEntity.getId());
             return null;
         }
-        int affectedRows = currencyDao.updateEntity(currencyEntity);
+        int affectedRows = currencyDao.update(currencyEntity);
         if (affectedRows != 1) {
             throw new IncomeServiceCurrencyNotFoundException(currencyDto.getId());
         }
@@ -74,7 +74,7 @@ public class CurrencyService implements ICurrencyService {
         if (id == null) {
             throw new IncomeServiceCurrencyNotFoundException();
         }
-        int affectedRows = currencyDao.deleteEntity(id);
+        int affectedRows = currencyDao.delete(id);
         if (affectedRows != 1) {
             throw new IncomeServiceCurrencyNotFoundException(id);
         }

@@ -43,7 +43,7 @@ public class CurrencyServiceTest {
                 new CurrencyDto(3, "03", "category3", 4)
         );
 
-        doReturn(currencyEntityList).when(currencyDao).getEntityList();
+        doReturn(currencyEntityList).when(currencyDao).getList();
         for (int index = 0; index < currencyEntityList.size(); index++) {
             doReturn(expected.get(index)).when(currencyConverter).convertToDto(currencyEntityList.get(index));
         }
@@ -51,7 +51,7 @@ public class CurrencyServiceTest {
         List<CurrencyDto> actual = currencyService.getList();
 
         assertCurrencyDtoListEquals(expected, actual);
-        verify(currencyDao).getEntityList();
+        verify(currencyDao).getList();
         for (CurrencyEntity currencyEntity : currencyEntityList) {
             verify(currencyConverter).convertToDto(currencyEntity);
         }
@@ -62,10 +62,10 @@ public class CurrencyServiceTest {
     public void testGetDtoList_AllEmpty() throws Exception {
         List<CurrencyEntity> currencyEntityList = Collections.emptyList();
         List<CurrencyDto> expected = Collections.emptyList();
-        doReturn(currencyEntityList).when(currencyDao).getEntityList();
+        doReturn(currencyEntityList).when(currencyDao).getList();
         List<CurrencyDto> actual = currencyService.getList();
         assertCurrencyDtoListEquals(expected, actual);
-        verify(currencyDao).getEntityList();
+        verify(currencyDao).getList();
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 
@@ -81,7 +81,7 @@ public class CurrencyServiceTest {
                 new CurrencyDto(2, "02", "category2", 2)
         );
 
-        doReturn(currencyEntityList).when(currencyDao).getEntityList(categoryIds);
+        doReturn(currencyEntityList).when(currencyDao).getList(categoryIds);
         for (int index = 0; index < currencyEntityList.size(); index++) {
             doReturn(expected.get(index)).when(currencyConverter).convertToDto(currencyEntityList.get(index));
         }
@@ -89,7 +89,7 @@ public class CurrencyServiceTest {
         List<CurrencyDto> actual = currencyService.getList(categoryIds);
 
         assertCurrencyDtoListEquals(expected, actual);
-        verify(currencyDao).getEntityList(categoryIds);
+        verify(currencyDao).getList(categoryIds);
         for (CurrencyEntity currencyEntity : currencyEntityList) {
             verify(currencyConverter).convertToDto(currencyEntity);
         }
@@ -101,10 +101,10 @@ public class CurrencyServiceTest {
         Set<Integer> categoryIds = Sets.newSet(1, 2);
         List<CurrencyEntity> currencyEntityList = Collections.emptyList();
         List<CurrencyDto> expected = Collections.emptyList();
-        doReturn(currencyEntityList).when(currencyDao).getEntityList(categoryIds);
+        doReturn(currencyEntityList).when(currencyDao).getList(categoryIds);
         List<CurrencyDto> actual = currencyService.getList(categoryIds);
         assertCurrencyDtoListEquals(expected, actual);
-        verify(currencyDao).getEntityList(categoryIds);
+        verify(currencyDao).getList(categoryIds);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 
@@ -125,7 +125,7 @@ public class CurrencyServiceTest {
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 1 not found", e.getMessage());
         }
-        verify(currencyDao).getEntity(1);
+        verify(currencyDao).get(1);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 
@@ -134,14 +134,14 @@ public class CurrencyServiceTest {
         CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
         CurrencyDto expected = new CurrencyDto(1, "01", "category1", 2);
 
-        doReturn(currencyEntity).when(currencyDao).getEntity(1);
+        doReturn(currencyEntity).when(currencyDao).get(1);
         doReturn(expected).when(currencyConverter).convertToDto(currencyEntity);
 
         CurrencyDto actual = currencyService.get(1);
 
         assertCurrencyDtoEquals(expected, actual);
 
-        verify(currencyDao).getEntity(1);
+        verify(currencyDao).get(1);
         verify(currencyConverter).convertToDto(currencyEntity);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
@@ -162,12 +162,12 @@ public class CurrencyServiceTest {
         CurrencyEntity currencyEntity = new CurrencyEntity(null, "01", "category1", 2);
 
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
-        doReturn(1).when(currencyDao).insertEntity(currencyEntity);
+        doReturn(1).when(currencyDao).insert(currencyEntity);
 
         currencyService.save(categoryDto);
 
         verify(currencyConverter).convertToEntity(categoryDto);
-        verify(currencyDao).insertEntity(currencyEntity);
+        verify(currencyDao).insert(currencyEntity);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 
@@ -177,7 +177,7 @@ public class CurrencyServiceTest {
         CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
 
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
-        doReturn(0).when(currencyDao).updateEntity(currencyEntity);
+        doReturn(0).when(currencyDao).update(currencyEntity);
 
         try {
             currencyService.save(categoryDto);
@@ -186,7 +186,7 @@ public class CurrencyServiceTest {
         }
 
         verify(currencyConverter).convertToEntity(categoryDto);
-        verify(currencyDao).updateEntity(currencyEntity);
+        verify(currencyDao).update(currencyEntity);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 
@@ -196,12 +196,12 @@ public class CurrencyServiceTest {
         CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
 
         doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
-        doReturn(1).when(currencyDao).updateEntity(currencyEntity);
+        doReturn(1).when(currencyDao).update(currencyEntity);
 
         currencyService.save(categoryDto);
 
         verify(currencyConverter).convertToEntity(categoryDto);
-        verify(currencyDao).updateEntity(currencyEntity);
+        verify(currencyDao).update(currencyEntity);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 
@@ -217,21 +217,21 @@ public class CurrencyServiceTest {
 
     @Test
     public void testDeleteDto_NotFound() throws Exception {
-        doReturn(0).when(currencyDao).deleteEntity(1);
+        doReturn(0).when(currencyDao).delete(1);
         try {
             currencyService.delete(1);
         } catch (IncomeServiceCurrencyNotFoundException e) {
             assertEquals("Currency with id 1 not found", e.getMessage());
         }
-        verify(currencyDao).deleteEntity(1);
+        verify(currencyDao).delete(1);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 
     @Test
     public void testDeleteDto_Ok() throws Exception {
-        doReturn(1).when(currencyDao).deleteEntity(1);
+        doReturn(1).when(currencyDao).delete(1);
         currencyService.delete(1);
-        verify(currencyDao).deleteEntity(1);
+        verify(currencyDao).delete(1);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 

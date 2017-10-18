@@ -39,12 +39,12 @@ public class BalanceService implements IBalanceService {
             throw new IncomeServiceBalanceNotFoundException();
         }
 
-        AccountEntity accountEntity = accountDao.getEntity(accountId);
+        AccountEntity accountEntity = accountDao.get(accountId);
         if (accountEntity == null) {
             throw new IncomeServiceAccountNotFoundException(accountId);
         }
 
-        BalanceEntity balanceEntity = balanceDao.getEntity(accountId, day);
+        BalanceEntity balanceEntity = balanceDao.get(accountId, day);
         if (balanceEntity != null) {
             BalanceDto dto = balanceConverter.convertToDto(balanceEntity);
             dto.setAccountTitle(accountEntity.getTitle());
@@ -74,15 +74,15 @@ public class BalanceService implements IBalanceService {
             throw new IncomeServiceAccountNotFoundException();
         }
 
-        AccountEntity accountEntity = accountDao.getEntity(dto.getAccountId());
+        AccountEntity accountEntity = accountDao.get(dto.getAccountId());
         if (accountEntity == null) {
             throw new IncomeServiceAccountNotFoundException(dto.getAccountId());
         }
 
         BalanceEntity entity = balanceConverter.convertToEntity(dto);
-        int affectedRows = balanceDao.updateEntity(entity);
+        int affectedRows = balanceDao.update(entity);
         if (affectedRows == 0) {
-            balanceDao.insertEntity(entity);
+            balanceDao.insert(entity);
         }
     }
 

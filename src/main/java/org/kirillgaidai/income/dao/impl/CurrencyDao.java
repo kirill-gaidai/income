@@ -1,9 +1,7 @@
 package org.kirillgaidai.income.dao.impl;
 
-import org.apache.commons.logging.LogFactory;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
-import org.kirillgaidai.income.dao.util.DaoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,80 +9,58 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Repository
-public class CurrencyDao implements ICurrencyDao {
+public class CurrencyDao extends SerialDao<CurrencyEntity> implements ICurrencyDao {
 
     final private static Logger LOGGER = LoggerFactory.getLogger(CurrencyDao.class);
-
-    final private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    final private DaoHelper daoHelper;
-    final private RowMapper<CurrencyEntity> currencyEntityRowMapper;
 
     @Autowired
     public CurrencyDao(
             NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-            DaoHelper daoHelper,
-            RowMapper<CurrencyEntity> currencyEntityRowMapper) {
-        super();
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.daoHelper = daoHelper;
-        this.currencyEntityRowMapper = currencyEntityRowMapper;
+            RowMapper<CurrencyEntity> rowMapper) {
+        super(namedParameterJdbcTemplate, rowMapper);
     }
 
     @Override
-    public List<CurrencyEntity> getEntityList() {
-        String sql = "SELECT id, code, title, accuracy FROM currencies ORDER BY title";
-        return namedParameterJdbcTemplate.query(sql, currencyEntityRowMapper);
+    protected String getGetListSql() {
+        return "SELECT id, code, title, accuracy FROM currencies ORDER BY title";
     }
 
     @Override
-    public List<CurrencyEntity> getEntityList(Set<Integer> ids) {
-        String sql = "SELECT id, code, title, accuracy FROM currencies WHERE id IN (:ids) ORDER BY title";
-        return daoHelper.getEntityList(sql, ids, currencyEntityRowMapper);
+    protected String getUpdateSql() {
+        return "UPDATE currencies SET code = :code, title = :title, accuracy = :accuracy WHERE id = :id";
     }
 
     @Override
-    public CurrencyEntity getEntity(Integer id) {
-        String sql = "SELECT id, code, title, accuracy FROM currencies WHERE id = :id";
-        return daoHelper.getEntity(sql, id, currencyEntityRowMapper);
+    protected String getGetListByIdsSql() {
+        return "SELECT id, code, title, accuracy FROM currencies WHERE id IN (:ids) ORDER BY title";
     }
 
     @Override
-    public int insertEntity(CurrencyEntity entity) {
-        String sql = "INSERT INTO currencies(code, title, accuracy) VALUES(:code, :title, :accuracy)";
+    protected String getGetByIdSql() {
+        return "SELECT id, code, title, accuracy FROM currencies WHERE id = :id";
+    }
+
+    @Override
+    protected String getInsertSql() {
+        return "INSERT INTO currencies(code, title, accuracy) VALUES(:code, :title, :accuracy)";
+    }
+
+    @Override
+    protected Map<String, Object> getInsertParamsMap(CurrencyEntity entity) {
         Map<String, Object> params = new HashMap<>();
         params.put("code", entity.getCode());
         params.put("title", entity.getTitle());
         params.put("accuracy", entity.getAccuracy());
-        Integer id = daoHelper.insertEntity(sql, params);
-        entity.setId(id);
-        return 1;
+        return params;
     }
 
     @Override
-    public int updateEntity(CurrencyEntity entity) {
-        LOGGER.debug("Updating currency with id={}. Setting code={}, title={}, scale={}",
-                entity.getId(), entity.getCode(), entity.getTitle(), entity.getAccuracy());
-        String sql = "UPDATE currencies SET code = :code, title = :title, accuracy = :accuracy WHERE id = :id";
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", entity.getId());
-        params.put("code", entity.getCode());
-        params.put("title", entity.getTitle());
-        params.put("accuracy", entity.getAccuracy());
-        return namedParameterJdbcTemplate.update(sql, params);
-    }
-
-    @Override
-    public int deleteEntity(Integer id) {
-        LOGGER.debug("Deleting currency with id={}", id);
-        String sql = "DELETE FROM currencies WHERE id = :id";
-        return namedParameterJdbcTemplate.update(sql, Collections.singletonMap("id", id));
+    protected String getDeleteByIdSql() {
+        return "DELETE FROM currencies WHERE id = :id";
     }
 
 }
