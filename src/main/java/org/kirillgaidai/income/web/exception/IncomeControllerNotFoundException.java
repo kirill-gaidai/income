@@ -19,8 +19,7 @@ public class IncomeControllerNotFoundException extends IncomeControllerException
     }
 
     public IncomeControllerNotFoundException(
-            final String message, final Throwable cause, final boolean enableSuppression,
-            final boolean writableStackTrace) {
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

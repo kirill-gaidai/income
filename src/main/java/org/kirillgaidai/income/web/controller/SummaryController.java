@@ -19,7 +19,7 @@ public class SummaryController {
 
     @Autowired
     public SummaryController(
-            final ISummaryService summaryService) {
+            ISummaryService summaryService) {
         this.summaryService = summaryService;
     }
 

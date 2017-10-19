@@ -8,11 +8,11 @@ public class IncomeServiceBalanceNotFoundException extends IncomeServiceNotFound
         super("Balance not found");
     }
 
-    public IncomeServiceBalanceNotFoundException(final String accountTitle, final LocalDate day) {
+    public IncomeServiceBalanceNotFoundException(String accountTitle, LocalDate day) {
         super(String.format("Balance for account \"%s\" on %s not found", accountTitle, day.toString()));
     }
 
-    public IncomeServiceBalanceNotFoundException(final Integer accountId, final LocalDate day) {
+    public IncomeServiceBalanceNotFoundException(Integer accountId, LocalDate day) {
         super(String.format("Balance for account with id %d on %s not found", accountId, day.toString()));
     }
 

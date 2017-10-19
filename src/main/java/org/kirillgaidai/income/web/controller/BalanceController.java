@@ -22,7 +22,7 @@ public class BalanceController {
 
     @Autowired
     public BalanceController(
-            final IBalanceService balanceService) {
+            IBalanceService balanceService) {
         this.balanceService = balanceService;
     }
 

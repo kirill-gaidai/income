@@ -6,7 +6,7 @@ public class IncomeServiceCategoryNotFoundException extends IncomeServiceNotFoun
         super("Category not found");
     }
 
-    public IncomeServiceCategoryNotFoundException(final Integer id) {
+    public IncomeServiceCategoryNotFoundException(Integer id) {
         super(String.format("Category with id %d not found", id));
     }
 

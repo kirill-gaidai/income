@@ -17,7 +17,8 @@ public class HomeController {
     final private IAccountService accountService;
 
     @Autowired
-    public HomeController(final IAccountService accountService) {
+    public HomeController(
+            IAccountService accountService) {
         this.accountService = accountService;
     }
 

@@ -6,7 +6,7 @@ public class IncomeServiceCurrencyNotFoundException extends IncomeServiceNotFoun
         super("Currency not found");
     }
 
-    public IncomeServiceCurrencyNotFoundException(final Integer id) {
+    public IncomeServiceCurrencyNotFoundException(Integer id) {
         super(String.format("Currency with id %d not found", id));
     }
 
