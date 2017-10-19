@@ -33,7 +33,7 @@ public class BalanceController {
             @RequestParam("return_account_id") Set<Integer> returnAccountIds,
             @RequestParam("return_first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnFirstDay,
             @RequestParam("return_last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnLastDay) {
-        BalanceDto balanceDto = balanceService.getDto(accountId, day);
+        BalanceDto balanceDto = balanceService.get(accountId, day);
         ModelAndView modelAndView = new ModelAndView("balance/form");
         modelAndView.addObject("balanceDto", balanceDto);
         modelAndView.addObject("returnAccountIds", returnAccountIds);
@@ -48,7 +48,7 @@ public class BalanceController {
             @RequestParam("return_account_id") Set<Integer> returnAccountIds,
             @RequestParam("return_first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnFirstDay,
             @RequestParam("return_last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnLastDay) {
-        balanceService.saveDto(balanceDto);
+        balanceService.save(balanceDto);
         StringBuilder result = new StringBuilder("redirect:/summary")
                 .append("?first_day=").append(returnFirstDay)
                 .append("&last_day=").append(returnLastDay);

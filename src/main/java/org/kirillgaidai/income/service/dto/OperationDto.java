@@ -6,7 +6,7 @@ import org.springframework.format.annotation.NumberFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class OperationDto implements IGenericDto {
+public class OperationDto implements ISerialDto {
 
     private Integer id;
     private Integer accountId;
@@ -35,10 +35,12 @@ public class OperationDto implements IGenericDto {
         this.note = note;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

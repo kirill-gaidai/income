@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class BalanceService implements IBalanceService {
@@ -34,7 +35,12 @@ public class BalanceService implements IBalanceService {
     }
 
     @Override
-    public BalanceDto getDto(Integer accountId, LocalDate day) {
+    public List<BalanceDto> getList() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BalanceDto get(Integer accountId, LocalDate day) {
         if (accountId == null || day == null) {
             throw new IncomeServiceBalanceNotFoundException();
         }
@@ -65,7 +71,7 @@ public class BalanceService implements IBalanceService {
     }
 
     @Override
-    public void saveDto(BalanceDto dto) {
+    public BalanceDto save(BalanceDto dto) {
         if (dto == null) {
             throw new IncomeServiceBalanceNotFoundException();
         }
@@ -84,6 +90,7 @@ public class BalanceService implements IBalanceService {
         if (affectedRows == 0) {
             balanceDao.insert(entity);
         }
+        return null;
     }
 
 }

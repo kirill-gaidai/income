@@ -9,12 +9,6 @@ public interface IGenericService<T extends IGenericDto> {
 
     List<T> getList();
 
-    List<T> getList(Set<Integer> ids);
-
-    T get(Integer id);
-
     T save(T operationDto);
-
-    void delete(Integer id);
 
 }

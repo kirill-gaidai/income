@@ -1,6 +1,6 @@
 package org.kirillgaidai.income.service.dto;
 
-public class CurrencyDto implements IGenericDto {
+public class CurrencyDto implements ISerialDto {
 
     private Integer id;
     private String code;
@@ -17,10 +17,12 @@ public class CurrencyDto implements IGenericDto {
         this.accuracy = accuracy;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

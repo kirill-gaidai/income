@@ -34,7 +34,7 @@ public class BalanceServiceTest {
     @Test
     public void testGetDto_Null() throws Exception {
         try {
-            balanceService.getDto(null, null);
+            balanceService.get(null, null);
         } catch (IncomeServiceBalanceNotFoundException e) {
             assertEquals("Balance not found", e.getMessage());
         }
@@ -46,7 +46,7 @@ public class BalanceServiceTest {
         Integer accountId = 1;
         LocalDate thisDay = LocalDate.of(2017, 4, 12);
         try {
-            balanceService.getDto(accountId, thisDay);
+            balanceService.get(accountId, thisDay);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals(String.format("Account with id %d not found", accountId), e.getMessage());
         }
@@ -63,7 +63,7 @@ public class BalanceServiceTest {
         doReturn(accountEntity).when(accountDao).get(accountId);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, BigDecimal.ZERO, false);
-        BalanceDto actual = balanceService.getDto(accountId, thisDay);
+        BalanceDto actual = balanceService.get(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
@@ -86,7 +86,7 @@ public class BalanceServiceTest {
         doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, amount, false);
-        BalanceDto actual = balanceService.getDto(accountId, thisDay);
+        BalanceDto actual = balanceService.get(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
@@ -108,7 +108,7 @@ public class BalanceServiceTest {
         doReturn(nextBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, amount, false);
-        BalanceDto actual = balanceService.getDto(accountId, thisDay);
+        BalanceDto actual = balanceService.get(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
@@ -132,7 +132,7 @@ public class BalanceServiceTest {
         doReturn(balanceDto).when(balanceConverter).convertToDto(balanceEntity);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, amount, true);
-        BalanceDto actual = balanceService.getDto(accountId, thisDay);
+        BalanceDto actual = balanceService.get(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
@@ -144,7 +144,7 @@ public class BalanceServiceTest {
     @Test
     public void testSaveDto_Null() throws Exception {
         try {
-            balanceService.saveDto(null);
+            balanceService.save(null);
         } catch (IncomeServiceBalanceNotFoundException e) {
             assertEquals("Balance not found", e.getMessage());
         }
@@ -157,7 +157,7 @@ public class BalanceServiceTest {
         BigDecimal amount = new BigDecimal("12.3");
         BalanceDto balanceDto = new BalanceDto(null, null, day, amount, false);
         try {
-            balanceService.saveDto(balanceDto);
+            balanceService.save(balanceDto);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account not found", e.getMessage());
         }
@@ -170,7 +170,7 @@ public class BalanceServiceTest {
         BigDecimal amount = new BigDecimal("12.3");
         BalanceDto balanceDto = new BalanceDto(1, null, day, amount, false);
         try {
-            balanceService.saveDto(balanceDto);
+            balanceService.save(balanceDto);
         } catch (IncomeServiceAccountNotFoundException e) {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
@@ -190,7 +190,7 @@ public class BalanceServiceTest {
         doReturn(balanceEntity).when(balanceConverter).convertToEntity(balanceDto);
         doReturn(1).when(balanceDao).update(balanceEntity);
 
-        balanceService.saveDto(balanceDto);
+        balanceService.save(balanceDto);
 
         verify(accountDao).get(1);
         verify(balanceDao).update(balanceEntity);
@@ -210,7 +210,7 @@ public class BalanceServiceTest {
         doReturn(balanceEntity).when(balanceConverter).convertToEntity(balanceDto);
         doReturn(0).when(balanceDao).update(balanceEntity);
 
-        balanceService.saveDto(balanceDto);
+        balanceService.save(balanceDto);
 
         verify(accountDao).get(1);
         verify(balanceDao).update(balanceEntity);

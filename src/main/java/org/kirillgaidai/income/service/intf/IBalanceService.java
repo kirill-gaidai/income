@@ -4,10 +4,8 @@ import org.kirillgaidai.income.service.dto.BalanceDto;
 
 import java.time.LocalDate;
 
-public interface IBalanceService {
+public interface IBalanceService extends IGenericService<BalanceDto> {
 
-    BalanceDto getDto(Integer accountId, LocalDate day);
-
-    void saveDto(BalanceDto dto);
+    BalanceDto get(Integer accountId, LocalDate day);
 
 }

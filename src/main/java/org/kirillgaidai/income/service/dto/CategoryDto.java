@@ -1,6 +1,6 @@
 package org.kirillgaidai.income.service.dto;
 
-public class CategoryDto implements IGenericDto {
+public class CategoryDto implements ISerialDto {
 
     private Integer id;
     private String sort;
@@ -15,10 +15,12 @@ public class CategoryDto implements IGenericDto {
         this.title = title;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

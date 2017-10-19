@@ -55,7 +55,7 @@ public class BalanceRest {
             @RequestParam("day") LocalDate day,
             @RequestParam("accountId") Integer accountId) {
         LOGGER.debug("Getting balance. day=\"{}\", accountId=\"{}\"", day, accountId);
-        return mapper.toRestDto(service.getDto(accountId, day));
+        return mapper.toRestDto(service.get(accountId, day));
     }
 
     @ResponseStatus(HttpStatus.OK)
