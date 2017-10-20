@@ -1,14 +1,14 @@
 package org.kirillgaidai.income.rest.dto.operation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.kirillgaidai.income.rest.dto.IGenericUpdateRestDto;
+import org.kirillgaidai.income.rest.dto.ISerialUpdateRestDto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class OperationUpdateRestDto extends OperationCreateRestDto implements IGenericUpdateRestDto {
+public class OperationUpdateRestDto extends OperationCreateRestDto implements ISerialUpdateRestDto {
 
     @JsonProperty
     @NotNull

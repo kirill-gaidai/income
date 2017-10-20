@@ -1,7 +1,6 @@
 package org.kirillgaidai.income.rest.dto.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.kirillgaidai.income.rest.dto.IGenericUpdateRestDto;
 import org.kirillgaidai.income.rest.dto.ISerialUpdateRestDto;
 
 import javax.validation.constraints.Min;

@@ -1,8 +1,8 @@
 package org.kirillgaidai.income.rest.dto.category;
 
-import org.kirillgaidai.income.rest.dto.IGenericGetRestDto;
+import org.kirillgaidai.income.rest.dto.ISerialGetRestDto;
 
-public class CategoryGetRestDto extends CategoryUpdateRestDto implements IGenericGetRestDto {
+public class CategoryGetRestDto extends CategoryUpdateRestDto implements ISerialGetRestDto {
 
     public CategoryGetRestDto() {
     }

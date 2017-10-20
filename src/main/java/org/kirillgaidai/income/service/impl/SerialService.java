@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public abstract class SerialService<T extends ISerialDto, E extends ISerialEntity>
         extends GenericService<T, E> implements ISerialService<T> {
 
-    public SerialService(IGenericConverter<E, T> converter, IGenericDao<E> dao) {
-        super(converter, dao);
+    public SerialService(IGenericDao<E> dao, IGenericConverter<E, T> converter) {
+        super(dao, converter);
     }
 
     protected ISerialDao<E> getSerialDao() {
@@ -44,7 +44,8 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
-        return getSerialDao().getList(ids).stream().map(converter::convertToDto).collect(Collectors.toList());
+        return populateAdditionalFields(getSerialDao().getList(ids).stream().map(converter::convertToDto)
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -56,7 +57,7 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
         if (entity == null) {
             throwNotFoundException(id);
         }
-        return converter.convertToDto(entity);
+        return populateAdditionalFields(converter.convertToDto(entity));
     }
 
     @Override
@@ -71,9 +72,5 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
     }
 
     protected abstract void throwNotFoundException(Integer id);
-
-    protected T populateAdditionalFields(T dto) {
-        return dto;
-    };
 
 }

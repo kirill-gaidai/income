@@ -28,13 +28,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class OperationService implements IOperationService {
+public class OperationService extends SerialService<OperationDto, OperationEntity> implements IOperationService {
 
     final private IAccountDao accountDao;
-    final private IOperationDao operationDao;
     final private IBalanceDao balanceDao;
     final private ICategoryDao categoryDao;
-    final private IGenericConverter<OperationEntity, OperationDto> operationConverter;
 
     @Autowired
     public OperationService(
@@ -42,28 +40,15 @@ public class OperationService implements IOperationService {
             IOperationDao operationDao,
             IBalanceDao balanceDao,
             ICategoryDao categoryDao,
-            IGenericConverter<OperationEntity, OperationDto> operationConverter) {
-        super();
+            IGenericConverter<OperationEntity, OperationDto> converter) {
+        super(operationDao, converter);
         this.accountDao = accountDao;
-        this.operationDao = operationDao;
         this.balanceDao = balanceDao;
         this.categoryDao = categoryDao;
-        this.operationConverter = operationConverter;
     }
 
-    @Override
-    public List<OperationDto> getList() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<OperationDto> getList(Set<Integer> ids) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public OperationDto get(Integer id) {
-        throw new UnsupportedOperationException();
+    private IOperationDao getOperationDao() {
+        return (IOperationDao) dao;
     }
 
     /**
@@ -90,14 +75,14 @@ public class OperationService implements IOperationService {
         }
 
         BigDecimal amount = operationDto.getAmount();
-        OperationEntity operationEntity = operationConverter.convertToEntity(operationDto);
+        OperationEntity operationEntity = converter.convertToEntity(operationDto);
 
         // if balance before this day exists, but no balance for this day - calculating balance for this day
         if (thisBalanceEntity == null) {
             BalanceEntity newBalanceEntity =
                     new BalanceEntity(accountId, thisDay, prevBalanceEntity.getAmount().subtract(amount), false);
             balanceDao.insert(newBalanceEntity);
-            operationDao.insert(operationEntity);
+            dao.insert(operationEntity);
             return null;
         }
 
@@ -106,13 +91,13 @@ public class OperationService implements IOperationService {
             BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay.minusDays(1L),
                     thisBalanceEntity.getAmount().add(amount), false);
             balanceDao.insert(newBalanceEntity);
-            operationDao.insert(operationEntity);
+            dao.insert(operationEntity);
             return null;
         }
 
         // if both balances exist, but fixed - no balance recalculation
         if (prevBalanceEntity.getManual() && thisBalanceEntity.getManual()) {
-            operationDao.insert(operationEntity);
+            dao.insert(operationEntity);
             return null;
         }
 
@@ -128,7 +113,7 @@ public class OperationService implements IOperationService {
             if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
                 balanceDao.update(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
             }
-            operationDao.insert(operationEntity);
+            dao.insert(operationEntity);
             return null;
         }
 
@@ -139,7 +124,7 @@ public class OperationService implements IOperationService {
             if (balanceDao.getEntityBefore(accountId, prevDay) == null) {
                 balanceDao.update(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
             }
-            operationDao.insert(operationEntity);
+            dao.insert(operationEntity);
             return null;
         }
 
@@ -148,19 +133,19 @@ public class OperationService implements IOperationService {
         // If no balance after this day then then recalculating balance for this day (subtracting)
         if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
             balanceDao.update(new BalanceEntity(accountId, thisDay, thisAmount.subtract(amount), false));
-            operationDao.insert(operationEntity);
+            dao.insert(operationEntity);
             return null;
         }
 
         // If no balance before previous day then recalculating balance for previous day (adding)
         if (balanceDao.getEntityBefore(accountId, prevDay) == null) {
             balanceDao.update(new BalanceEntity(accountId, prevDay, prevAmount.add(amount), false));
-            operationDao.insert(operationEntity);
+            dao.insert(operationEntity);
             return null;
         }
 
         // Balance recalculation in the middle is forbidden
-        operationDao.insert(operationEntity);
+        dao.insert(operationEntity);
         return null;
     }
 
@@ -172,7 +157,7 @@ public class OperationService implements IOperationService {
     @Override
     public void delete(Integer id) {
         // Error in case operation with specified id is not found
-        OperationEntity operationEntity = operationDao.get(id);
+        OperationEntity operationEntity = getSerialDao().get(id);
         if (operationEntity == null) {
             throw new IncomeServiceOperationNotFoundException(id);
         }
@@ -196,7 +181,7 @@ public class OperationService implements IOperationService {
 
         // If this and previous balances fixed, then simply deleting operation
         if (thisBalanceEntity.getManual() && prevBalanceEntity.getManual()) {
-            operationDao.delete(id);
+            getSerialDao().delete(id);
             return;
         }
 
@@ -210,7 +195,7 @@ public class OperationService implements IOperationService {
             if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
                 balanceDao.update(new BalanceEntity(accountId, thisDay, thisBalanceAmount.add(amount), false));
             }
-            operationDao.delete(id);
+            getSerialDao().delete(id);
             return;
         }
 
@@ -220,7 +205,7 @@ public class OperationService implements IOperationService {
                 balanceDao.update(
                         new BalanceEntity(accountId, prevDay, prevBalanceAmount.subtract(amount), false));
             }
-            operationDao.delete(id);
+            getSerialDao().delete(id);
             return;
         }
 
@@ -229,7 +214,7 @@ public class OperationService implements IOperationService {
         // If no balances after this, then updating this balance
         if (balanceDao.getEntityAfter(accountId, thisDay) == null) {
             balanceDao.update(new BalanceEntity(accountId, thisDay, thisBalanceAmount.add(amount), false));
-            operationDao.delete(id);
+            getSerialDao().delete(id);
             return;
         }
 
@@ -239,17 +224,17 @@ public class OperationService implements IOperationService {
         }
 
         // Otherwise, simply deleting operation
-        operationDao.delete(id);
+        getSerialDao().delete(id);
     }
 
     @Override
     public List<OperationDto> getDtoList(Set<Integer> accountIds, LocalDate day) {
-        return convertToDtoList(operationDao.getEntityList(accountIds, day));
+        return convertToDtoList(getOperationDao().getEntityList(accountIds, day));
     }
 
     @Override
     public List<OperationDto> getDtoList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
-        return convertToDtoList(operationDao.getEntityList(accountIds, day, categoryId));
+        return convertToDtoList(getOperationDao().getEntityList(accountIds, day, categoryId));
     }
 
     private List<OperationDto> convertToDtoList(List<OperationEntity> operationEntityList) {
@@ -257,7 +242,7 @@ public class OperationService implements IOperationService {
             return Collections.emptyList();
         }
 
-        List<OperationDto> operationDtoList = operationEntityList.stream().map(operationConverter::convertToDto)
+        List<OperationDto> operationDtoList = operationEntityList.stream().map(converter::convertToDto)
                 .collect(Collectors.toList());
 
         Set<Integer> accountIds = new HashSet<>();
@@ -315,6 +300,11 @@ public class OperationService implements IOperationService {
         }
 
         return result;
+    }
+
+    @Override
+    protected void throwNotFoundException(Integer id) {
+        throw new IncomeServiceOperationNotFoundException(id);
     }
 
 }

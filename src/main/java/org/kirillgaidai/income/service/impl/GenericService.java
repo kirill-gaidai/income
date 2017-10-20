@@ -11,17 +11,18 @@ import java.util.stream.Collectors;
 
 public abstract class GenericService<T extends IGenericDto, E extends IGenericEntity> implements IGenericService<T> {
 
-    final protected IGenericConverter<E, T> converter;
     final protected IGenericDao<E> dao;
+    final protected IGenericConverter<E, T> converter;
 
-    public GenericService(IGenericConverter<E, T> converter, IGenericDao<E> dao) {
-        this.converter = converter;
+    public GenericService(IGenericDao<E> dao, IGenericConverter<E, T> converter) {
         this.dao = dao;
+        this.converter = converter;
     }
 
     @Override
     public List<T> getList() {
-        return dao.getList().stream().map(converter::convertToDto).collect(Collectors.toList());
+        return populateAdditionalFields(dao.getList().stream().map(converter::convertToDto)
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -34,7 +35,15 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
         if (affectedRows != 1) {
             dao.insert(entity);
         }
-        return converter.convertToDto(entity);
+        return populateAdditionalFields(converter.convertToDto(entity));
+    }
+
+    protected List<T> populateAdditionalFields(List<T> dtoList) {
+        return dtoList;
+    }
+
+    protected T populateAdditionalFields(T dto) {
+        return dto;
     }
 
 }

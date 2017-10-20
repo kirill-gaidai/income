@@ -25,8 +25,8 @@ import java.util.Set;
 @RestController
 @RequestMapping("/rest/operation")
 public class OperationRest
-        extends GenericRest<OperationGetRestDto, OperationCreateRestDto, OperationUpdateRestDto, OperationDto>
-        implements IGenericRest<OperationGetRestDto, OperationCreateRestDto, OperationUpdateRestDto> {
+        extends SerialRest<OperationGetRestDto, OperationCreateRestDto, OperationUpdateRestDto, OperationDto>
+        implements ISerialRest<OperationGetRestDto, OperationCreateRestDto, OperationUpdateRestDto> {
 
     @Autowired
     public OperationRest(IGenericService<OperationDto> service, IGenericRestDtoMapper<OperationGetRestDto,

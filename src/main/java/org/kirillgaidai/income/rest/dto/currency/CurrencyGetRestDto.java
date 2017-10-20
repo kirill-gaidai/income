@@ -1,8 +1,8 @@
 package org.kirillgaidai.income.rest.dto.currency;
 
-import org.kirillgaidai.income.rest.dto.IGenericGetRestDto;
+import org.kirillgaidai.income.rest.dto.ISerialGetRestDto;
 
-public class CurrencyGetRestDto extends CurrencyUpdateRestDto implements IGenericGetRestDto {
+public class CurrencyGetRestDto extends CurrencyUpdateRestDto implements ISerialGetRestDto {
 
     public CurrencyGetRestDto() {
     }

@@ -12,108 +12,35 @@ import org.kirillgaidai.income.service.intf.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class AccountService implements IAccountService {
+public class AccountService extends SerialService<AccountDto, AccountEntity> implements IAccountService {
 
-    final private IAccountDao accountDao;
     final private ICurrencyDao currencyDao;
-    final private IGenericConverter<AccountEntity, AccountDto> accountConverter;
 
     @Autowired
     public AccountService(
             IAccountDao accountDao,
             ICurrencyDao currencyDao,
-            IGenericConverter<AccountEntity, AccountDto> accountConverter) {
-        this.accountDao = accountDao;
+            IGenericConverter<AccountEntity, AccountDto> converter) {
+        super(accountDao, converter);
         this.currencyDao = currencyDao;
-        this.accountConverter = accountConverter;
     }
 
     @Override
-    public List<AccountDto> getList() {
-        return convertToDtoList(accountDao.getList());
-    }
-
-    @Override
-    public List<AccountDto> getList(Set<Integer> ids) {
-        return convertToDtoList(accountDao.getList(ids));
-    }
-
-    @Override
-    public AccountDto get(Integer id) {
-        if (id == null) {
-            throw new IncomeServiceAccountNotFoundException();
+    protected List<AccountDto> populateAdditionalFields(List<AccountDto> dtoList) {
+        if (dtoList.isEmpty()) {
+            return dtoList;
         }
 
-        AccountEntity accountEntity = accountDao.get(id);
-        if (accountEntity == null) {
-            throw new IncomeServiceAccountNotFoundException(id);
-        }
-        if (accountEntity.getCurrencyId() == null) {
-            throw new IncomeServiceCurrencyNotFoundException();
-        }
-
-        CurrencyEntity currencyEntity = currencyDao.get(accountEntity.getCurrencyId());
-        if (currencyEntity == null) {
-            throw new IncomeServiceCurrencyNotFoundException(accountEntity.getCurrencyId());
-        }
-
-        AccountDto dto = accountConverter.convertToDto(accountEntity);
-        dto.setCurrencyCode(currencyEntity.getCode());
-        dto.setCurrencyTitle(currencyEntity.getTitle());
-        return dto;
-    }
-
-    @Override
-    public AccountDto save(AccountDto accountDto) {
-        if (accountDto == null) {
-            throw new IncomeServiceAccountNotFoundException();
-        }
-
-        AccountEntity accountEntity = accountConverter.convertToEntity(accountDto);
-        if (accountDto.getId() == null) {
-            accountDao.insert(accountEntity);
-            accountDto.setId(accountEntity.getId());
-            return null;
-        }
-
-        int affectedRows = accountDao.update(accountEntity);
-        if (affectedRows != 1) {
-            throw new IncomeServiceAccountNotFoundException(accountDto.getId());
-        }
-        return null;
-    }
-
-    @Override
-    public void delete(Integer id) {
-        if (id == null) {
-            throw new IncomeServiceAccountNotFoundException();
-        }
-
-        int affectedRows = accountDao.delete(id);
-        if (affectedRows != 1) {
-            throw new IncomeServiceAccountNotFoundException(id);
-        }
-    }
-
-    private List<AccountDto> convertToDtoList(List<AccountEntity> accountEntityList) {
-        if (accountEntityList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<AccountDto> accountDtoList = accountEntityList.stream().map(accountConverter::convertToDto)
-                .collect(Collectors.toList());
-        Set<Integer> currencyIds = accountEntityList.stream().map(AccountEntity::getCurrencyId)
-                .collect(Collectors.toSet());
+        Set<Integer> currencyIds = dtoList.stream().map(AccountDto::getCurrencyId).collect(Collectors.toSet());
         Map<Integer, CurrencyEntity> currencyEntityMap = currencyDao.getList(currencyIds).stream()
                 .collect(Collectors.toMap(CurrencyEntity::getId, currencyEntity -> currencyEntity));
-        accountDtoList.forEach(accountDto -> {
+        dtoList.forEach(accountDto -> {
             Integer currencyId = accountDto.getCurrencyId();
             if (!currencyEntityMap.containsKey(currencyId)) {
                 throw new IncomeServiceCurrencyNotFoundException(currencyId);
@@ -122,7 +49,24 @@ public class AccountService implements IAccountService {
             accountDto.setCurrencyCode(currencyEntity.getCode());
             accountDto.setCurrencyTitle(currencyEntity.getTitle());
         });
-        return accountDtoList;
+        return dtoList;
+    }
+
+    @Override
+    protected AccountDto populateAdditionalFields(AccountDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("null");
+        }
+
+        CurrencyEntity currencyEntity = currencyDao.get(dto.getCurrencyId());
+        dto.setCurrencyCode(currencyEntity.getCode());
+        dto.setCurrencyTitle(currencyEntity.getTitle());
+        return dto;
+    }
+
+    @Override
+    protected void throwNotFoundException(Integer id) {
+        throw new IncomeServiceAccountNotFoundException(id);
     }
 
 }

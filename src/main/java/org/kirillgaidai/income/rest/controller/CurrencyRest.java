@@ -21,8 +21,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/rest/currency")
 public class CurrencyRest
-        extends GenericRest<CurrencyGetRestDto, CurrencyCreateRestDto, CurrencyUpdateRestDto, CurrencyDto>
-        implements IGenericRest<CurrencyGetRestDto, CurrencyCreateRestDto, CurrencyUpdateRestDto> {
+        extends SerialRest<CurrencyGetRestDto, CurrencyCreateRestDto, CurrencyUpdateRestDto, CurrencyDto>
+        implements ISerialRest<CurrencyGetRestDto, CurrencyCreateRestDto, CurrencyUpdateRestDto> {
 
     @Autowired
     public CurrencyRest(IGenericService<CurrencyDto> service, IGenericRestDtoMapper<CurrencyGetRestDto,
