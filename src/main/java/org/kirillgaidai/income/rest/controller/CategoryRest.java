@@ -24,8 +24,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/category")
 public class CategoryRest
-        extends GenericRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto>
-        implements IGenericRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto> {
+        extends SerialRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto>
+        implements ISerialRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto> {
 
     @Autowired
     public CategoryRest(IGenericService<CategoryDto> service, IGenericRestDtoMapper<CategoryGetRestDto,

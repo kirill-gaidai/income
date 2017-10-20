@@ -21,8 +21,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/account")
 public class AccountRest
-        extends GenericRest<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto, AccountDto>
-        implements IGenericRest<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto> {
+        extends SerialRest<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto, AccountDto>
+        implements ISerialRest<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto> {
 
     @Autowired
     public AccountRest(IGenericService<AccountDto> service, IGenericRestDtoMapper<AccountGetRestDto,

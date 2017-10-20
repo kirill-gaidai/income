@@ -11,12 +11,8 @@ public interface IGenericRest<GT extends IGenericGetRestDto, CT extends IGeneric
 
     List<GT> getList();
 
-    GT get(Integer id);
-
     GT create(CT newRestDto);
 
     GT update(UT restDto);
-
-    void delete(Integer id);
 
 }

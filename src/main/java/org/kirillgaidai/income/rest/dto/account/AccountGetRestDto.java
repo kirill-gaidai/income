@@ -1,12 +1,12 @@
 package org.kirillgaidai.income.rest.dto.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.kirillgaidai.income.rest.dto.IGenericGetRestDto;
+import org.kirillgaidai.income.rest.dto.ISerialGetRestDto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class AccountGetRestDto extends AccountUpdateRestDto implements IGenericGetRestDto {
+public class AccountGetRestDto extends AccountUpdateRestDto implements ISerialGetRestDto {
 
     @JsonProperty
     @NotNull

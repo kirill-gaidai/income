@@ -18,12 +18,10 @@ public abstract class GenericRest<
 
     final private static Logger LOGGER = LoggerFactory.getLogger(GenericRest.class);
 
-    final private IGenericService<ST> service;
-    final private IGenericRestDtoMapper<GT, CT, UT, ST> mapper;
+    final protected IGenericService<ST> service;
+    final protected IGenericRestDtoMapper<GT, CT, UT, ST> mapper;
 
-    public GenericRest(
-            IGenericService<ST> service,
-            IGenericRestDtoMapper<GT, CT, UT, ST> mapper) {
+    public GenericRest(IGenericService<ST> service, IGenericRestDtoMapper<GT, CT, UT, ST> mapper) {
         this.service = service;
         this.mapper = mapper;
     }
@@ -32,12 +30,6 @@ public abstract class GenericRest<
     public List<GT> getList() {
         LOGGER.debug("Getting entity list");
         return service.getList().stream().map(mapper::toRestDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public GT get(Integer id) {
-        LOGGER.debug("Getting entity");
-        return mapper.toRestDto(service.get(id));
     }
 
     @Override
@@ -54,12 +46,6 @@ public abstract class GenericRest<
         ST dto = mapper.toDto(restDto);
         service.save(dto);
         return mapper.toRestDto(dto);
-    }
-
-    @Override
-    public void delete(Integer id) {
-        LOGGER.debug("Deleting entity");
-        service.delete(id);
     }
 
 }

@@ -3,7 +3,10 @@ package org.kirillgaidai.income.rest.controller;
 import org.kirillgaidai.income.rest.dto.balance.BalanceGetRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceUpdateRestDto;
 import org.kirillgaidai.income.rest.mappers.BalanceRestDtoMapper;
+import org.kirillgaidai.income.rest.mappers.IGenericRestDtoMapper;
+import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.intf.IBalanceService;
+import org.kirillgaidai.income.service.intf.IGenericService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +26,21 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/rest/balance")
-public class BalanceRest {
+public class BalanceRest
+        extends GenericRest<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto>
+        implements IGenericRest<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto> {
 
     final private static Logger LOGGER = LoggerFactory.getLogger(BalanceRest.class);
 
-    final private IBalanceService service;
-    final private BalanceRestDtoMapper mapper;
-
     @Autowired
-    public BalanceRest(IBalanceService service, BalanceRestDtoMapper mapper) {
-        this.service = service;
-        this.mapper = mapper;
+    public BalanceRest(
+            IBalanceService service,
+            IGenericRestDtoMapper<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto> mapper) {
+        super(service, mapper);
+    }
+
+    private IBalanceService getService() {
+        return (IBalanceService) service;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -55,7 +62,7 @@ public class BalanceRest {
             @RequestParam("day") LocalDate day,
             @RequestParam("accountId") Integer accountId) {
         LOGGER.debug("Getting balance. day=\"{}\", accountId=\"{}\"", day, accountId);
-        return mapper.toRestDto(service.get(accountId, day));
+        return mapper.toRestDto(getService().get(accountId, day));
     }
 
     @ResponseStatus(HttpStatus.OK)

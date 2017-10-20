@@ -2,11 +2,12 @@ package org.kirillgaidai.income.rest.dto.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kirillgaidai.income.rest.dto.IGenericUpdateRestDto;
+import org.kirillgaidai.income.rest.dto.ISerialUpdateRestDto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-public class AccountUpdateRestDto extends AccountCreateRestDto implements IGenericUpdateRestDto {
+public class AccountUpdateRestDto extends AccountCreateRestDto implements ISerialUpdateRestDto {
 
     @JsonProperty
     @NotNull
@@ -21,10 +22,12 @@ public class AccountUpdateRestDto extends AccountCreateRestDto implements IGener
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }
