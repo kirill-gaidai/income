@@ -1,4 +1,4 @@
-package org.kirillgaidai.income.service.impl;
+package org.kirillgaidai.income.service.impl.currencyservice;
 
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
@@ -8,6 +8,7 @@ import org.kirillgaidai.income.service.converter.CurrencyConverter;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceCurrencyNotFoundException;
+import org.kirillgaidai.income.service.impl.CurrencyService;
 import org.kirillgaidai.income.service.intf.ICurrencyService;
 import org.mockito.internal.util.collections.Sets;
 
@@ -105,133 +106,6 @@ public class CurrencyServiceTest {
         List<CurrencyDto> actual = currencyService.getList(categoryIds);
         assertCurrencyDtoListEquals(expected, actual);
         verify(currencyDao).getList(categoryIds);
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testGetDto_Null() throws Exception {
-        try {
-            currencyService.get(null);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
-            assertEquals("Currency not found", e.getMessage());
-        }
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testGetDto_NotFound() throws Exception {
-        try {
-            currencyService.get(1);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
-            assertEquals("Currency with id 1 not found", e.getMessage());
-        }
-        verify(currencyDao).get(1);
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testGetDto_Ok() throws Exception {
-        CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
-        CurrencyDto expected = new CurrencyDto(1, "01", "category1", 2);
-
-        doReturn(currencyEntity).when(currencyDao).get(1);
-        doReturn(expected).when(currencyConverter).convertToDto(currencyEntity);
-
-        CurrencyDto actual = currencyService.get(1);
-
-        assertCurrencyDtoEquals(expected, actual);
-
-        verify(currencyDao).get(1);
-        verify(currencyConverter).convertToDto(currencyEntity);
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testSaveDto_Null() throws Exception {
-        try {
-            currencyService.save(null);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
-            assertEquals("Currency not found", e.getMessage());
-        }
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testSaveDto_Insert() throws Exception {
-        CurrencyDto categoryDto = new CurrencyDto(null, "01", "category1", 2);
-        CurrencyEntity currencyEntity = new CurrencyEntity(null, "01", "category1", 2);
-
-        doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
-        doReturn(1).when(currencyDao).insert(currencyEntity);
-
-        currencyService.save(categoryDto);
-
-        verify(currencyConverter).convertToEntity(categoryDto);
-        verify(currencyDao).insert(currencyEntity);
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testSaveDto_UpdateNotFound() throws Exception {
-        CurrencyDto categoryDto = new CurrencyDto(1, "01", "category1", 2);
-        CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
-
-        doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
-        doReturn(0).when(currencyDao).update(currencyEntity);
-
-        try {
-            currencyService.save(categoryDto);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
-            assertEquals("Currency with id 1 not found", e.getMessage());
-        }
-
-        verify(currencyConverter).convertToEntity(categoryDto);
-        verify(currencyDao).update(currencyEntity);
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testSaveDto_Update() throws Exception {
-        CurrencyDto categoryDto = new CurrencyDto(1, "01", "category1", 2);
-        CurrencyEntity currencyEntity = new CurrencyEntity(1, "01", "category1", 2);
-
-        doReturn(currencyEntity).when(currencyConverter).convertToEntity(categoryDto);
-        doReturn(1).when(currencyDao).update(currencyEntity);
-
-        currencyService.save(categoryDto);
-
-        verify(currencyConverter).convertToEntity(categoryDto);
-        verify(currencyDao).update(currencyEntity);
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testDeleteDto_Null() throws Exception {
-        try {
-            currencyService.delete(null);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
-            assertEquals("Currency not found", e.getMessage());
-        }
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testDeleteDto_NotFound() throws Exception {
-        doReturn(0).when(currencyDao).delete(1);
-        try {
-            currencyService.delete(1);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
-            assertEquals("Currency with id 1 not found", e.getMessage());
-        }
-        verify(currencyDao).delete(1);
-        verifyNoMoreInteractions(currencyDao, currencyConverter);
-    }
-
-    @Test
-    public void testDeleteDto_Ok() throws Exception {
-        doReturn(1).when(currencyDao).delete(1);
-        currencyService.delete(1);
-        verify(currencyDao).delete(1);
         verifyNoMoreInteractions(currencyDao, currencyConverter);
     }
 

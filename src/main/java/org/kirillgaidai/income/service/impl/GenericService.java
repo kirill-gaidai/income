@@ -35,7 +35,8 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
         if (affectedRows != 1) {
             dao.insert(entity);
         }
-        return populateAdditionalFields(converter.convertToDto(entity));
+        // don't populate additional fields here, but in descendants in overriding method
+        return converter.convertToDto(entity);
     }
 
     protected List<T> populateAdditionalFields(List<T> dtoList) {

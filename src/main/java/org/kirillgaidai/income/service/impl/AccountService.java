@@ -32,7 +32,19 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
+    public AccountDto save(AccountDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("null");
+        }
+        return super.save(dto);
+
+    }
+
+    @Override
     protected List<AccountDto> populateAdditionalFields(List<AccountDto> dtoList) {
+        if (dtoList == null) {
+            throw new IllegalArgumentException("null");
+        }
         if (dtoList.isEmpty()) {
             return dtoList;
         }
@@ -57,11 +69,16 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
         if (dto == null) {
             throw new IllegalArgumentException("null");
         }
-
-        CurrencyEntity currencyEntity = currencyDao.get(dto.getCurrencyId());
-        dto.setCurrencyCode(currencyEntity.getCode());
-        dto.setCurrencyTitle(currencyEntity.getTitle());
-        return dto;
+        Integer currencyId = dto.getCurrencyId();
+        if (currencyId == null) {
+            throw new IllegalArgumentException("null");
+        }
+        CurrencyEntity currencyEntity = currencyDao.get(currencyId);
+        if (currencyEntity == null) {
+            throw new IncomeServiceCurrencyNotFoundException(currencyId);
+        }
+        return new AccountDto(dto.getId(), dto.getCurrencyId(), currencyEntity.getCode(), currencyEntity.getTitle(),
+                dto.getSort(), dto.getTitle());
     }
 
     @Override

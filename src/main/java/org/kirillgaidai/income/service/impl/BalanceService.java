@@ -7,42 +7,73 @@ import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
-import org.kirillgaidai.income.service.exception.IncomeServiceBalanceNotFoundException;
 import org.kirillgaidai.income.service.intf.IBalanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-public class BalanceService implements IBalanceService {
+public class BalanceService extends GenericService<BalanceDto, BalanceEntity> implements IBalanceService {
 
-    final private IBalanceDao balanceDao;
     final private IAccountDao accountDao;
-    final private IGenericConverter<BalanceEntity, BalanceDto> balanceConverter;
 
     @Autowired
     public BalanceService(
             IBalanceDao balanceDao,
             IAccountDao accountDao,
-            IGenericConverter<BalanceEntity, BalanceDto> balanceConverter) {
-        super();
-        this.balanceDao = balanceDao;
+            IGenericConverter<BalanceEntity, BalanceDto> converter) {
+        super(balanceDao, converter);
         this.accountDao = accountDao;
-        this.balanceConverter = balanceConverter;
     }
 
-    @Override
-    public List<BalanceDto> getList() {
-        throw new UnsupportedOperationException();
+    private IBalanceDao getDao() {
+        return (IBalanceDao) dao;
     }
 
     @Override
     public BalanceDto get(Integer accountId, LocalDate day) {
         if (accountId == null || day == null) {
-            throw new IncomeServiceBalanceNotFoundException();
+            throw new IllegalArgumentException("null");
+        }
+
+        // if balance exists for specified account and day, then we will return it
+        BalanceEntity balanceEntity = getDao().get(accountId, day);
+        if (balanceEntity != null) {
+            return populateAdditionalFields(converter.convertToDto(balanceEntity));
+        }
+
+        // otherwise, if balance for specified day does not exist, but it exists before specified day,
+        // then we will return it
+        balanceEntity = getDao().getEntityBefore(accountId, day);
+        if (balanceEntity != null) {
+            return populateAdditionalFields(new BalanceDto(accountId, null, day, balanceEntity.getAmount(), false));
+        }
+        // if balance exists only after specified day, then we will return it
+        balanceEntity = getDao().getEntityAfter(accountId, day);
+        if (balanceEntity != null) {
+            return populateAdditionalFields(new BalanceDto(accountId, null, day, balanceEntity.getAmount(), false));
+        }
+        // otherwise, returning zero
+        return populateAdditionalFields(new BalanceDto(accountId, null, day, BigDecimal.ZERO, false));
+    }
+
+    @Override
+    public BalanceDto save(BalanceDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("null");
+        }
+
+        Integer accountId = dto.getAccountId();
+        LocalDate day = dto.getDay();
+        if (day == null || accountId == null) {
+            throw new IllegalArgumentException("null");
         }
 
         AccountEntity accountEntity = accountDao.get(accountId);
@@ -50,47 +81,32 @@ public class BalanceService implements IBalanceService {
             throw new IncomeServiceAccountNotFoundException(accountId);
         }
 
-        BalanceEntity balanceEntity = balanceDao.get(accountId, day);
-        if (balanceEntity != null) {
-            BalanceDto dto = balanceConverter.convertToDto(balanceEntity);
-            dto.setAccountTitle(accountEntity.getTitle());
-            return dto;
+        BalanceEntity entity = converter.convertToEntity(dto);
+        int affectedRows = dao.update(entity);
+        if (affectedRows == 0) {
+            dao.insert(entity);
         }
 
-        balanceEntity = balanceDao.getEntityBefore(accountId, day);
-        if (balanceEntity != null) {
-            return new BalanceDto(accountId, accountEntity.getTitle(), day, balanceEntity.getAmount(), false);
-        }
-
-        balanceEntity = balanceDao.getEntityAfter(accountId, day);
-        if (balanceEntity != null) {
-            return new BalanceDto(accountId, accountEntity.getTitle(), day, balanceEntity.getAmount(), false);
-        }
-
-        return new BalanceDto(accountId, accountEntity.getTitle(), day, BigDecimal.ZERO, false);
+        dto.setAccountTitle(accountEntity.getTitle());
+        return dto;
     }
 
     @Override
-    public BalanceDto save(BalanceDto dto) {
-        if (dto == null) {
-            throw new IncomeServiceBalanceNotFoundException();
+    protected List<BalanceDto> populateAdditionalFields(List<BalanceDto> dtoList) {
+        if (dtoList.isEmpty()) {
+            return Collections.emptyList();
         }
+        Set<Integer> accountIds = dtoList.stream().map(BalanceDto::getAccountId).collect(Collectors.toSet());
+        Map<Integer, String> accountEntityMap = accountDao.getList(accountIds).stream()
+                .collect(Collectors.toMap(AccountEntity::getId, AccountEntity::getTitle));
+        dtoList.forEach(dto -> dto.setAccountTitle(accountEntityMap.get(dto.getAccountId())));
+        return dtoList;
+    }
 
-        if (dto.getAccountId() == null) {
-            throw new IncomeServiceAccountNotFoundException();
-        }
-
-        AccountEntity accountEntity = accountDao.get(dto.getAccountId());
-        if (accountEntity == null) {
-            throw new IncomeServiceAccountNotFoundException(dto.getAccountId());
-        }
-
-        BalanceEntity entity = balanceConverter.convertToEntity(dto);
-        int affectedRows = balanceDao.update(entity);
-        if (affectedRows == 0) {
-            balanceDao.insert(entity);
-        }
-        return null;
+    @Override
+    protected BalanceDto populateAdditionalFields(BalanceDto dto) {
+        dto.setAccountTitle(accountDao.get(dto.getAccountId()).getTitle());
+        return dto;
     }
 
 }

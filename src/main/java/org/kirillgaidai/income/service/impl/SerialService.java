@@ -33,7 +33,8 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
         if (affectedRows != 1) {
             throwNotFoundException(dto.getId());
         }
-        return populateAdditionalFields(converter.convertToDto(entity));
+        // don't populate additional fields here, but in descendants in overriding method
+        return converter.convertToDto(entity);
     }
 
     @Override

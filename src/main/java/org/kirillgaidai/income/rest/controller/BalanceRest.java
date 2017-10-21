@@ -2,11 +2,9 @@ package org.kirillgaidai.income.rest.controller;
 
 import org.kirillgaidai.income.rest.dto.balance.BalanceGetRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceUpdateRestDto;
-import org.kirillgaidai.income.rest.mappers.BalanceRestDtoMapper;
 import org.kirillgaidai.income.rest.mappers.IGenericRestDtoMapper;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.intf.IBalanceService;
-import org.kirillgaidai.income.service.intf.IGenericService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
