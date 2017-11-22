@@ -48,14 +48,6 @@ public class ServiceTestUtils {
         assertEquals(expected.getManual(), actual.getManual());
     }
 
-    public static void assertBalanceDtoListEquals(List<BalanceDto> expected, List<BalanceDto> actual) {
-        assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-        for (int index = 0; index < expected.size(); index++) {
-            assertBalanceDtoEquals(expected.get(index), actual.get(index));
-        }
-    }
-
     public static void assertCategoryDtoEquals(CategoryDto expected, CategoryDto actual) {
         assertNotNull(actual);
         assertEquals(expected.getId(), actual.getId());

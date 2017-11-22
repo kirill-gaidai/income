@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertAccountEntityEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -22,7 +22,7 @@ public class AccountEntityRowMapperTest {
         doReturn("account1").when(resultSet).getString("title");
         AccountEntity expected = new AccountEntity(1, 2, "01", "account1");
         AccountEntity actual = accountEntityRowMapper.mapRow(resultSet, 1);
-        assertAccountEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
 }

@@ -51,12 +51,12 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
 
         // otherwise, if balance for specified day does not exist, but it exists before specified day,
         // then we will return it
-        balanceEntity = getDao().getEntityBefore(accountId, day);
+        balanceEntity = getDao().getBefore(accountId, day);
         if (balanceEntity != null) {
             return populateAdditionalFields(new BalanceDto(accountId, null, day, balanceEntity.getAmount(), false));
         }
         // if balance exists only after specified day, then we will return it
-        balanceEntity = getDao().getEntityAfter(accountId, day);
+        balanceEntity = getDao().getAfter(accountId, day);
         if (balanceEntity != null) {
             return populateAdditionalFields(new BalanceDto(accountId, null, day, balanceEntity.getAmount(), false));
         }

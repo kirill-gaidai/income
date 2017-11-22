@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.impl.CurrencyDao;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
+import org.kirillgaidai.income.exception.IncomeException;
 import org.kirillgaidai.income.service.converter.CurrencyConverter;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
@@ -82,8 +83,8 @@ public class CurrencyServiceSaveTest {
 
         try {
             service.save(dto);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
-            assertEquals("Currency with id 1 not found", e.getMessage());
+        } catch (IncomeException e) {
+            assertEquals("Dto isn't inserted or updated", e.getMessage());
         }
 
         verify(converter).convertToEntity(dto);

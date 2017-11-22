@@ -6,7 +6,8 @@ import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BalanceRestDtoMapper {
+public class BalanceRestDtoMapper
+        implements IGenericRestDtoMapper<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto> {
 
     public BalanceDto toDto(BalanceUpdateRestDto newRestDto) {
         return newRestDto == null ? null : new BalanceDto(newRestDto.getAccountId(), null, newRestDto.getDay(),

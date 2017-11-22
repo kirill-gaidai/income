@@ -35,6 +35,20 @@ public class CurrencyDao extends SerialDao<CurrencyEntity> implements ICurrencyD
     }
 
     @Override
+    protected String getUpdateOptimisticSql() {
+        return getUpdateSql() + " AND (code = :old_code) AND (title = :old_title) AND (accuracy = :old_accuracy)";
+    }
+
+    @Override
+    protected Map<String, Object> getUpdateOptimisticParamsMap(CurrencyEntity newEntity, CurrencyEntity oldEntity) {
+        Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_code", oldEntity.getCode());
+        params.put("old_title", oldEntity.getTitle());
+        params.put("old_accuracy", oldEntity.getAccuracy());
+        return params;
+    }
+
+    @Override
     protected String getGetListByIdsSql() {
         return "SELECT id, code, title, accuracy FROM currencies WHERE id IN (:ids) ORDER BY title";
     }
@@ -61,6 +75,17 @@ public class CurrencyDao extends SerialDao<CurrencyEntity> implements ICurrencyD
     @Override
     protected String getDeleteByIdSql() {
         return "DELETE FROM currencies WHERE id = :id";
+    }
+
+    @Override
+    protected String getDeleteOptimisticSql() {
+        return "DELETE FROM currencies " +
+                "WHERE (id = :id) AND (code = :code) AND (title = :title) AND (accuracy = :accuracy)";
+    }
+
+    @Override
+    protected Map<String, Object> getDeleteOptimisticParamsMap(CurrencyEntity entity) {
+        return getUpdateParamsMap(entity);
     }
 
 }

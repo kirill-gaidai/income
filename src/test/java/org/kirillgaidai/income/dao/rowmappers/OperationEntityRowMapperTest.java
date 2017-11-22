@@ -9,7 +9,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertOperationEntityEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -29,7 +29,7 @@ public class OperationEntityRowMapperTest {
         doReturn("note1").when(resultSet).getString("note");
         OperationEntity expected = new OperationEntity(1, 2, 3, day, amount, "note1");
         OperationEntity actual = operationEntityRowMapper.mapRow(resultSet, 1);
-        assertOperationEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
     
 }

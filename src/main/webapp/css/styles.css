@@ -1,11 +1,15 @@
-table.form, table.form > tbody > tr > td {
-    border: none;
+table.form,
+table.form td,
+table.form th {
     border-collapse: collapse;
+    border: none;
 }
 
-table.list, table.list > tbody > tr > td {
-    border: 1px solid black;
+table.list,
+table.list td,
+table.list th {
     border-collapse: collapse;
+    border: 1px solid black;
 }
 
 .inline-form {

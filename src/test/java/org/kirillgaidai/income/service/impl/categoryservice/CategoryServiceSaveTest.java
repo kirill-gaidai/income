@@ -8,6 +8,7 @@ import org.kirillgaidai.income.service.converter.CategoryConverter;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.CategoryDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceCategoryNotFoundException;
+import org.kirillgaidai.income.service.exception.IncomeServiceException;
 import org.kirillgaidai.income.service.impl.CategoryService;
 import org.kirillgaidai.income.service.intf.ICategoryService;
 
@@ -79,11 +80,12 @@ public class CategoryServiceSaveTest {
 
         doReturn(entity).when(converter).convertToEntity(dto);
         doReturn(0).when(dao).update(entity);
+        doReturn(1).when(dao).insert(entity);
 
         try {
             service.save(dto);
-        } catch (IncomeServiceCategoryNotFoundException e) {
-            assertEquals("Category with id 1 not found", e.getMessage());
+        } catch (IncomeServiceException e) {
+            assertEquals("Dto isn't inserted or updated", e.getMessage());
         }
 
         verify(converter).convertToEntity(dto);

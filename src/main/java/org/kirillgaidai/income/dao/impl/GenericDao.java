@@ -8,6 +8,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Generic DAO
+ *
+ * @param <T> entity
+ * @author Kirill Gaidai
+ */
 public abstract class GenericDao<T extends IGenericEntity> implements IGenericDao<T> {
 
     final protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -35,6 +41,23 @@ public abstract class GenericDao<T extends IGenericEntity> implements IGenericDa
         return namedParameterJdbcTemplate.update(getUpdateSql(), getUpdateParamsMap(entity));
     }
 
+    @Override
+    public int update(T newEntity, T oldEntity) {
+        return namedParameterJdbcTemplate.update(
+                getUpdateOptimisticSql(), getUpdateOptimisticParamsMap(newEntity, oldEntity));
+    }
+
+    @Override
+    public int delete(T entity) {
+        return namedParameterJdbcTemplate.update(
+                getDeleteOptimisticSql(), getDeleteOptimisticParamsMap(entity));
+    }
+
+    /**
+     * Returns SQL used by {@link IGenericDao#getList()}
+     *
+     * @return getting list SQL
+     */
     protected abstract String getGetListSql();
 
     protected abstract String getInsertSql();
@@ -44,5 +67,13 @@ public abstract class GenericDao<T extends IGenericEntity> implements IGenericDa
     protected abstract String getUpdateSql();
 
     protected abstract Map<String, Object> getUpdateParamsMap(T entity);
+
+    protected abstract String getUpdateOptimisticSql();
+
+    protected abstract Map<String, Object> getUpdateOptimisticParamsMap(T newEntity, T oldEntity);
+
+    protected abstract String getDeleteOptimisticSql();
+
+    protected abstract Map<String, Object> getDeleteOptimisticParamsMap(T entity);
 
 }

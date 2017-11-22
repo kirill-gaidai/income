@@ -31,6 +31,19 @@ public class CategoryDao extends SerialDao<CategoryEntity> implements ICategoryD
     }
 
     @Override
+    protected String getUpdateOptimisticSql() {
+        return getUpdateSql() + " AND (sort = :old_sort) AND (title = :old_title)";
+    }
+
+    @Override
+    protected Map<String, Object> getUpdateOptimisticParamsMap(CategoryEntity newEntity, CategoryEntity oldEntity) {
+        Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_sort", oldEntity.getSort());
+        params.put("old_title", oldEntity.getTitle());
+        return params;
+    }
+
+    @Override
     protected String getGetListByIdsSql() {
         return "SELECT id, sort, title FROM categories WHERE id IN (:ids) ORDER BY sort";
     }
@@ -56,6 +69,16 @@ public class CategoryDao extends SerialDao<CategoryEntity> implements ICategoryD
     @Override
     protected String getDeleteByIdSql() {
         return "DELETE FROM categories WHERE id = :id";
+    }
+
+    @Override
+    protected String getDeleteOptimisticSql() {
+        return "DELETE FROM categories WHERE (id = :id) AND (sort = :sort) AND (title = :title)";
+    }
+
+    @Override
+    protected Map<String, Object> getDeleteOptimisticParamsMap(CategoryEntity entity) {
+        return getUpdateParamsMap(entity);
     }
 
 }

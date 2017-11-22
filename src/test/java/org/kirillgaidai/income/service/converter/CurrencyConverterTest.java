@@ -5,8 +5,7 @@ import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
 
 import static org.junit.Assert.assertNull;
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCurrencyEntityEquals;
-import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertCurrencyDtoEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 
 public class CurrencyConverterTest {
 
@@ -17,7 +16,7 @@ public class CurrencyConverterTest {
         CurrencyEntity entity = new CurrencyEntity(1, "cc1", "currency1", 2);
         CurrencyDto expected = new CurrencyDto(1, "cc1", "currency1", 2);
         CurrencyDto actual = converter.convertToDto(entity);
-        assertCurrencyDtoEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
     @Test
@@ -31,7 +30,7 @@ public class CurrencyConverterTest {
         CurrencyDto dto = new CurrencyDto(1, "cc1", "currency1", 2);
         CurrencyEntity expected = new CurrencyEntity(1, "cc1", "currency1", 2);
         CurrencyEntity actual = converter.convertToEntity(dto);
-        assertCurrencyEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
     @Test

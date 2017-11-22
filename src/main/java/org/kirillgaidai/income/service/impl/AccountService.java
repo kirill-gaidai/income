@@ -9,6 +9,8 @@ import org.kirillgaidai.income.service.dto.AccountDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
 import org.kirillgaidai.income.service.exception.IncomeServiceCurrencyNotFoundException;
 import org.kirillgaidai.income.service.intf.IAccountService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountService extends SerialService<AccountDto, AccountEntity> implements IAccountService {
+
+    final private static Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
     final private ICurrencyDao currencyDao;
 
@@ -32,58 +36,75 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
-    public AccountDto save(AccountDto dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("null");
-        }
-        return super.save(dto);
+    public AccountDto create(AccountDto dto) {
+        LOGGER.debug("Entering method");
+        CurrencyEntity currencyEntity = getCurrency(dto.getCurrencyId());
+        AccountDto result = super.create(dto);
+        result.setCurrencyCode(currencyEntity.getCode());
+        result.setCurrencyTitle(currencyEntity.getTitle());
+        return result;
+    }
 
+    @Override
+    public AccountDto update(AccountDto dto) {
+        LOGGER.debug("Entering method");
+        CurrencyEntity currencyEntity = getCurrency(dto.getCurrencyId());
+        AccountDto result = super.update(dto);
+        result.setCurrencyCode(currencyEntity.getCode());
+        result.setCurrencyTitle(currencyEntity.getTitle());
+        return result;
+    }
+
+    @Override
+    public AccountDto save(AccountDto dto) {
+        LOGGER.debug("Entering method");
+        CurrencyEntity currencyEntity = getCurrency(dto.getCurrencyId());
+        AccountDto result = super.save(dto);
+        result.setCurrencyCode(currencyEntity.getCode());
+        result.setCurrencyTitle(currencyEntity.getTitle());
+        return result;
     }
 
     @Override
     protected List<AccountDto> populateAdditionalFields(List<AccountDto> dtoList) {
-        if (dtoList == null) {
-            throw new IllegalArgumentException("null");
-        }
+        LOGGER.debug("Entering method");
         if (dtoList.isEmpty()) {
             return dtoList;
         }
-
-        Set<Integer> currencyIds = dtoList.stream().map(AccountDto::getCurrencyId).collect(Collectors.toSet());
-        Map<Integer, CurrencyEntity> currencyEntityMap = currencyDao.getList(currencyIds).stream()
+        Set<Integer> ids = dtoList.stream().map(AccountDto::getCurrencyId).collect(Collectors.toSet());
+        Map<Integer, CurrencyEntity> entityMap = currencyDao.getList(ids).stream()
                 .collect(Collectors.toMap(CurrencyEntity::getId, currencyEntity -> currencyEntity));
-        dtoList.forEach(accountDto -> {
-            Integer currencyId = accountDto.getCurrencyId();
-            if (!currencyEntityMap.containsKey(currencyId)) {
-                throw new IncomeServiceCurrencyNotFoundException(currencyId);
-            }
-            CurrencyEntity currencyEntity = currencyEntityMap.get(currencyId);
-            accountDto.setCurrencyCode(currencyEntity.getCode());
-            accountDto.setCurrencyTitle(currencyEntity.getTitle());
-        });
+        for (AccountDto dto: dtoList) {
+            CurrencyEntity entity = entityMap.get(dto.getCurrencyId());
+            dto.setCurrencyCode(entity.getCode());
+            dto.setCurrencyTitle(entity.getTitle());
+        }
         return dtoList;
     }
 
     @Override
     protected AccountDto populateAdditionalFields(AccountDto dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("null");
-        }
-        Integer currencyId = dto.getCurrencyId();
-        if (currencyId == null) {
-            throw new IllegalArgumentException("null");
-        }
-        CurrencyEntity currencyEntity = currencyDao.get(currencyId);
-        if (currencyEntity == null) {
-            throw new IncomeServiceCurrencyNotFoundException(currencyId);
-        }
-        return new AccountDto(dto.getId(), dto.getCurrencyId(), currencyEntity.getCode(), currencyEntity.getTitle(),
-                dto.getSort(), dto.getTitle());
+        LOGGER.debug("Entering method");
+        CurrencyEntity currencyEntity = currencyDao.get(dto.getCurrencyId());
+        dto.setCurrencyCode(currencyEntity.getCode());
+        dto.setCurrencyTitle(currencyEntity.getTitle());
+        return dto;
     }
 
     @Override
     protected void throwNotFoundException(Integer id) {
+        LOGGER.debug("Entering method");
         throw new IncomeServiceAccountNotFoundException(id);
+    }
+
+    private CurrencyEntity getCurrency(Integer id) {
+        LOGGER.debug("Entering method");
+        CurrencyEntity result = currencyDao.get(id);
+        if (result == null) {
+            LOGGER.error("Currency with id {} not found", id);
+            throw new IncomeServiceCurrencyNotFoundException(id);
+        }
+        return result;
     }
 
 }

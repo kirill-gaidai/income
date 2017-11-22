@@ -31,6 +31,20 @@ public class AccountDao extends SerialDao<AccountEntity> implements IAccountDao 
     }
 
     @Override
+    protected String getUpdateOptimisticSql() {
+        return getUpdateSql() + " AND (currency_id = :old_currency_id) AND (sort = :old_sort) AND (title = :old_title)";
+    }
+
+    @Override
+    protected Map<String, Object> getUpdateOptimisticParamsMap(AccountEntity newEntity, AccountEntity oldEntity) {
+        Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_currency_id", oldEntity.getCurrencyId());
+        params.put("old_sort", oldEntity.getSort());
+        params.put("old_title", oldEntity.getTitle());
+        return params;
+    }
+
+    @Override
     protected String getGetListByIdsSql() {
         return "SELECT id, currency_id, sort, title FROM accounts WHERE id IN (:ids) ORDER BY sort";
     }
@@ -57,6 +71,17 @@ public class AccountDao extends SerialDao<AccountEntity> implements IAccountDao 
     @Override
     protected String getDeleteByIdSql() {
         return "DELETE FROM accounts WHERE id = :id";
+    }
+
+    @Override
+    protected String getDeleteOptimisticSql() {
+        return "DELETE FROM accounts " +
+                "WHERE (id = :id) AND (currency_id = :currency_id) AND (sort = :sort) AND (title = :title)";
+    }
+
+    @Override
+    protected Map<String, Object> getDeleteOptimisticParamsMap(AccountEntity entity) {
+        return getUpdateParamsMap(entity);
     }
 
 }

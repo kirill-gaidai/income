@@ -73,7 +73,7 @@ public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao
     }
 
     @Override
-    public BalanceEntity getEntityBefore(Integer accountId, LocalDate day) {
+    public BalanceEntity getBefore(Integer accountId, LocalDate day) {
         String sql = "SELECT account_id, day, amount, MANUAL FROM balances " +
                 "WHERE (account_id = :account_id) AND (day < :day) ORDER BY day DESC LIMIT 1";
         Map<String, Object> params = new HashMap<>();
@@ -87,7 +87,7 @@ public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao
     }
 
     @Override
-    public BalanceEntity getEntityAfter(Integer accountId, LocalDate day) {
+    public BalanceEntity getAfter(Integer accountId, LocalDate day) {
         String sql = "SELECT account_id, day, amount, MANUAL FROM balances " +
                 "WHERE (account_id = :account_id) AND (day > :day) ORDER BY day LIMIT 1";
         Map<String, Object> params = new HashMap<>();
@@ -139,6 +139,30 @@ public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao
     @Override
     protected Map<String, Object> getUpdateParamsMap(BalanceEntity entity) {
         return getInsertParamsMap(entity);
+    }
+
+    @Override
+    protected String getUpdateOptimisticSql() {
+        return getUpdateSql() + " AND (amount = :old_amount) AND (manual = :old_manual)";
+    }
+
+    @Override
+    protected Map<String, Object> getUpdateOptimisticParamsMap(BalanceEntity newEntity, BalanceEntity oldEntity) {
+        Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_amount", oldEntity.getAmount());
+        params.put("old_manual", oldEntity.getManual());
+        return params;
+    }
+
+    @Override
+    protected String getDeleteOptimisticSql() {
+        return "DELETE FROM balances " +
+                "WHERE (account_id = :account_id) AND (day = :day) AND (amount = :amount) AND (manual = :manual)";
+    }
+
+    @Override
+    protected Map<String, Object> getDeleteOptimisticParamsMap(BalanceEntity entity) {
+        return getUpdateParamsMap(entity);
     }
 
 }

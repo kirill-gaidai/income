@@ -1,4 +1,4 @@
-package org.kirillgaidai.income.dao.impl;
+package org.kirillgaidai.income.dao.impl.ratedao;
 
 import org.junit.After;
 import org.junit.Before;
@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kirillgaidai.income.dao.config.PersistenceTestConfig;
 import org.kirillgaidai.income.dao.entity.RateEntity;
-import org.kirillgaidai.income.dao.exception.IncomeDaoException;
 import org.kirillgaidai.income.dao.intf.IRateDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -151,7 +150,7 @@ public class RateDaoTest {
         String message = null;
         try {
             rateDao.insertEntity(entity);
-        } catch (IncomeDaoException e) {
+        } catch (RuntimeException e) {
             message = e.getMessage();
         }
         assertEquals("Rate entity already exists", message);
@@ -163,7 +162,7 @@ public class RateDaoTest {
         String message = null;
         try {
             rateDao.insertEntity(entity);
-        } catch (IncomeDaoException e) {
+        } catch (RuntimeException e) {
             message = e.getMessage();
         }
         assertEquals("Rate entity already exists", message);

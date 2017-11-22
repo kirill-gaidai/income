@@ -10,7 +10,6 @@ import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.service.converter.BalanceConverter;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.BalanceDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
 import org.kirillgaidai.income.service.impl.BalanceService;
 import org.kirillgaidai.income.service.intf.IBalanceService;
 
@@ -65,9 +64,9 @@ public class BalanceServiceGetTest {
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
-        verify(balanceDao).getEntityBefore(accountId, thisDay);
+        verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
-        verify(balanceDao).getEntityAfter(accountId, thisDay);
+        verify(balanceDao).getAfter(accountId, thisDay);
         verifyNoMoreInteractions(balanceDao, accountDao, converter);
     }
 
@@ -81,14 +80,14 @@ public class BalanceServiceGetTest {
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, amount, true);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
-        doReturn(prevBalanceEntity).when(balanceDao).getEntityBefore(accountId, thisDay);
+        doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, amount, false);
         BalanceDto actual = service.get(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
-        verify(balanceDao).getEntityBefore(accountId, thisDay);
+        verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verifyNoMoreInteractions(balanceDao, accountDao, converter);
     }
@@ -103,16 +102,16 @@ public class BalanceServiceGetTest {
         BalanceEntity nextBalanceEntity = new BalanceEntity(accountId, nextDay, amount, true);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
-        doReturn(nextBalanceEntity).when(balanceDao).getEntityAfter(accountId, thisDay);
+        doReturn(nextBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
 
         BalanceDto expected = new BalanceDto(accountId, "account1", thisDay, amount, false);
         BalanceDto actual = service.get(accountId, thisDay);
 
         assertBalanceDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
-        verify(balanceDao).getEntityBefore(accountId, thisDay);
+        verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
-        verify(balanceDao).getEntityAfter(accountId, thisDay);
+        verify(balanceDao).getAfter(accountId, thisDay);
         verifyNoMoreInteractions(balanceDao, accountDao, converter);
     }
 

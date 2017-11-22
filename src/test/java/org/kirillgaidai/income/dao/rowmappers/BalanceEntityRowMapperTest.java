@@ -9,7 +9,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertBalanceEntityEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -27,7 +27,7 @@ public class BalanceEntityRowMapperTest {
         doReturn(true).when(resultSet).getBoolean("manual");
         BalanceEntity expected = new BalanceEntity(1, day, amount, true);
         BalanceEntity actual = balanceEntityRowMapper.mapRow(resultSet, 1);
-        assertBalanceEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
 }

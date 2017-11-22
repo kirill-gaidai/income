@@ -22,7 +22,7 @@ public interface IGenericDao<T extends IGenericEntity> {
     /**
      * Creates new entity in DB
      *
-     * @param entity - new entity
+     * @param entity new entity
      * @return number of inserted rows
      */
     int insert(T entity);
@@ -30,9 +30,26 @@ public interface IGenericDao<T extends IGenericEntity> {
     /**
      * Updates entity with specified in DB
      *
-     * @param entity - entity
+     * @param entity entity
      * @return number of updated rows
      */
     int update(T entity);
+
+    /**
+     * Updates entity with specified if it matches old entity
+     *
+     * @param newEntity new entity
+     * @param oldEntity old entity
+     * @return number of updated rows
+     */
+    int update(T newEntity, T oldEntity);
+
+    /**
+     * Deletes entity if it matches specified entity
+     *
+     * @param entity old entity
+     * @return number of deleted rows
+     */
+    int delete(T entity);
 
 }

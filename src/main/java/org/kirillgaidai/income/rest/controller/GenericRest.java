@@ -28,24 +28,20 @@ public abstract class GenericRest<
 
     @Override
     public List<GT> getList() {
-        LOGGER.debug("Getting entity list");
+        LOGGER.debug("Entering method");
         return service.getList().stream().map(mapper::toRestDto).collect(Collectors.toList());
     }
 
     @Override
     public GT create(CT newRestDto) {
-        LOGGER.debug("Creating entity");
-        ST dto = mapper.toDto(newRestDto);
-        service.save(dto);
-        return mapper.toRestDto(dto);
+        LOGGER.debug("Entering method");
+        return mapper.toRestDto(service.save(mapper.toDto(newRestDto)));
     }
 
     @Override
     public GT update(UT restDto) {
-        LOGGER.debug("Updating entity");
-        ST dto = mapper.toDto(restDto);
-        service.save(dto);
-        return mapper.toRestDto(dto);
+        LOGGER.debug("Entering method");
+        return mapper.toRestDto(service.save(mapper.toDto(restDto)));
     }
 
 }

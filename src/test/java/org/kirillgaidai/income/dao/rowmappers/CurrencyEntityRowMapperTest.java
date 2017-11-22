@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCurrencyEntityEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -22,7 +22,7 @@ public class CurrencyEntityRowMapperTest {
         doReturn(2).when(resultSet).getInt("accuracy");
         CurrencyEntity expected = new CurrencyEntity(1, "cc1", "currency1", 2);
         CurrencyEntity actual = currencyEntityRowMapper.mapRow(resultSet, 1);
-        assertCurrencyEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
 }

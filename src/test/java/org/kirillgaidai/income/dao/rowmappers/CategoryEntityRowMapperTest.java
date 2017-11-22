@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCategoryEntityEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -21,7 +21,7 @@ public class CategoryEntityRowMapperTest {
         doReturn("category1").when(resultSet).getString("title");
         CategoryEntity expected = new CategoryEntity(1, "01", "category1");
         CategoryEntity actual = categoryEntityRowMapper.mapRow(resultSet, 1);
-        assertCategoryEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
 }

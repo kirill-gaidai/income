@@ -1,5 +1,6 @@
 package org.kirillgaidai.income.service.impl.accountservice;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
@@ -30,12 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class AccountServiceTest {
-
-    final private IAccountDao accountDao = mock(AccountDao.class);
-    final private ICurrencyDao currencyDao = mock(CurrencyDao.class);
-    final private IGenericConverter<AccountEntity, AccountDto> converter = mock(AccountConverter.class);
-    final private IAccountService service = new AccountService(accountDao, currencyDao, converter);
+public class AccountServiceTest extends AccountServiceBaseTest {
 
     @Test
     public void testGetDtoList_AllCurrencyEntityNotFound() throws Exception {

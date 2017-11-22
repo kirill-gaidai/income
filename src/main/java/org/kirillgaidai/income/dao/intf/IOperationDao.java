@@ -8,10 +8,10 @@ import java.util.Set;
 
 public interface IOperationDao extends ISerialDao<OperationEntity> {
 
-    List<OperationEntity> getEntityList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay);
+    List<OperationEntity> getList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay);
 
-    List<OperationEntity> getEntityList(Set<Integer> accountIds, LocalDate day);
+    List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day);
 
-    List<OperationEntity> getEntityList(Set<Integer> accountIds, LocalDate day, Integer categoryId);
+    List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId);
 
 }

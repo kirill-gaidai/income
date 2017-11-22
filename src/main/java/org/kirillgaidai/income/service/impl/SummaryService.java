@@ -70,7 +70,7 @@ public class SummaryService implements ISummaryService {
     public SummaryDto getSummaryDto(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
         List<BalanceEntity> initialBalanceEntityList = balanceDao.getList(accountIds, firstDay.minusDays(1L));
         List<BalanceEntity> balanceEntityList = balanceDao.getList(accountIds, firstDay, lastDay);
-        List<OperationEntity> operationEntityList = operationDao.getEntityList(accountIds, firstDay, lastDay);
+        List<OperationEntity> operationEntityList = operationDao.getList(accountIds, firstDay, lastDay);
 
         Set<Integer> categoryIds = operationEntityList
                 .stream().map(OperationEntity::getCategoryId).collect(Collectors.toSet());

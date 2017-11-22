@@ -14,4 +14,20 @@ public interface IOperationService extends ISerialService<OperationDto> {
 
     OperationDto getDto(Set<Integer> accountIds, Integer categoryId, LocalDate day);
 
+    /**
+     * Creates new operation. Recalculates balance for account if necessary
+     *
+     * @param dto operation dto
+     * @return new operation dto
+     */
+    OperationDto create(OperationDto dto);
+
+    /**
+     * Updates existing operation. Recalculates balance for account if necessary
+     *
+     * @param dto operation dto
+     * @return new operation dto
+     */
+    OperationDto update(OperationDto dto);
+
 }

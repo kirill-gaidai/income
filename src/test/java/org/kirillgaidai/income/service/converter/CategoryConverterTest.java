@@ -5,8 +5,7 @@ import org.kirillgaidai.income.dao.entity.CategoryEntity;
 import org.kirillgaidai.income.service.dto.CategoryDto;
 
 import static org.junit.Assert.assertNull;
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertCategoryEntityEquals;
-import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertCategoryDtoEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 
 public class CategoryConverterTest {
 
@@ -17,7 +16,7 @@ public class CategoryConverterTest {
         CategoryEntity entity = new CategoryEntity(1, "01", "category1");
         CategoryDto expected = new CategoryDto(1, "01", "category1");
         CategoryDto actual = converter.convertToDto(entity);
-        assertCategoryDtoEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
     @Test
@@ -31,7 +30,7 @@ public class CategoryConverterTest {
         CategoryDto dto = new CategoryDto(1, "01", "category1");
         CategoryEntity expected = new CategoryEntity(1, "01", "category1");
         CategoryEntity actual = converter.convertToEntity(dto);
-        assertCategoryEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
     @Test

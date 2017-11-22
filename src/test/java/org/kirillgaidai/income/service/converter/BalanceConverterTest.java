@@ -8,8 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertNull;
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertBalanceEntityEquals;
-import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertBalanceDtoEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 
 public class BalanceConverterTest {
 
@@ -22,7 +21,7 @@ public class BalanceConverterTest {
         BalanceEntity entity = new BalanceEntity(1, day, amount, true);
         BalanceDto expected = new BalanceDto(1, null, day, amount, true);
         BalanceDto actual = converter.convertToDto(entity);
-        assertBalanceDtoEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
     @Test
@@ -38,7 +37,7 @@ public class BalanceConverterTest {
         BalanceDto dto = new BalanceDto(1, "account1", day, amount, false);
         BalanceEntity expected = new BalanceEntity(1, day, amount, false);
         BalanceEntity actual = converter.convertToEntity(dto);
-        assertBalanceEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
     @Test

@@ -1,7 +1,6 @@
 package org.kirillgaidai.income.dao.impl;
 
 import org.kirillgaidai.income.dao.entity.RateEntity;
-import org.kirillgaidai.income.dao.exception.IncomeDuplicateDaoException;
 import org.kirillgaidai.income.dao.intf.IRateDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -80,14 +79,14 @@ public class RateDao implements IRateDao {
 
         if (entity.getDay() == null && rowCount != 0) {
             // Can not insert rate without date in case it already exists
-            throw new IncomeDuplicateDaoException("Rate entity already exists");
+            throw new RuntimeException("Rate entity already exists");
         } else if (entity.getDay() != null) {
             sql = "SELECT COUNT(*) FROM rates WHERE (currency_id_from = :currency_id_from) " +
                     "AND (currency_id_to = :currency_id_to) AND (day = :day)";
             rowCount = namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
             if (rowCount != 0) {
                 // Can not specify two rates for one day
-                throw new IncomeDuplicateDaoException("Rate entity already exists");
+                throw new RuntimeException("Rate entity already exists");
             }
         }
 

@@ -26,7 +26,7 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     }
 
     @Override
-    public List<OperationEntity> getEntityList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
+    public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
         if (accountIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -41,7 +41,7 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     }
 
     @Override
-    public List<OperationEntity> getEntityList(Set<Integer> accountIds, LocalDate day) {
+    public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day) {
         if (accountIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -55,7 +55,7 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     }
 
     @Override
-    public List<OperationEntity> getEntityList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
+    public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
         if (accountIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -85,6 +85,19 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
         params.put(ID_FIELD, entity.getId());
         params.put("amount", entity.getAmount());
         params.put("note", entity.getNote());
+        return params;
+    }
+
+    @Override
+    protected String getUpdateOptimisticSql() {
+        return getUpdateSql() + " AND (amount = :old_amount) AND (note = :old_note)";
+    }
+
+    @Override
+    protected Map<String, Object> getUpdateOptimisticParamsMap(OperationEntity newEntity, OperationEntity oldEntity) {
+        Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_amount", oldEntity.getAmount());
+        params.put("old_note", oldEntity.getNote());
         return params;
     }
 
@@ -121,4 +134,15 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
         return "DELETE FROM operations WHERE id = :id";
     }
 
+    @Override
+    protected String getDeleteOptimisticSql() {
+        return "DELETE FROM operations WHERE (id = :id) AND " +
+                "(account_id = :account_id) AND (category_id = :category_id) AND " +
+                "(amount = :amount) AND (note = :note)";
+    }
+
+    @Override
+    protected Map<String, Object> getDeleteOptimisticParamsMap(OperationEntity entity) {
+        return getUpdateParamsMap(entity);
+    }
 }

@@ -2,7 +2,6 @@ package org.kirillgaidai.income.dao.rowmappers;
 
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.RateEntity;
-import org.kirillgaidai.income.dao.utils.PersistenceTestUtils;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.math.BigDecimal;
@@ -10,7 +9,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 
-import static org.kirillgaidai.income.dao.utils.PersistenceTestUtils.assertRateEntityEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -29,7 +28,7 @@ public class RateEntityRowMapperTest {
         doReturn(value).when(resultSet).getBigDecimal("value");
         RateEntity expected = new RateEntity(2, 3, day, value);
         RateEntity actual = rateEntityRowMapper.mapRow(resultSet, 1);
-        assertRateEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
     @Test
@@ -44,7 +43,7 @@ public class RateEntityRowMapperTest {
         doReturn(value).when(resultSet).getBigDecimal("value");
         RateEntity expected = new RateEntity(2, 3, null, value);
         RateEntity actual = rateEntityRowMapper.mapRow(resultSet, 1);
-        assertRateEntityEquals(expected, actual);
+        assertEntityEquals(expected, actual);
     }
 
 }
