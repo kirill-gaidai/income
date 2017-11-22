@@ -8,6 +8,9 @@ import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
 import org.kirillgaidai.income.service.intf.IBalanceService;
+import org.kirillgaidai.income.service.util.ServiceHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +25,16 @@ import java.util.stream.Collectors;
 @Service
 public class BalanceService extends GenericService<BalanceDto, BalanceEntity> implements IBalanceService {
 
+    final private static Logger LOGGER = LoggerFactory.getLogger(BalanceService.class);
+
     final private IAccountDao accountDao;
+    final private ServiceHelper serviceHelper;
 
     @Autowired
     public BalanceService(
             IBalanceDao balanceDao,
             IAccountDao accountDao,
+            ServiceHelper serviceHelper,
             IGenericConverter<BalanceEntity, BalanceDto> converter) {
         super(balanceDao, converter);
         this.accountDao = accountDao;
@@ -62,6 +69,12 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
         }
         // otherwise, returning zero
         return populateAdditionalFields(new BalanceDto(accountId, null, day, BigDecimal.ZERO, false));
+    }
+
+    @Override
+    public BalanceDto update(BalanceDto dto) {
+        LOGGER.debug("Entering method");
+        return super.update(dto);
     }
 
     @Override

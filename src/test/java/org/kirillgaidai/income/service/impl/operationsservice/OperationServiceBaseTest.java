@@ -9,19 +9,16 @@ import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.converter.OperationConverter;
 import org.kirillgaidai.income.service.dto.OperationDto;
 import org.kirillgaidai.income.service.impl.OperationService;
+import org.kirillgaidai.income.service.impl.ServiceBaseTest;
 import org.kirillgaidai.income.service.intf.IOperationService;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
-public abstract class OperationServiceBaseTest {
+public abstract class OperationServiceBaseTest extends ServiceBaseTest {
 
-    final protected IOperationDao operationDao = mock(IOperationDao.class);
-    final protected IBalanceDao balanceDao = mock(IBalanceDao.class);
-    final protected IAccountDao accountDao = mock(IAccountDao.class);
-    final protected ICategoryDao categoryDao = mock(ICategoryDao.class);
-    final protected IGenericConverter<OperationEntity, OperationDto> converter = mock(OperationConverter.class);
-    final protected IOperationService service = spy(new OperationService(accountDao, operationDao, balanceDao,
-            categoryDao, converter));
+    final protected IGenericConverter<OperationEntity, OperationDto> converter = new OperationConverter();
+    final protected IOperationService service =
+            new OperationService(accountDao, operationDao, balanceDao, categoryDao, converter);
 
 }

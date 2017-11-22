@@ -22,9 +22,8 @@ import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class BalanceServiceSaveTest {
+public class BalanceServiceSaveTest extends BalanceServiceBaseTest {
 
     final private IBalanceDao balanceDao = mock(BalanceDao.class);
     final private IAccountDao accountDao = mock(AccountDao.class);
@@ -38,7 +37,7 @@ public class BalanceServiceSaveTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -51,7 +50,7 @@ public class BalanceServiceSaveTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -65,7 +64,7 @@ public class BalanceServiceSaveTest {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
         verify(accountDao).get(1);
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -85,7 +84,7 @@ public class BalanceServiceSaveTest {
         verify(accountDao).get(1);
         verify(balanceDao).update(balanceEntity);
         verify(converter).convertToEntity(balanceDto);
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -109,7 +108,7 @@ public class BalanceServiceSaveTest {
         verify(balanceDao).update(balanceEntity);
         verify(balanceDao).insert(balanceEntity);
         verify(converter).convertToEntity(dto);
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
 }

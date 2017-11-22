@@ -21,9 +21,8 @@ import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertBalan
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class BalanceServiceGetTest {
+public class BalanceServiceGetTest extends BalanceServiceBaseTest {
 
     final private IBalanceDao balanceDao = mock(BalanceDao.class);
     final private IAccountDao accountDao = mock(AccountDao.class);
@@ -38,7 +37,7 @@ public class BalanceServiceGetTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -48,7 +47,7 @@ public class BalanceServiceGetTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -67,7 +66,7 @@ public class BalanceServiceGetTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -89,7 +88,7 @@ public class BalanceServiceGetTest {
         verify(accountDao).get(accountId);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -112,7 +111,7 @@ public class BalanceServiceGetTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -135,7 +134,7 @@ public class BalanceServiceGetTest {
         verify(accountDao).get(accountId);
         verify(balanceDao).get(accountId, thisDay);
         verify(converter).convertToDto(balanceEntity);
-        verifyNoMoreInteractions(balanceDao, accountDao, converter);
+        verifyNoMoreInteractions();
     }
 
 }

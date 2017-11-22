@@ -5,11 +5,14 @@ import org.kirillgaidai.income.dao.intf.IGenericDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.IGenericDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceException;
+import org.kirillgaidai.income.service.exception.IncomeServiceIntegrityException;
+import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.IGenericService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +47,7 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
         int affectedRows = dao.insert(entity);
         if (affectedRows != 1) {
             LOGGER.error("Dto isn't created");
-            throw new IncomeServiceException("Dto isn't created");
+            throw new IncomeServiceIntegrityException();
         }
         // additional fields are set in the overriding method which wraps this method
         return converter.convertToDto(entity);
@@ -53,11 +56,16 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
     @Override
     public T update(T dto) {
         LOGGER.debug("Entering method");
+        return update(dto, () -> new IncomeServiceNotFoundException("Entity not found"));
+    }
+
+    final protected T update(T dto, Supplier<? extends IncomeServiceNotFoundException> notFoundExceptionSupplier) {
+        LOGGER.debug("Entering method");
         E entity = converter.convertToEntity(dto);
         int affectedRows = dao.update(entity);
         if (affectedRows != 1) {
-            LOGGER.error("Dto isn't updated");
-            throw new IncomeServiceException("Dto isn't updated");
+            LOGGER.error("Entity not found");
+            throw notFoundExceptionSupplier.get();
         }
         // additional fields are set in the overriding method which wraps this method
         return converter.convertToDto(entity);
@@ -103,6 +111,14 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
     protected T populateAdditionalFields(T dto) {
         LOGGER.debug("Entering method");
         return dto;
+    }
+
+    protected void validateDto(T dto) {
+        LOGGER.debug("Entering method");
+        if (dto == null) {
+            LOGGER.error("Dto is null");
+            throw new IllegalArgumentException("Dto is null");
+        }
     }
 
 }

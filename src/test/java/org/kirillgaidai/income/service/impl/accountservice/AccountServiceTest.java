@@ -1,20 +1,11 @@
 package org.kirillgaidai.income.service.impl.accountservice;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
-import org.kirillgaidai.income.dao.impl.AccountDao;
-import org.kirillgaidai.income.dao.impl.CurrencyDao;
-import org.kirillgaidai.income.dao.intf.IAccountDao;
-import org.kirillgaidai.income.dao.intf.ICurrencyDao;
-import org.kirillgaidai.income.service.converter.AccountConverter;
-import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.AccountDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
 import org.kirillgaidai.income.service.exception.IncomeServiceCurrencyNotFoundException;
-import org.kirillgaidai.income.service.impl.AccountService;
-import org.kirillgaidai.income.service.intf.IAccountService;
 import org.mockito.internal.util.collections.Sets;
 
 import java.util.Arrays;
@@ -25,11 +16,8 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertAccountDtoEquals;
 import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertAccountDtoListEquals;
-import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class AccountServiceTest extends AccountServiceBaseTest {
 
@@ -65,7 +53,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(converter).convertToDto(anAccountEntityList);
         }
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -105,7 +93,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(converter).convertToDto(anAccountEntityList);
         }
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -115,7 +103,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         List<AccountDto> actual = service.getList();
         assertAccountDtoListEquals(expected, actual);
         verify(accountDao).getList();
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -151,7 +139,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(converter).convertToDto(anAccountEntityList);
         }
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -189,7 +177,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         for (AccountEntity anAccountEntityList : accountEntityList) {
             verify(converter).convertToDto(anAccountEntityList);
         }
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -200,7 +188,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         List<AccountDto> actual = service.getList();
         assertAccountDtoListEquals(expected, actual);
         verify(accountDao).getList();
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -210,7 +198,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -221,7 +209,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
         verify(accountDao).get(1);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -240,7 +228,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
 
         verify(accountDao).get(1);
         verify(converter).convertToDto(accountEntity);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -258,7 +246,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         verify(accountDao).get(1);
         verify(converter).convertToDto(accountEntity);
         verify(currencyDao).get(11);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -275,7 +263,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         verify(accountDao).get(1);
         verify(currencyDao).get(11);
         verify(converter).convertToDto(accountEntity);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -285,7 +273,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -297,7 +285,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
             assertEquals("Account with id 1 not found", e.getMessage());
         }
         verify(accountDao).delete(1);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -305,7 +293,7 @@ public class AccountServiceTest extends AccountServiceBaseTest {
         doReturn(1).when(accountDao).delete(1);
         service.delete(1);
         verify(accountDao).delete(1);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
 }

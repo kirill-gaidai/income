@@ -21,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Operation service create test
@@ -57,7 +56,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         }
 
         verify(accountDao).get(accountId);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -88,7 +87,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -125,7 +124,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(categoryDao).get(categoryId);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, thisDay);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -178,7 +177,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
 
         assertEntityEquals(thisBalanceEntity, argumentCaptor.getValue());
     }
@@ -233,7 +232,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
 
         assertEntityEquals(prevBalanceEntity, argumentCaptor.getValue());
     }
@@ -284,7 +283,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -339,7 +338,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -395,7 +394,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -450,7 +449,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -506,7 +505,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -562,7 +561,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -624,7 +623,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -684,7 +683,7 @@ public class OperationServiceCreateTest extends OperationServiceBaseTest {
         verify(converter).convertToEntity(origDto);
         verify(converter).convertToDto(entity);
         verify(operationDao).insert(entity);
-        verifyNoMoreInteractions(accountDao, categoryDao, balanceDao, operationDao, converter);
+        verifyNoMoreInteractions();
     }
 
 }

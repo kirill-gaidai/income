@@ -6,6 +6,8 @@ import org.kirillgaidai.income.dao.intf.ISerialDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.ISerialDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceException;
+import org.kirillgaidai.income.service.exception.IncomeServiceIntegrityException;
+import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.ISerialService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,15 +89,35 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
     @Override
     public void delete(Integer id) {
         LOGGER.debug("Entering method");
-        if (id == null) {
-            throw new IllegalArgumentException("null");
+        E entity = getDao().get(id);
+        if (entity != null) {
+            if (getDao().delete(entity) == 1) {
+                return;
+            }
+            LOGGER.error("Integrity exception when deleting entity with id {}", entity.getId());
+            throw new IncomeServiceIntegrityException();
         }
-        int affectedRows = getDao().delete(id);
-        if (affectedRows == 0) {
-            throwNotFoundException(id);
-        }
+        LOGGER.error("Entity with id {} not found", id);
+        throwNotFoundException(id);
     }
 
-    protected abstract void throwNotFoundException(Integer id);
+    protected void throwNotFoundException(Integer id) {
+        LOGGER.debug("Entering method");
+        throw new IncomeServiceNotFoundException(String.format("Entity with id %d not found", id));
+    };
+
+    protected void validateDtoWithId(T dto) {
+        LOGGER.debug("Entering method");
+        validateDto(dto);
+        validateId(dto.getId());
+    }
+
+    protected void validateId(Integer id) {
+        LOGGER.debug("Entering method");
+        if (id == null) {
+            LOGGER.error("Id is null");
+            throw new IllegalArgumentException("Id is null");
+        }
+    }
 
 }

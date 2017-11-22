@@ -73,7 +73,8 @@ public class CategoryDao extends SerialDao<CategoryEntity> implements ICategoryD
 
     @Override
     protected String getDeleteOptimisticSql() {
-        return "DELETE FROM categories WHERE (id = :id) AND (sort = :sort) AND (title = :title)";
+        return "DELETE FROM categories WHERE (id = :id) AND (sort = :sort) AND (title = :title) " +
+                "AND (0 = (SELECT COUNT(*) FROM operations WHERE category_id = :id))";
     }
 
     @Override

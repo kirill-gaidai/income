@@ -449,7 +449,7 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
 
     @Override
     protected void throwNotFoundException(Integer id) {
-        LOGGER.error("Operation with id {} not found", id);
+        LOGGER.debug("Entering method");
         throw new IncomeServiceOperationNotFoundException(id);
     }
 

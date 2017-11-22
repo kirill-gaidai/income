@@ -68,4 +68,12 @@ public interface IBalanceDao extends IGenericDao<BalanceEntity> {
      */
     int delete(Integer accountId, LocalDate day);
 
+    /**
+     * Returns number of balances by account id
+     *
+     * @param accountId account id
+     * @return number of balances
+     */
+    int getCountByAccountId(Integer accountId);
+
 }

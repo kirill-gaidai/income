@@ -3,7 +3,6 @@ package org.kirillgaidai.income.service.intf;
 import org.kirillgaidai.income.service.dto.IGenericDto;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Service generic interface for {@link org.kirillgaidai.income.dao.entity.IGenericEntity}

@@ -5,14 +5,69 @@ import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.service.dto.AccountDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceCurrencyNotFoundException;
+import org.kirillgaidai.income.service.exception.IncomeServiceIntegrityException;
+import org.kirillgaidai.income.utils.TestUtils;
+import org.mockito.ArgumentCaptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
+import static org.kirillgaidai.income.utils.TestUtils.getSerialEntityInsertAnswer;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class AccountServiceUpdateTest extends AccountServiceBaseTest {
+
+    /**
+     * Test null argument
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNull() throws Exception {
+        try {
+            service.update(null);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Dto is null", e.getMessage());
+        }
+
+        verifyNoMoreInteractions();
+    }
+
+    /**
+     * Test currency is null
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testCurrencyIsNull() throws Exception {
+        AccountDto accountDto = new AccountDto(null, null, null, null, "01", "accountTitle");
+
+        try {
+            service.update(accountDto);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Currency id is null", e.getMessage());
+        }
+
+        verifyNoMoreInteractions();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testIdIsNull() throws Exception {
+        AccountDto accountDto = new AccountDto(null, 2, null, null, "01", "accountTitle");
+
+        try {
+            service.update(accountDto);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Id is null", e.getMessage());
+        }
+
+        verifyNoMoreInteractions();
+    }
 
     /**
      * Test currency isn't found
@@ -21,9 +76,10 @@ public class AccountServiceUpdateTest extends AccountServiceBaseTest {
      */
     @Test
     public void testCurrencyNotFound() throws Exception {
+        Integer accountId = 1;
         Integer currencyId = 2;
 
-        AccountDto accountDto = new AccountDto(null, currencyId, null, null, "01", "accountTitle");
+        AccountDto accountDto = new AccountDto(accountId, currencyId, null, null, "01", "accountTitle");
 
         doReturn(null).when(currencyDao).get(currencyId);
 
@@ -34,7 +90,43 @@ public class AccountServiceUpdateTest extends AccountServiceBaseTest {
         }
 
         verify(currencyDao).get(currencyId);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
+    }
+
+    /**
+     * Test account isn't found
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNotFound() throws Exception {
+        Integer accountId = 1;
+        Integer currencyId = 2;
+        String accountSort = "01";
+        String accountTitle = "accountTitle";
+        String currencyCode = "CC1";
+        String currencyTitle = "currencyTitle";
+
+        AccountDto accountDto = new AccountDto(accountId, currencyId, null, null, accountSort, accountTitle);
+        CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, currencyCode, currencyTitle, 2);
+
+        doReturn(currencyEntity).when(currencyDao).get(currencyId);
+        doReturn(0).when(accountDao).update(any(AccountEntity.class));
+
+        try {
+            service.update(accountDto);
+        } catch (IncomeServiceIntegrityException e) {
+            assertEquals("Dto isn't updated", e.getMessage());
+        }
+
+        ArgumentCaptor<AccountEntity> argumentCaptor = ArgumentCaptor.forClass(AccountEntity.class);
+
+        verify(currencyDao).get(currencyId);
+        verify(accountDao).update(argumentCaptor.capture());
+        verifyNoMoreInteractions();
+
+        AccountEntity expectedAccountEntity = new AccountEntity(accountId, currencyId, accountSort, accountTitle);
+        assertEntityEquals(expectedAccountEntity, argumentCaptor.getValue());
     }
 
     /**
@@ -51,27 +143,25 @@ public class AccountServiceUpdateTest extends AccountServiceBaseTest {
         String currencyCode = "CC1";
         String currencyTitle = "currencyTitle";
 
-        AccountDto accountDto = new AccountDto(null, currencyId, null, null, accountSort, accountTitle);
-        AccountEntity accountEntity = new AccountEntity(null, currencyId, accountSort, accountTitle);
+        AccountDto accountDto = new AccountDto(accountId, currencyId, null, null, accountSort, accountTitle);
         CurrencyEntity currencyEntity = new CurrencyEntity(currencyId, currencyCode, currencyTitle, 2);
-        AccountDto newAccountDto = new AccountDto(accountId, currencyId, null, null, accountSort, accountTitle);
 
         doReturn(currencyEntity).when(currencyDao).get(currencyId);
-        doReturn(accountEntity).when(converter).convertToEntity(accountDto);
-        doReturn(newAccountDto).when(converter).convertToDto(accountEntity);
-        doReturn(1).when(accountDao).update(accountEntity);
+        doReturn(1).when(accountDao).update(any(AccountEntity.class));
 
-        AccountDto expected =
+        AccountDto expectedAccountDto =
                 new AccountDto(accountId, currencyId, currencyCode, currencyTitle, accountSort, accountTitle);
-        AccountDto actual = service.create(accountDto);
-        assertEntityEquals(expected, actual);
+        AccountDto actualAccountDto = service.update(accountDto);
+        assertEntityEquals(expectedAccountDto, actualAccountDto);
+
+        ArgumentCaptor<AccountEntity> argumentCaptor = ArgumentCaptor.forClass(AccountEntity.class);
 
         verify(currencyDao).get(currencyId);
-        verify(converter).convertToEntity(accountDto);
-        verify(converter).convertToDto(accountEntity);
-        verify(accountDao).insert(accountEntity);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
-    }
+        verify(accountDao).update(argumentCaptor.capture());
+        verifyNoMoreInteractions();
 
+        AccountEntity expectedAccountEntity = new AccountEntity(accountId, currencyId, accountSort, accountTitle);
+        assertEntityEquals(expectedAccountEntity, argumentCaptor.getValue());
+    }
 
 }

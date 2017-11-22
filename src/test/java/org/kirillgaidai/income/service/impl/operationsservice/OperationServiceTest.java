@@ -18,7 +18,6 @@ import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertOpera
 import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertOperationDtoListEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class OperationServiceTest extends OperationServiceBaseTest {
 
@@ -69,7 +68,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         OperationDto expected = new OperationDto(null, null, null, null, null, day, BigDecimal.ZERO, null);
         OperationDto actual = service.getDto(Sets.newSet(1, 2), null, day);
         assertOperationDtoEquals(expected, actual);
-        verifyNoMoreInteractions(operationDao, accountDao, categoryDao, balanceDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -82,7 +81,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         OperationDto actual = service.getDto(Collections.singleton(accountId), null, day);
         assertOperationDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
-        verifyNoMoreInteractions(operationDao, accountDao, categoryDao, balanceDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -95,7 +94,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         OperationDto actual = service.getDto(Sets.newSet(1, 2), categoryId, day);
         assertOperationDtoEquals(expected, actual);
         verify(categoryDao).get(categoryId);
-        verifyNoMoreInteractions(operationDao, accountDao, categoryDao, balanceDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -113,7 +112,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         assertOperationDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
-        verifyNoMoreInteractions(operationDao, accountDao, categoryDao, balanceDao, converter);
+        verifyNoMoreInteractions();
     }
 
 }

@@ -8,4 +8,7 @@ import org.kirillgaidai.income.dao.entity.AccountEntity;
  * @author Kirill Gaidai
  */
 public interface IAccountDao extends ISerialDao<AccountEntity> {
+
+    int getCountByCurrencyId(Integer currencyId);
+
 }

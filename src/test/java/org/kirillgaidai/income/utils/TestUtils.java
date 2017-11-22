@@ -1,6 +1,9 @@
 package org.kirillgaidai.income.utils;
 
 import junit.framework.AssertionFailedError;
+import org.kirillgaidai.income.dao.entity.ISerialEntity;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -56,6 +59,13 @@ public class TestUtils {
 
     public static void throwUnreachableException() {
         throw new AssertionFailedError("Unreachable point");
+    }
+
+    public static Answer<Integer> getSerialEntityInsertAnswer(Integer id) {
+        return invocation -> {
+            ((ISerialEntity) invocation.getArgument(0)).setId(id);
+            return 1;
+        };
     }
 
 }

@@ -4,23 +4,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
-import org.kirillgaidai.income.dao.impl.AccountDao;
-import org.kirillgaidai.income.dao.impl.CurrencyDao;
-import org.kirillgaidai.income.dao.intf.IAccountDao;
-import org.kirillgaidai.income.dao.intf.ICurrencyDao;
-import org.kirillgaidai.income.service.converter.AccountConverter;
-import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.AccountDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
-import org.kirillgaidai.income.service.impl.AccountService;
-import org.kirillgaidai.income.service.intf.IAccountService;
 
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @Ignore
 public class AccountServiceSaveTest extends AccountServiceBaseTest {
@@ -32,7 +22,7 @@ public class AccountServiceSaveTest extends AccountServiceBaseTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -53,7 +43,7 @@ public class AccountServiceSaveTest extends AccountServiceBaseTest {
         verify(converter).convertToEntity(accountDto);
         verify(converter).convertToDto(accountEntity);
         verify(accountDao).insert(accountEntity);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -74,7 +64,7 @@ public class AccountServiceSaveTest extends AccountServiceBaseTest {
         verify(converter).convertToEntity(accountDto);
         verify(converter).convertToDto(accountEntity);
         verify(accountDao).update(accountEntity);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
     @Test
@@ -90,7 +80,7 @@ public class AccountServiceSaveTest extends AccountServiceBaseTest {
         }
         verify(converter).convertToEntity(accountDto);
         verify(accountDao).update(accountEntity);
-        verifyNoMoreInteractions(accountDao, currencyDao, converter);
+        verifyNoMoreInteractions();
     }
 
 }

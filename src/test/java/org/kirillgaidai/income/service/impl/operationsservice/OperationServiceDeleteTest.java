@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * {@link org.kirillgaidai.income.service.impl.OperationService#delete(Integer)} test
@@ -43,7 +42,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         }
 
         verify(operationDao).get(operationId);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -77,7 +76,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
 
         verify(operationDao).get(operationId);
         verify(balanceDao).get(accountId, thisDay);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -111,7 +110,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(operationDao).get(operationId);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -145,7 +144,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -185,7 +184,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(thisBalanceEntity));
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("11.25"), false);
         assertEntityEquals(expected, argumentCaptor.getValue());
@@ -226,7 +225,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -266,7 +265,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(prevBalanceEntity));
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expected = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
         assertEntityEquals(expected, argumentCaptor.getValue());
@@ -307,7 +306,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
     }
 
     /**
@@ -346,7 +345,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(thisBalanceEntity));
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
         assertEntityEquals(expected, argumentCaptor.getValue());
@@ -392,7 +391,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(thisBalanceEntity));
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expected = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
         assertEntityEquals(expected, argumentCaptor.getValue());
@@ -438,7 +437,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(prevBalanceEntity));
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
 
         BalanceEntity expected = new BalanceEntity(accountId, prevDay, new BigDecimal("8.75"), false);
         assertEntityEquals(expected, argumentCaptor.getValue());
@@ -483,7 +482,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(operationDao).delete(operationEntity);
-        verifyNoMoreInteractions(accountDao, operationDao, balanceDao, categoryDao, converter);
+        verifyNoMoreInteractions();
     }
 
 }

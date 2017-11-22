@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,12 +77,21 @@ public class AccountDao extends SerialDao<AccountEntity> implements IAccountDao 
     @Override
     protected String getDeleteOptimisticSql() {
         return "DELETE FROM accounts " +
-                "WHERE (id = :id) AND (currency_id = :currency_id) AND (sort = :sort) AND (title = :title)";
+                "WHERE (id = :id) AND (currency_id = :currency_id) AND (sort = :sort) AND (title = :title) " +
+                "AND (0 = (SELECT COUNT(*) FROM operations WHERE account_id = :id)) " +
+                "AND (0 = (SELECT COUNT(*) FROM balances WHERE account_id = :id))";
     }
 
     @Override
     protected Map<String, Object> getDeleteOptimisticParamsMap(AccountEntity entity) {
         return getUpdateParamsMap(entity);
+    }
+
+    @Override
+    public int getCountByCurrencyId(Integer currencyId) {
+        String sql = "SELECT COUNT(*) FROM accounts WHERE currency_id = :currency_id";
+        Map<String, Object> params = Collections.singletonMap("currency_id", currencyId);
+        return namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
     }
 
 }
