@@ -19,6 +19,6 @@ public abstract class OperationServiceBaseTest extends ServiceBaseTest {
 
     final protected IGenericConverter<OperationEntity, OperationDto> converter = new OperationConverter();
     final protected IOperationService service =
-            new OperationService(accountDao, operationDao, balanceDao, categoryDao, converter);
+            new OperationService(accountDao, operationDao, balanceDao, categoryDao, serviceHelper, converter);
 
 }

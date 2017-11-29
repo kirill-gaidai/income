@@ -68,7 +68,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         OperationDto expected = new OperationDto(null, null, null, null, null, day, BigDecimal.ZERO, null);
         OperationDto actual = service.getDto(Sets.newSet(1, 2), null, day);
         assertOperationDtoEquals(expected, actual);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -81,7 +81,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         OperationDto actual = service.getDto(Collections.singleton(accountId), null, day);
         assertOperationDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -94,7 +94,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         OperationDto actual = service.getDto(Sets.newSet(1, 2), categoryId, day);
         assertOperationDtoEquals(expected, actual);
         verify(categoryDao).get(categoryId);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -112,7 +112,7 @@ public class OperationServiceTest extends OperationServiceBaseTest {
         assertOperationDtoEquals(expected, actual);
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
 }

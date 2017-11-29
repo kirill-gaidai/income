@@ -2,12 +2,11 @@ package org.kirillgaidai.income.service.impl;
 
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.RateEntity;
-import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.dao.intf.IRateDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.RateDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceCurrencyNotFoundException;
 import org.kirillgaidai.income.service.intf.IRateService;
+import org.kirillgaidai.income.service.util.ServiceHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,28 +19,24 @@ import java.util.stream.Collectors;
 public class RateService implements IRateService {
 
     final private IRateDao rateDao;
-    final private ICurrencyDao currencyDao;
+    final private ServiceHelper serviceHelper;
     final private IGenericConverter<RateEntity, RateDto> rateConverter;
 
     @Autowired
-    public RateService(IRateDao rateDao, ICurrencyDao currencyDao, IGenericConverter<RateEntity, RateDto> rateConverter) {
+    public RateService(
+            IRateDao rateDao,
+            ServiceHelper serviceHelper,
+            IGenericConverter<RateEntity, RateDto> rateConverter) {
         this.rateDao = rateDao;
-        this.currencyDao = currencyDao;
+        this.serviceHelper = serviceHelper;
         this.rateConverter = rateConverter;
     }
 
     @Override
     public List<RateDto> getDtoList(
             Integer currencyIdFrom, Integer currencyIdTo, LocalDate firstDay, LocalDate lastDay) {
-        CurrencyEntity currencyEntityFrom = currencyDao.get(currencyIdFrom);
-        if (currencyEntityFrom == null) {
-            throw new IncomeServiceCurrencyNotFoundException(currencyIdFrom);
-        }
-
-        CurrencyEntity currencyEntityTo = currencyDao.get(currencyIdTo);
-        if (currencyEntityTo == null) {
-            throw new IncomeServiceCurrencyNotFoundException(currencyIdTo);
-        }
+        CurrencyEntity currencyEntityFrom = serviceHelper.getCurrencyEntity(currencyIdFrom);
+        CurrencyEntity currencyEntityTo = serviceHelper.getCurrencyEntity(currencyIdTo);
 
         List<RateDto> rateDtoList = rateDao.getEntityList(currencyIdFrom, currencyIdTo, firstDay, lastDay).stream()
                 .map(rateConverter::convertToDto).collect(Collectors.toList());
@@ -66,15 +61,8 @@ public class RateService implements IRateService {
 
     @Override
     public RateDto getDto(Integer currencyIdFrom, Integer currencyIdTo, LocalDate day) {
-        CurrencyEntity currencyEntityFrom = currencyDao.get(currencyIdFrom);
-        if (currencyEntityFrom == null) {
-            throw new IncomeServiceCurrencyNotFoundException(currencyIdFrom);
-        }
-
-        CurrencyEntity currencyEntityTo = currencyDao.get(currencyIdTo);
-        if (currencyEntityTo == null) {
-            throw new IncomeServiceCurrencyNotFoundException(currencyIdTo);
-        }
+        CurrencyEntity currencyEntityFrom = serviceHelper.getCurrencyEntity(currencyIdFrom);
+        CurrencyEntity currencyEntityTo = serviceHelper.getCurrencyEntity(currencyIdTo);
 
         RateEntity rateEntity = rateDao.getEntity(currencyIdFrom, currencyIdTo, day);
         if (rateEntity == null) {

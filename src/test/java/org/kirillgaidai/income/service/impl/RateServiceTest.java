@@ -3,12 +3,17 @@ package org.kirillgaidai.income.service.impl;
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.RateEntity;
+import org.kirillgaidai.income.dao.intf.IAccountDao;
+import org.kirillgaidai.income.dao.intf.IBalanceDao;
+import org.kirillgaidai.income.dao.intf.ICategoryDao;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
+import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.dao.intf.IRateDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.converter.RateConverter;
 import org.kirillgaidai.income.service.dto.RateDto;
 import org.kirillgaidai.income.service.intf.IRateService;
+import org.kirillgaidai.income.service.util.ServiceHelper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,10 +30,18 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class RateServiceTest {
 
-    final private IRateDao rateDao = mock(IRateDao.class);
+    final private IAccountDao accountDao = mock(IAccountDao.class);
+    final private IBalanceDao balanceDao = mock(IBalanceDao.class);
+    final private ICategoryDao categoryDao = mock(ICategoryDao.class);
     final private ICurrencyDao currencyDao = mock(ICurrencyDao.class);
+    final private IOperationDao operationDao = mock(IOperationDao.class);
+    final private IRateDao rateDao = mock(IRateDao.class);
+
+    final private ServiceHelper serviceHelper =
+            new ServiceHelper(accountDao, balanceDao, categoryDao, currencyDao, operationDao);
     final private IGenericConverter<RateEntity, RateDto> rateConverter = mock(RateConverter.class);
-    final private IRateService rateService = new RateService(rateDao, currencyDao, rateConverter);
+
+    final private IRateService rateService = new RateService(rateDao, serviceHelper, rateConverter);
 
     @Test
     public void testGetDtoList_FullList() throws Exception {

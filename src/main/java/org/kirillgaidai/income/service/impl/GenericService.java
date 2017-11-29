@@ -4,15 +4,12 @@ import org.kirillgaidai.income.dao.entity.IGenericEntity;
 import org.kirillgaidai.income.dao.intf.IGenericDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.IGenericDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceException;
-import org.kirillgaidai.income.service.exception.IncomeServiceIntegrityException;
-import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.IGenericService;
+import org.kirillgaidai.income.service.util.ServiceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -28,10 +25,12 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
 
     final protected IGenericDao<E> dao;
     final protected IGenericConverter<E, T> converter;
+    final protected ServiceHelper serviceHelper;
 
-    public GenericService(IGenericDao<E> dao, IGenericConverter<E, T> converter) {
+    public GenericService(IGenericDao<E> dao, IGenericConverter<E, T> converter, ServiceHelper serviceHelper) {
         this.dao = dao;
         this.converter = converter;
+        this.serviceHelper = serviceHelper;
     }
 
     @Override
@@ -40,59 +39,8 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
                 .collect(Collectors.toList()));
     }
 
-    @Override
-    public T create(T dto) {
-        LOGGER.debug("Entering method");
-        E entity = converter.convertToEntity(dto);
-        int affectedRows = dao.insert(entity);
-        if (affectedRows != 1) {
-            LOGGER.error("Dto isn't created");
-            throw new IncomeServiceIntegrityException();
-        }
-        // additional fields are set in the overriding method which wraps this method
-        return converter.convertToDto(entity);
-    }
-
-    @Override
-    public T update(T dto) {
-        LOGGER.debug("Entering method");
-        return update(dto, () -> new IncomeServiceNotFoundException("Entity not found"));
-    }
-
-    final protected T update(T dto, Supplier<? extends IncomeServiceNotFoundException> notFoundExceptionSupplier) {
-        LOGGER.debug("Entering method");
-        E entity = converter.convertToEntity(dto);
-        int affectedRows = dao.update(entity);
-        if (affectedRows != 1) {
-            LOGGER.error("Entity not found");
-            throw notFoundExceptionSupplier.get();
-        }
-        // additional fields are set in the overriding method which wraps this method
-        return converter.convertToDto(entity);
-    }
-
-    @Override
-    public T save(T dto) {
-        LOGGER.debug("Entering method");
-        E entity = converter.convertToEntity(dto);
-        int affectedRows = dao.update(entity);
-        if (affectedRows == 1) {
-            LOGGER.debug("Dto is inserted");
-            // additional fields are set in the overriding method which wraps this method
-            return converter.convertToDto(entity);
-        }
-        affectedRows = dao.insert(entity);
-        if (affectedRows == 1) {
-            LOGGER.debug("Dto is updated");
-            // additional fields are set in the overriding method which wraps this method
-            return converter.convertToDto(entity);
-        }
-        LOGGER.error("Dto isn't inserted or updated");
-        throw new IncomeServiceException("Dto isn't inserted or updated");
-    }
-
     /**
-     * Override to Populate additional fields for dto list. For reading methods only
+     * Override to populate additional fields for dto list. For reading methods only
      *
      * @param dtoList dto list
      * @return populated dto list
@@ -103,7 +51,7 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
     }
 
     /**
-     * Override to Populate additional fields for dto. For reading methods only
+     * Override to populate additional fields for dto. For reading methods only
      *
      * @param dto dto
      * @return populated dto
@@ -113,6 +61,11 @@ public abstract class GenericService<T extends IGenericDto, E extends IGenericEn
         return dto;
     }
 
+    /**
+     * Override to validate dto
+     *
+     * @param dto dto
+     */
     protected void validateDto(T dto) {
         LOGGER.debug("Entering method");
         if (dto == null) {

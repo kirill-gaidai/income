@@ -25,7 +25,7 @@ public abstract class ServiceBaseTest {
     final protected ServiceHelper serviceHelper =
             new ServiceHelper(accountDao, balanceDao, categoryDao, currencyDao, operationDao);
 
-    public void verifyNoMoreInteractions() {
+    public void verifyNoMoreDaoInteractions() {
         Mockito.verifyNoMoreInteractions(accountDao, balanceDao, categoryDao, currencyDao, operationDao);
     }
 

@@ -3,15 +3,7 @@ package org.kirillgaidai.income.service.impl.balanceservice;
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.BalanceEntity;
-import org.kirillgaidai.income.dao.impl.AccountDao;
-import org.kirillgaidai.income.dao.impl.BalanceDao;
-import org.kirillgaidai.income.dao.intf.IAccountDao;
-import org.kirillgaidai.income.dao.intf.IBalanceDao;
-import org.kirillgaidai.income.service.converter.BalanceConverter;
-import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.BalanceDto;
-import org.kirillgaidai.income.service.impl.BalanceService;
-import org.kirillgaidai.income.service.intf.IBalanceService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,35 +11,41 @@ import java.time.LocalDate;
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertBalanceDtoEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public class BalanceServiceGetTest extends BalanceServiceBaseTest {
 
-    final private IBalanceDao balanceDao = mock(BalanceDao.class);
-    final private IAccountDao accountDao = mock(AccountDao.class);
-    final private IGenericConverter<BalanceEntity, BalanceDto> converter = mock(BalanceConverter.class);
-    final private IBalanceService service = new BalanceService(balanceDao, accountDao, converter);
-
+    /**
+     * Test account id is null
+     *
+     * @throws Exception exception
+     */
     @Test
-    public void testAccountNull() throws Exception {
+    public void testAccountIdIsNull() throws Exception {
         LocalDate day = LocalDate.of(2017, 4, 12);
+
         try {
             service.get(null, day);
         } catch (IllegalArgumentException e) {
-            assertEquals("null", e.getMessage());
+            assertEquals("Account id is null", e.getMessage());
         }
-        verifyNoMoreInteractions();
+
+        verifyNoMoreDaoInteractions();
     }
 
+    /**
+     * Test day is null
+     *
+     * @throws Exception exception
+     */
     @Test
-    public void testDayNull() throws Exception {
+    public void testDayIsNull() throws Exception {
         try {
             service.get(1, null);
         } catch (IllegalArgumentException e) {
-            assertEquals("null", e.getMessage());
+            assertEquals("Day is null", e.getMessage());
         }
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -66,7 +64,7 @@ public class BalanceServiceGetTest extends BalanceServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -88,7 +86,7 @@ public class BalanceServiceGetTest extends BalanceServiceBaseTest {
         verify(accountDao).get(accountId);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -111,7 +109,7 @@ public class BalanceServiceGetTest extends BalanceServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -134,7 +132,7 @@ public class BalanceServiceGetTest extends BalanceServiceBaseTest {
         verify(accountDao).get(accountId);
         verify(balanceDao).get(accountId, thisDay);
         verify(converter).convertToDto(balanceEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
 }

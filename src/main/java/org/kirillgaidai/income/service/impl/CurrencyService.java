@@ -4,7 +4,6 @@ import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceCurrencyNotFoundException;
 import org.kirillgaidai.income.service.intf.ICurrencyService;
 import org.kirillgaidai.income.service.util.ServiceHelper;
 import org.slf4j.Logger;
@@ -17,50 +16,49 @@ public class CurrencyService extends SerialService<CurrencyDto, CurrencyEntity> 
 
     final private static Logger LOGGER = LoggerFactory.getLogger(CurrencyService.class);
 
-    final private ServiceHelper serviceHelper;
-
     @Autowired
     public CurrencyService(
             ICurrencyDao dao,
             ServiceHelper serviceHelper,
             IGenericConverter<CurrencyEntity, CurrencyDto> converter) {
-        super(dao, converter);
-        this.serviceHelper = serviceHelper;
+        super(dao, converter, serviceHelper);
+    }
+
+    @Override
+    public CurrencyDto get(Integer id) {
+        LOGGER.debug("Entering method");
+        validateId(id);
+        return converter.convertToDto(serviceHelper.getCurrencyEntity(id));
     }
 
     @Override
     public CurrencyDto create(CurrencyDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
-        return super.create(dto);
+        CurrencyEntity entity = converter.convertToEntity(dto);
+        serviceHelper.createCurrencyEntity(entity);
+        return converter.convertToDto(entity);
     }
 
     @Override
     public CurrencyDto update(CurrencyDto dto) {
         LOGGER.debug("Entering method");
-        validateDtoWithId(dto);
-        return super.update(dto);
-    }
-
-    @Override
-    public CurrencyDto save(CurrencyDto dto) {
-        LOGGER.debug("Entering method");
         validateDto(dto);
-        return super.save(dto);
+        Integer id = dto.getId();
+        validateId(id);
+        CurrencyEntity oldEntity = serviceHelper.getCurrencyEntity(id);
+        CurrencyEntity newEntity = converter.convertToEntity(dto);
+        serviceHelper.updateCurrencyEntity(newEntity, oldEntity);
+        return converter.convertToDto(newEntity);
     }
 
     @Override
     public void delete(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);
+        CurrencyEntity entity = serviceHelper.getCurrencyEntity(id);
         serviceHelper.checkCurrencyDependentAccounts(id);
-        super.delete(id);
-    }
-
-    @Override
-    protected void throwNotFoundException(Integer id) {
-        LOGGER.debug("Entering method");
-        throw new IncomeServiceCurrencyNotFoundException(id);
+        serviceHelper.deleteCurrencyEntity(entity);
     }
 
 }

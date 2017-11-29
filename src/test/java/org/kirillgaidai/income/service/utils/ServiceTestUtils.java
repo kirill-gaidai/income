@@ -3,7 +3,6 @@ package org.kirillgaidai.income.service.utils;
 import org.kirillgaidai.income.service.dto.AccountDto;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.dto.CategoryDto;
-import org.kirillgaidai.income.service.dto.CurrencyDto;
 import org.kirillgaidai.income.service.dto.OperationDto;
 import org.kirillgaidai.income.service.dto.RateDto;
 import org.kirillgaidai.income.service.dto.SummaryDto;
@@ -60,22 +59,6 @@ public class ServiceTestUtils {
         assertEquals(expected.size(), actual.size());
         for (int index = 0; index < expected.size(); index++) {
             assertCategoryDtoEquals(expected.get(index), actual.get(index));
-        }
-    }
-
-    public static void assertCurrencyDtoEquals(CurrencyDto expected, CurrencyDto actual) {
-        assertNotNull(actual);
-        assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getCode(), actual.getCode());
-        assertEquals(expected.getTitle(), actual.getTitle());
-        assertEquals(expected.getAccuracy(), actual.getAccuracy());
-    }
-
-    public static void assertCurrencyDtoListEquals(List<CurrencyDto> expected, List<CurrencyDto> actual) {
-        assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-        for (int index = 0; index < expected.size(); index++) {
-            assertCurrencyDtoEquals(expected.get(index), actual.get(index));
         }
     }
 

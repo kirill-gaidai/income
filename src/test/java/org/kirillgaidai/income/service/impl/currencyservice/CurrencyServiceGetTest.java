@@ -3,7 +3,7 @@ package org.kirillgaidai.income.service.impl.currencyservice;
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceCurrencyNotFoundException;
+import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
@@ -19,18 +19,18 @@ public class CurrencyServiceGetTest extends CurrencyServiceBaseTest {
         } catch (IllegalArgumentException e) {
             assertEquals("null", e.getMessage());
         }
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
     public void testNotFound() throws Exception {
         try {
             service.get(1);
-        } catch (IncomeServiceCurrencyNotFoundException e) {
+        } catch (IncomeServiceNotFoundException e) {
             assertEquals("Currency with id 1 not found", e.getMessage());
         }
         verify(currencyDao).get(1);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     @Test
@@ -46,7 +46,7 @@ public class CurrencyServiceGetTest extends CurrencyServiceBaseTest {
 
         verify(currencyDao).get(1);
         verify(converter).convertToDto(entity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
 }

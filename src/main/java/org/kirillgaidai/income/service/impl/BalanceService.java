@@ -6,7 +6,7 @@ import org.kirillgaidai.income.dao.intf.IAccountDao;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.BalanceDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
+import org.kirillgaidai.income.service.exception.IncomeServiceDuplicateException;
 import org.kirillgaidai.income.service.intf.IBalanceService;
 import org.kirillgaidai.income.service.util.ServiceHelper;
 import org.slf4j.Logger;
@@ -28,7 +28,6 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     final private static Logger LOGGER = LoggerFactory.getLogger(BalanceService.class);
 
     final private IAccountDao accountDao;
-    final private ServiceHelper serviceHelper;
 
     @Autowired
     public BalanceService(
@@ -36,7 +35,7 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
             IAccountDao accountDao,
             ServiceHelper serviceHelper,
             IGenericConverter<BalanceEntity, BalanceDto> converter) {
-        super(balanceDao, converter);
+        super(balanceDao, converter, serviceHelper);
         this.accountDao = accountDao;
     }
 
@@ -46,9 +45,8 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
 
     @Override
     public BalanceDto get(Integer accountId, LocalDate day) {
-        if (accountId == null || day == null) {
-            throw new IllegalArgumentException("null");
-        }
+        LOGGER.debug("Entering method");
+        validateAccountIdAndDay(accountId, day);
 
         // if balance exists for specified account and day, then we will return it
         BalanceEntity balanceEntity = getDao().get(accountId, day);
@@ -72,40 +70,78 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     }
 
     @Override
+    public BalanceDto create(BalanceDto dto) {
+        LOGGER.debug("Entering method");
+
+        validateDto(dto);
+
+        Integer accountId = dto.getAccountId();
+        LocalDate day = dto.getDay();
+
+        validateAccountIdAndDay(accountId, day);
+
+        AccountEntity accountEntity = serviceHelper.getAccountEntity(dto.getAccountId());
+
+        if (getDao().get(accountId, day) != null) {
+            String message = String.format("Balance for account with id %d on %s already exists", accountId, day);
+            LOGGER.error(message);
+            throw new IncomeServiceDuplicateException(message);
+        }
+
+        BalanceEntity entity = converter.convertToEntity(dto);
+        serviceHelper.createBalanceEntity(entity);
+        BalanceDto result = converter.convertToDto(entity);
+        result.setAccountTitle(accountEntity.getTitle());
+        return result;
+    }
+
+    @Override
     public BalanceDto update(BalanceDto dto) {
         LOGGER.debug("Entering method");
-        return super.update(dto);
+
+        validateDto(dto);
+        validateAccountIdAndDay(dto.getAccountId(), dto.getDay());
+
+        BalanceEntity oldBalanceEntity = serviceHelper.getBalanceEntity(dto.getAccountId(), dto.getDay(), 0);
+        AccountEntity accountEntity = serviceHelper.getAccountEntity(dto.getAccountId());
+
+        BalanceEntity entity = converter.convertToEntity(dto);
+        serviceHelper.updateBalanceEntity(entity, oldBalanceEntity);
+        BalanceDto result = converter.convertToDto(entity);
+
+        result.setAccountTitle(accountEntity.getTitle());
+        return result;
     }
 
     @Override
     public BalanceDto save(BalanceDto dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("null");
-        }
+        LOGGER.debug("Entering method");
+
+        validateDto(dto);
 
         Integer accountId = dto.getAccountId();
         LocalDate day = dto.getDay();
-        if (day == null || accountId == null) {
-            throw new IllegalArgumentException("null");
+
+        validateAccountIdAndDay(accountId, day);
+
+        AccountEntity accountEntity = serviceHelper.getAccountEntity(accountId);
+        BalanceEntity newBalanceEntity = converter.convertToEntity(dto);
+
+        BalanceEntity oldBalanceEntity = getDao().get(accountId, day);
+        if (oldBalanceEntity == null) {
+            serviceHelper.createBalanceEntity(newBalanceEntity);
+        } else {
+            serviceHelper.updateBalanceEntity(newBalanceEntity, oldBalanceEntity);
         }
 
-        AccountEntity accountEntity = accountDao.get(accountId);
-        if (accountEntity == null) {
-            throw new IncomeServiceAccountNotFoundException(accountId);
-        }
-
-        BalanceEntity entity = converter.convertToEntity(dto);
-        int affectedRows = dao.update(entity);
-        if (affectedRows == 0) {
-            dao.insert(entity);
-        }
-
-        dto.setAccountTitle(accountEntity.getTitle());
-        return dto;
+        BalanceDto result = converter.convertToDto(newBalanceEntity);
+        result.setAccountTitle(accountEntity.getTitle());
+        return result;
     }
 
     @Override
     protected List<BalanceDto> populateAdditionalFields(List<BalanceDto> dtoList) {
+        LOGGER.debug("Entering method");
         if (dtoList.isEmpty()) {
             return Collections.emptyList();
         }
@@ -118,8 +154,21 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
 
     @Override
     protected BalanceDto populateAdditionalFields(BalanceDto dto) {
+        LOGGER.debug("Entering method");
         dto.setAccountTitle(accountDao.get(dto.getAccountId()).getTitle());
         return dto;
+    }
+
+    private void validateAccountIdAndDay(Integer accountId, LocalDate day) {
+        LOGGER.debug("Entering method");
+        if (accountId == null) {
+            LOGGER.error("Account id is null");
+            throw new IllegalArgumentException("Account id is null");
+        }
+        if (day == null) {
+            LOGGER.error("Day is null");
+            throw new IllegalArgumentException("Day is null");
+        }
     }
 
 }

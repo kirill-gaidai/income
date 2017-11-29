@@ -6,10 +6,7 @@ import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.entity.CategoryEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
 import org.kirillgaidai.income.service.dto.OperationDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceAccountNotFoundException;
-import org.kirillgaidai.income.service.exception.IncomeServiceBalanceNotFoundException;
-import org.kirillgaidai.income.service.exception.IncomeServiceCategoryNotFoundException;
-import org.kirillgaidai.income.service.exception.IncomeServiceOperationNotFoundException;
+import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
@@ -53,12 +50,12 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         try {
             service.update(origDto);
             throwUnreachableException();
-        } catch (IncomeServiceAccountNotFoundException e) {
+        } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Account with id %d not found", accountId), e.getMessage());
         }
 
         verify(accountDao).get(accountId);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -84,13 +81,13 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         try {
             service.update(origDto);
             throwUnreachableException();
-        } catch (IncomeServiceCategoryNotFoundException e) {
+        } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Category with id %d not found", categoryId), e.getMessage());
         }
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -120,7 +117,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         try {
             service.update(origDto);
             throwUnreachableException();
-        } catch (IncomeServiceBalanceNotFoundException e) {
+        } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Balance for account with id %d before %s not found", accountId, thisDay),
                     e.getMessage());
         }
@@ -129,7 +126,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(categoryDao).get(categoryId);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, thisDay);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -160,7 +157,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         try {
             service.update(origDto);
             throwUnreachableException();
-        } catch (IncomeServiceBalanceNotFoundException e) {
+        } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Balance for account with id %d on %s not found", accountId, thisDay),
                     e.getMessage());
         }
@@ -168,7 +165,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
         verify(balanceDao).get(accountId, thisDay);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -201,7 +198,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         try {
             service.update(origDto);
             throwUnreachableException();
-        } catch (IncomeServiceOperationNotFoundException e) {
+        } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Operation with id %d not found", operationId), e.getMessage());
         }
 
@@ -210,7 +207,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(operationDao).get(operationId);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -268,7 +265,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -332,7 +329,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.25"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -397,7 +394,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -461,7 +458,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.5"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -526,7 +523,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
     /**
@@ -591,7 +588,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.25"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -663,7 +660,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.5"), false);
         assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
@@ -733,7 +730,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(operationDao).update(newEntity, oldEntity);
         verify(converter).convertToEntity(newDto);
         verify(converter).convertToDto(newEntity);
-        verifyNoMoreInteractions();
+        verifyNoMoreDaoInteractions();
     }
 
 }

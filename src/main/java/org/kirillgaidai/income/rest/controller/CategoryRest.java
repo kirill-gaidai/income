@@ -6,7 +6,7 @@ import org.kirillgaidai.income.rest.dto.category.CategoryGetRestDto;
 import org.kirillgaidai.income.rest.dto.category.CategoryUpdateRestDto;
 import org.kirillgaidai.income.rest.mappers.IGenericRestDtoMapper;
 import org.kirillgaidai.income.service.dto.CategoryDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceCategoryNotFoundException;
+import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.IGenericService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,8 +71,8 @@ public class CategoryRest
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(IncomeServiceCategoryNotFoundException.class)
-    public ResponseMessage handleNoFoundException(IncomeServiceCategoryNotFoundException exception) {
+    @ExceptionHandler(IncomeServiceNotFoundException.class)
+    public ResponseMessage handleNoFoundException(IncomeServiceNotFoundException exception) {
         return new ResponseMessage(exception.getMessage());
     }
 

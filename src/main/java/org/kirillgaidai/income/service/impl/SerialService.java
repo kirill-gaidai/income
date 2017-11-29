@@ -5,10 +5,8 @@ import org.kirillgaidai.income.dao.intf.IGenericDao;
 import org.kirillgaidai.income.dao.intf.ISerialDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.ISerialDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceException;
-import org.kirillgaidai.income.service.exception.IncomeServiceIntegrityException;
-import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.ISerialService;
+import org.kirillgaidai.income.service.util.ServiceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +27,8 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
 
     final private static Logger LOGGER = LoggerFactory.getLogger(SerialService.class);
 
-    public SerialService(IGenericDao<E> dao, IGenericConverter<E, T> converter) {
-        super(dao, converter);
+    public SerialService(IGenericDao<E> dao, IGenericConverter<E, T> converter, ServiceHelper serviceHelper) {
+        super(dao, converter, serviceHelper);
     }
 
     protected ISerialDao<E> getDao() {
@@ -38,33 +36,10 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
     }
 
     @Override
-    public T save(T dto) {
-        LOGGER.debug("Entering method");
-        if (dto == null) {
-            throw new IllegalArgumentException("null");
-        }
-        E entity = converter.convertToEntity(dto);
-        int affectedRows;
-        if (dto.getId() == null) {
-            LOGGER.debug("Creating dto");
-            affectedRows = getDao().insert(entity);
-        } else {
-            LOGGER.debug("Updating dto");
-            affectedRows = getDao().update(entity);
-        }
-        if (affectedRows != 1) {
-            LOGGER.error("Dto isn't inserted or updated");
-            throw new IncomeServiceException("Dto isn't inserted or updated");
-        }
-        // additional fields are set in the overriding method which wraps this method
-        return converter.convertToDto(entity);
-    }
-
-    @Override
     public List<T> getList(Set<Integer> ids) {
         LOGGER.debug("Entering method");
         if (ids == null) {
-            throw new IllegalArgumentException("null");
+            throw new IllegalArgumentException("Set of ids is null");
         }
         if (ids.isEmpty()) {
             return Collections.emptyList();
@@ -74,44 +49,16 @@ public abstract class SerialService<T extends ISerialDto, E extends ISerialEntit
     }
 
     @Override
-    public T get(Integer id) {
+    public T save(T dto) {
         LOGGER.debug("Entering method");
-        if (id == null) {
-            throw new IllegalArgumentException("null");
-        }
-        E entity = getDao().get(id);
-        if (entity == null) {
-            throwNotFoundException(id);
-        }
-        return populateAdditionalFields(converter.convertToDto(entity));
+        return dto == null || dto.getId() == null ? create(dto) : update(dto);
     }
 
-    @Override
-    public void delete(Integer id) {
-        LOGGER.debug("Entering method");
-        E entity = getDao().get(id);
-        if (entity != null) {
-            if (getDao().delete(entity) == 1) {
-                return;
-            }
-            LOGGER.error("Integrity exception when deleting entity with id {}", entity.getId());
-            throw new IncomeServiceIntegrityException();
-        }
-        LOGGER.error("Entity with id {} not found", id);
-        throwNotFoundException(id);
-    }
-
-    protected void throwNotFoundException(Integer id) {
-        LOGGER.debug("Entering method");
-        throw new IncomeServiceNotFoundException(String.format("Entity with id %d not found", id));
-    };
-
-    protected void validateDtoWithId(T dto) {
-        LOGGER.debug("Entering method");
-        validateDto(dto);
-        validateId(dto.getId());
-    }
-
+    /**
+     * Validates id
+     *
+     * @param id id
+     */
     protected void validateId(Integer id) {
         LOGGER.debug("Entering method");
         if (id == null) {

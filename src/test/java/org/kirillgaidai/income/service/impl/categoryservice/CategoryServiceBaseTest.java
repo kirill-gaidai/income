@@ -8,11 +8,9 @@ import org.kirillgaidai.income.service.impl.CategoryService;
 import org.kirillgaidai.income.service.impl.ServiceBaseTest;
 import org.kirillgaidai.income.service.intf.ICategoryService;
 
-import static org.mockito.Mockito.mock;
-
 public class CategoryServiceBaseTest extends ServiceBaseTest {
 
-    final protected IGenericConverter<CategoryEntity, CategoryDto> converter = mock(CategoryConverter.class);
+    final protected IGenericConverter<CategoryEntity, CategoryDto> converter = new CategoryConverter();
     final protected ICategoryService service = new CategoryService(categoryDao, serviceHelper, converter);
 
 }

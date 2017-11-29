@@ -1,0 +1,206 @@
+package org.kirillgaidai.income.service.impl.balanceservice;
+
+import org.junit.Test;
+import org.kirillgaidai.income.dao.entity.AccountEntity;
+import org.kirillgaidai.income.dao.entity.BalanceEntity;
+import org.kirillgaidai.income.service.dto.BalanceDto;
+import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
+import org.kirillgaidai.income.service.exception.optimistic.IncomeServiceOptimisticUpdateException;
+import org.mockito.ArgumentCaptor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static org.junit.Assert.assertEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+public class BalanceServiceUpdateTest extends BalanceServiceBaseTest {
+
+    /**
+     * Test dto is null
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNull() throws Exception {
+        try {
+            service.update(null);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Dto is null", e.getMessage());
+        }
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Test account id is null
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testAccountIdIsNull() throws Exception {
+        LocalDate day = LocalDate.of(2017, 11, 27);
+
+        BalanceDto dto = new BalanceDto(null, null, day, new BigDecimal("10"), true);
+
+        try {
+            service.update(dto);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Account id is null", e.getMessage());
+        }
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Test day is null
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testDayIsNull() throws Exception {
+        Integer accountId = 1;
+
+        BalanceDto dto = new BalanceDto(accountId, null, null, new BigDecimal("10"), true);
+
+        try {
+            service.update(dto);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Day is null", e.getMessage());
+        }
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Test not found
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNotFound() throws Exception {
+        Integer accountId = 1;
+        LocalDate day = LocalDate.of(2017, 11, 27);
+
+        BalanceDto dto = new BalanceDto(accountId, null, day, new BigDecimal("10"), true);
+
+        doReturn(null).when(balanceDao).get(accountId, day);
+
+        try {
+            service.update(dto);
+        } catch (IncomeServiceNotFoundException e) {
+            assertEquals(String.format("Balance for account with id %d on %s not found", accountId, day),
+                    e.getMessage());
+        }
+
+        verify(balanceDao).get(accountId, day);
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Test account not found
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testAccountNotFound() throws Exception {
+        Integer accountId = 1;
+        LocalDate day = LocalDate.of(2017, 11, 27);
+
+        BalanceDto dto = new BalanceDto(accountId, null, day, new BigDecimal("10"), true);
+        BalanceEntity oldEntity = new BalanceEntity(accountId, day, new BigDecimal("5"), false);
+
+        doReturn(oldEntity).when(balanceDao).get(accountId, day);
+        doReturn(null).when(accountDao).get(accountId);
+
+        try {
+            service.update(dto);
+        } catch (IncomeServiceNotFoundException e) {
+            assertEquals(String.format("Account with id %d not found", accountId), e.getMessage());
+        }
+
+        verify(balanceDao).get(accountId, day);
+        verify(accountDao).get(accountId);
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Test failure
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testFailure() throws Exception {
+        Integer accountId = 1;
+        LocalDate day = LocalDate.of(2017, 11, 27);
+
+        BalanceDto dto = new BalanceDto(accountId, null, day, new BigDecimal("10"), true);
+        BalanceEntity oldEntity = new BalanceEntity(accountId, day, new BigDecimal("5"), false);
+        AccountEntity accountEntity = new AccountEntity(accountId, 2, "01", "title");
+
+        doReturn(oldEntity).when(balanceDao).get(accountId, day);
+        doReturn(accountEntity).when(accountDao).get(accountId);
+        doReturn(0).when(balanceDao).update(any(BalanceEntity.class), eq(oldEntity));
+
+        try {
+            service.update(dto);
+        } catch (IncomeServiceOptimisticUpdateException e) {
+            assertEquals(String.format("Balance for account with id %d on %s update failure",accountId, day),
+                    e.getMessage());
+        }
+
+        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+
+        verify(balanceDao).get(accountId, day);
+        verify(accountDao).get(accountId);
+        verify(balanceDao).update(argumentCaptor.capture(), eq(oldEntity));
+
+        BalanceEntity expectedEntity = new BalanceEntity(accountId, day, new BigDecimal("10"), true);
+        BalanceEntity actualEntity = argumentCaptor.getValue();
+        assertEntityEquals(expectedEntity, actualEntity);
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Test successful
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testSuccessful() throws Exception {
+        Integer accountId = 1;
+        LocalDate day = LocalDate.of(2017, 11, 27);
+
+        BalanceDto dto = new BalanceDto(accountId, null, day, new BigDecimal("10"), true);
+        BalanceEntity oldEntity = new BalanceEntity(accountId, day, new BigDecimal("5"), false);
+        AccountEntity accountEntity = new AccountEntity(accountId, 2, "01", "title");
+
+        doReturn(oldEntity).when(balanceDao).get(accountId, day);
+        doReturn(accountEntity).when(accountDao).get(accountId);
+        doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(oldEntity));
+
+        BalanceDto expected = new BalanceDto(accountId, "title", day, new BigDecimal("10"), true);
+        BalanceDto actual = service.update(dto);
+        assertEntityEquals(expected, actual);
+
+        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+
+        verify(balanceDao).get(accountId, day);
+        verify(accountDao).get(accountId);
+        verify(balanceDao).update(argumentCaptor.capture(), eq(oldEntity));
+
+        BalanceEntity expectedEntity = new BalanceEntity(accountId, day, new BigDecimal("10"), true);
+        BalanceEntity actualEntity = argumentCaptor.getValue();
+        assertEntityEquals(expectedEntity, actualEntity);
+
+        verifyNoMoreDaoInteractions();
+    }
+
+}

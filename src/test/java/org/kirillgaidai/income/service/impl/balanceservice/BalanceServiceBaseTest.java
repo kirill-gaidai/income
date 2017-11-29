@@ -11,6 +11,6 @@ import org.kirillgaidai.income.service.intf.IBalanceService;
 public abstract class BalanceServiceBaseTest extends ServiceBaseTest {
 
     final protected IGenericConverter<BalanceEntity, BalanceDto> converter = new BalanceConverter();
-    final protected IBalanceService service = new BalanceService(balanceDao, accountDao, converter);
+    final protected IBalanceService service = new BalanceService(balanceDao, accountDao, serviceHelper, converter);
 
 }

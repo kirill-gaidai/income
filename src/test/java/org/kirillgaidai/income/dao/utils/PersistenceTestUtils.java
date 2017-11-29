@@ -1,6 +1,5 @@
 package org.kirillgaidai.income.dao.utils;
 
-import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.entity.RateEntity;
 
 import java.math.BigDecimal;
