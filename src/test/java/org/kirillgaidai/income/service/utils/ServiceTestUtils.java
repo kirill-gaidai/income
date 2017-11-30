@@ -1,9 +1,7 @@
 package org.kirillgaidai.income.service.utils;
 
 import org.kirillgaidai.income.service.dto.AccountDto;
-import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.dto.CategoryDto;
-import org.kirillgaidai.income.service.dto.OperationDto;
 import org.kirillgaidai.income.service.dto.RateDto;
 import org.kirillgaidai.income.service.dto.SummaryDto;
 
@@ -38,15 +36,6 @@ public class ServiceTestUtils {
         }
     }
 
-    public static void assertBalanceDtoEquals(BalanceDto expected, BalanceDto actual) {
-        assertNotNull(actual);
-        assertEquals(expected.getAccountId(), actual.getAccountId());
-        assertEquals(expected.getAccountTitle(), actual.getAccountTitle());
-        assertEquals(expected.getDay(), actual.getDay());
-        assertBigDecimalEquals(expected.getAmount(), actual.getAmount());
-        assertEquals(expected.getManual(), actual.getManual());
-    }
-
     public static void assertCategoryDtoEquals(CategoryDto expected, CategoryDto actual) {
         assertNotNull(actual);
         assertEquals(expected.getId(), actual.getId());
@@ -59,26 +48,6 @@ public class ServiceTestUtils {
         assertEquals(expected.size(), actual.size());
         for (int index = 0; index < expected.size(); index++) {
             assertCategoryDtoEquals(expected.get(index), actual.get(index));
-        }
-    }
-
-    public static void assertOperationDtoEquals(OperationDto expected, OperationDto actual) {
-        assertNotNull(actual);
-        assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getAccountId(), actual.getAccountId());
-        assertEquals(expected.getAccountTitle(), actual.getAccountTitle());
-        assertEquals(expected.getCategoryId(), actual.getCategoryId());
-        assertEquals(expected.getCategoryTitle(), actual.getCategoryTitle());
-        assertEquals(expected.getDay(), actual.getDay());
-        assertBigDecimalEquals(expected.getAmount(), actual.getAmount());
-        assertEquals(expected.getNote(), actual.getNote());
-    }
-
-    public static void assertOperationDtoListEquals(List<OperationDto> expected, List<OperationDto> actual) {
-        assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-        for (int index = 0; index < expected.size(); index++) {
-            assertOperationDtoEquals(expected.get(index), actual.get(index));
         }
     }
 

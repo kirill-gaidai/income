@@ -6,7 +6,7 @@ import org.kirillgaidai.income.service.dto.CategoryDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 
 import static org.junit.Assert.assertEquals;
-import static org.kirillgaidai.income.service.utils.ServiceTestUtils.assertCategoryDtoEquals;
+import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -46,7 +46,7 @@ public class CategoryServiceGetTest extends CategoryServiceBaseTest {
 
         CategoryDto expectedCategoryDto = new CategoryDto(1, "01", "category1");
         CategoryDto actualCategoryDto = service.get(1);
-        assertCategoryDtoEquals(expectedCategoryDto, actualCategoryDto);
+        assertEntityEquals(expectedCategoryDto, actualCategoryDto);
 
         verify(categoryDao).get(1);
 

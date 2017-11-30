@@ -24,7 +24,7 @@
     <table class="form">
         <tr>
             <td><label for="id">ID</label></td>
-            <td><input type="text" name="id" id="id"></td>
+            <td><input type="text" name="id" id="id" readonly></td>
         </tr>
         <tr>
             <td><label for="sort">Sort</label></td>

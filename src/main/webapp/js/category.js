@@ -14,39 +14,40 @@ document.addEventListener("DOMContentLoaded", function () {
     var entityList = [];
     var currentEntity = null;
 
-    getList();
+    var resourceUrl = appCtx + "/rest/category";
+
+    jQuery.getJSON(resourceUrl, function (data) {
+        entityList = data;
+        entityList.forEach(function (entity) {
+            appendRow(entity);
+        });
+    });
 
     formElem.addEventListener("submit", doOnFormSubmit);
     saveBtnElem.addEventListener("click", doOnSaveBtnClick);
     newBtnElem.addEventListener("click", doOnNewBtnClick);
 
-    function getList() {
-        jQuery.getJSON(appCtx + "/rest/category", function (data) {
-            entityList = data;
-            entityList.forEach(function (entity) {
-                appendRow(entity);
-            });
-        });
-    }
-
     function doOnFormSubmit(event) {
         event.preventDefault();
+    }
+
+    function doOnNewBtnClick() {
+        clearForm();
     }
 
     function doOnSaveBtnClick() {
         var linkedRow = currentEntity ? currentEntity.linkedRow : null;
         var entity = getEntityFromForm();
-        currentEntity = null;
         clearForm();
 
-        $.ajax({
-            url: appCtx + "/rest/category",
+        jQuery.ajax({
+            url: resourceUrl,
             method: linkedRow ? "put" : "post",
             data: JSON.stringify(entity),
             contentType: "application/json",
             dataType: "json",
             success: linkedRow ? doOnPutSuccess : doOnPostSuccess,
-            error: doOnError()
+            error: doOnError
         });
 
         function doOnPutSuccess(data) {
@@ -64,18 +65,34 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function doOnNewBtnClick() {
-        currentEntity = null;
-        clearForm();
-    }
-
     function doOnEditBtnClick() {
         currentEntity = this.parentElement.parentElement.linkedEntity;
         fillForm(currentEntity);
     }
 
-    function doOnDeleteBtnClick(event) {
+    function doOnDeleteBtnClick() {
+        var linkedRow = this.parentElement.parentElement;
+        var entity = linkedRow.linkedEntity;
 
+        jQuery.ajax({
+            url: resourceUrl + "/" + entity.id,
+            method: "delete",
+            success: doOnDeleteSuccess,
+            error: doOnError
+        });
+
+        function doOnDeleteSuccess() {
+            for (var index = 0; index < entityList.length; index++) {
+                if (entityList[index] === entity) {
+                    listElem.removeChild(entity.linkedRow);
+                    entityList.splice(index, 1);
+                }
+            }
+        }
+
+        function doOnError() {
+            console.log("error");
+        }
     }
 
     function getEntityFromForm() {
@@ -87,6 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function clearForm() {
+        currentEntity = null;
         idElem.value = "";
         sortElem.value = "";
         titleElem.value = "";
@@ -96,12 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
         idElem.value = entity.id;
         sortElem.value = entity.sort;
         titleElem.value = entity.title;
-    }
-
-    function updateRow(rowElem, entity) {
-        rowElem.children[0].innerText = entity.id;
-        rowElem.children[1].innerText = entity.sort;
-        rowElem.children[2].innerText = entity.title;
     }
 
     function appendRow(entity) {
@@ -121,6 +133,12 @@ document.addEventListener("DOMContentLoaded", function () {
         btnElem = cellElem.appendChild(document.createElement("button"));
         btnElem.innerText = "Delete";
         btnElem.onclick = doOnDeleteBtnClick;
+    }
+
+    function updateRow(rowElem, entity) {
+        rowElem.children[0].innerText = entity.id;
+        rowElem.children[1].innerText = entity.sort;
+        rowElem.children[2].innerText = entity.title;
     }
 
     function copyEntity(source, target) {
