@@ -54,19 +54,19 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     }
 
     @Override
-    public List<OperationDto> getDtoList(Set<Integer> accountIds, LocalDate day) {
+    public List<OperationDto> getList(Set<Integer> accountIds, LocalDate day) {
         return populateAdditionalFields(getDao().getList(accountIds, day).stream()
                 .map(converter::convertToDto).collect(Collectors.toList()));
     }
 
     @Override
-    public List<OperationDto> getDtoList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
+    public List<OperationDto> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
         return populateAdditionalFields(getDao().getList(accountIds, day, categoryId).stream()
                 .map(converter::convertToDto).collect(Collectors.toList()));
     }
 
     @Override
-    public OperationDto getDto(Set<Integer> accountIds, Integer categoryId, LocalDate day) {
+    public OperationDto get(Set<Integer> accountIds, Integer categoryId, LocalDate day) {
         throw new UnsupportedOperationException();
     }
 

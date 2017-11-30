@@ -17,35 +17,41 @@ public class CurrencyServiceGetTest extends CurrencyServiceBaseTest {
         try {
             service.get(null);
         } catch (IllegalArgumentException e) {
-            assertEquals("null", e.getMessage());
+            assertEquals("Id is null", e.getMessage());
         }
+
         verifyNoMoreDaoInteractions();
     }
 
     @Test
     public void testNotFound() throws Exception {
+        Integer currencyId = 1;
+
         try {
-            service.get(1);
+            service.get(currencyId);
         } catch (IncomeServiceNotFoundException e) {
-            assertEquals("Currency with id 1 not found", e.getMessage());
+            assertEquals(String.format("Currency with id %d not found", currencyId), e.getMessage());
         }
-        verify(currencyDao).get(1);
+
+        verify(currencyDao).get(currencyId);
+
         verifyNoMoreDaoInteractions();
     }
 
     @Test
     public void testGetOk() throws Exception {
-        CurrencyEntity entity = new CurrencyEntity(1, "01", "category1", 2);
-        CurrencyDto expected = new CurrencyDto(1, "01", "category1", 2);
+        Integer currencyId = 1;
 
-        doReturn(entity).when(currencyDao).get(1);
-        doReturn(expected).when(converter).convertToDto(entity);
+        CurrencyEntity entity = new CurrencyEntity(currencyId, "01", "category1", 2);
+        CurrencyDto expected = new CurrencyDto(currencyId, "01", "category1", 2);
 
-        CurrencyDto actual = service.get(1);
+        doReturn(entity).when(currencyDao).get(currencyId);
+
+        CurrencyDto actual = service.get(currencyId);
         assertEntityEquals(expected, actual);
 
-        verify(currencyDao).get(1);
-        verify(converter).convertToDto(entity);
+        verify(currencyDao).get(currencyId);
+
         verifyNoMoreDaoInteractions();
     }
 
