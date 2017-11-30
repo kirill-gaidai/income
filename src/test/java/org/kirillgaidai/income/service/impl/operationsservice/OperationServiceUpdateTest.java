@@ -321,7 +321,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(null).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(oldThisBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
@@ -389,7 +389,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
@@ -450,7 +450,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(null).when(balanceDao).getBefore(accountId, prevDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(oldPrevBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
@@ -518,7 +518,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(beforeBalanceEntity).when(balanceDao).getBefore(accountId, prevDay);
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
@@ -580,7 +580,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(null).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(thisBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
@@ -651,7 +651,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(prevBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
@@ -724,7 +724,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
