@@ -28,33 +28,70 @@ import static org.mockito.Mockito.verify;
 public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
     /**
+     * Operation isn't found
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNotFound() throws Exception {
+        BigDecimal newAmount = new BigDecimal("1.25");
+        String newNote = "newNote";
+        Integer operationId = 1;
+        Integer accountId = 2;
+        Integer categoryId = 3;
+        LocalDate thisDay = LocalDate.of(2017, 9, 5);
+
+        OperationDto dto =
+                new OperationDto(operationId, accountId, null, categoryId, null, thisDay, newAmount, newNote);
+
+        doReturn(null).when(operationDao).get(operationId);
+
+        try {
+            service.update(dto);
+            throwUnreachableException();
+        } catch (IncomeServiceNotFoundException e) {
+            assertEquals(String.format("Operation with id %d not found", operationId), e.getMessage());
+        }
+
+        verify(operationDao).get(operationId);
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
      * Account isn't found
      *
      * @throws Exception exception
      */
     @Test
     public void testAccountNotFound() throws Exception {
-        BigDecimal amount = new BigDecimal("1.25");
-        String note = "note";
+        BigDecimal newAmount = new BigDecimal("1.25");
+        BigDecimal oldAmount = new BigDecimal("1.25");
+        String newNote = "newNote";
+        String oldNote = "oldNote";
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
         LocalDate thisDay = LocalDate.of(2017, 9, 5);
 
-        CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", "category1");
-        OperationDto origDto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
+        OperationDto dto =
+                new OperationDto(operationId, accountId, null, categoryId, null, thisDay, newAmount, newNote);
+        OperationEntity oldEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, oldAmount, oldNote);
 
+        doReturn(oldEntity).when(operationDao).get(operationId);
         doReturn(null).when(accountDao).get(accountId);
-        doReturn(categoryEntity).when(categoryDao).get(categoryId);
 
         try {
-            service.update(origDto);
+            service.update(dto);
             throwUnreachableException();
         } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Account with id %d not found", accountId), e.getMessage());
         }
 
+        verify(operationDao).get(operationId);
         verify(accountDao).get(accountId);
+
         verifyNoMoreDaoInteractions();
     }
 
@@ -66,27 +103,35 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
     @Test
     public void testCategoryNotFound() throws Exception {
         BigDecimal amount = new BigDecimal("1.25");
+        BigDecimal oldAmount = new BigDecimal("1.25");
         String note = "note";
+        String oldNote = "oldNote";
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
         LocalDate thisDay = LocalDate.of(2017, 9, 5);
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
-        OperationDto origDto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
+        OperationEntity oldEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, oldAmount, oldNote);
 
+
+        doReturn(oldEntity).when(operationDao).get(operationId);
         doReturn(accountEntity).when(accountDao).get(accountId);
         doReturn(null).when(categoryDao).get(categoryId);
 
         try {
-            service.update(origDto);
+            service.update(dto);
             throwUnreachableException();
         } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Category with id %d not found", categoryId), e.getMessage());
         }
 
+        verify(operationDao).get(operationId);
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
+
         verifyNoMoreDaoInteractions();
     }
 
@@ -98,7 +143,9 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
     @Test
     public void testBalanceThisNotFound() throws Exception {
         BigDecimal amount = new BigDecimal("1.25");
+        BigDecimal oldAmount = new BigDecimal("1.25");
         String note = "note";
+        String oldNote = "oldNote";
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
@@ -106,26 +153,31 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", "category1");
-        OperationDto origDto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
+        OperationEntity oldEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, oldAmount, oldNote);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10"), false);
 
+        doReturn(oldEntity).when(operationDao).get(operationId);
         doReturn(accountEntity).when(accountDao).get(accountId);
         doReturn(categoryEntity).when(categoryDao).get(categoryId);
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(null).when(balanceDao).getBefore(accountId, thisDay);
 
         try {
-            service.update(origDto);
+            service.update(dto);
             throwUnreachableException();
         } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Balance for account with id %d before %s not found", accountId, thisDay),
                     e.getMessage());
         }
 
+        verify(operationDao).get(operationId);
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, thisDay);
+
         verifyNoMoreDaoInteractions();
     }
 
@@ -137,7 +189,9 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
     @Test
     public void testBalancePrevNotFound() throws Exception {
         BigDecimal amount = new BigDecimal("1.25");
+        BigDecimal oldAmount = new BigDecimal("1.25");
         String note = "note";
+        String oldNote = "oldNote";
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
@@ -146,67 +200,30 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", "category1");
-        OperationDto origDto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
+        OperationEntity oldEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, oldAmount, oldNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
 
+        doReturn(oldEntity).when(operationDao).get(operationId);
         doReturn(accountEntity).when(accountDao).get(accountId);
         doReturn(categoryEntity).when(categoryDao).get(categoryId);
         doReturn(null).when(balanceDao).get(accountId, thisDay);
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
 
         try {
-            service.update(origDto);
+            service.update(dto);
             throwUnreachableException();
         } catch (IncomeServiceNotFoundException e) {
             assertEquals(String.format("Balance for account with id %d on %s not found", accountId, thisDay),
                     e.getMessage());
         }
 
-        verify(accountDao).get(accountId);
-        verify(categoryDao).get(categoryId);
-        verify(balanceDao).get(accountId, thisDay);
-        verifyNoMoreDaoInteractions();
-    }
-
-    /**
-     * Operation isn't found
-     *
-     * @throws Exception exception
-     */
-    @Test
-    public void testOperationNotFound() throws Exception {
-        BigDecimal amount = new BigDecimal("1.25");
-        String note = "note";
-        Integer operationId = 1;
-        Integer accountId = 2;
-        Integer categoryId = 3;
-        LocalDate thisDay = LocalDate.of(2017, 9, 5);
-        LocalDate prevDay = LocalDate.of(2017, 9, 3);
-
-        AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", "account1");
-        CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", "category1");
-        OperationDto origDto = new OperationDto(operationId, accountId, null, categoryId, null, thisDay, amount, note);
-        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10"), false);
-        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
-
-        doReturn(accountEntity).when(accountDao).get(accountId);
-        doReturn(categoryEntity).when(categoryDao).get(categoryId);
-        doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
-        doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
-        doReturn(null).when(operationDao).get(operationId);
-
-        try {
-            service.update(origDto);
-            throwUnreachableException();
-        } catch (IncomeServiceNotFoundException e) {
-            assertEquals(String.format("Operation with id %d not found", operationId), e.getMessage());
-        }
-
-        verify(accountDao).get(accountId);
-        verify(categoryDao).get(categoryId);
-        verify(balanceDao).get(accountId, thisDay);
-        verify(balanceDao).getBefore(accountId, thisDay);
         verify(operationDao).get(operationId);
+        verify(accountDao).get(accountId);
+        verify(categoryDao).get(categoryId);
+        verify(balanceDao).get(accountId, thisDay);
+
         verifyNoMoreDaoInteractions();
     }
 
@@ -232,14 +249,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), true);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10"), true);
 
@@ -248,24 +261,28 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), eq(oldEntity));
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
+
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
     /**
@@ -290,14 +307,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), true);
         BalanceEntity oldThisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
 
@@ -308,31 +321,35 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(null).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(oldThisBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
 
-        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<BalanceEntity> balanceArgumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
-        verify(balanceDao).update(argumentCaptor.capture(), eq(oldThisBalanceEntity));
+        verify(balanceDao).update(balanceArgumentCaptor.capture(), eq(oldThisBalanceEntity));
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.25"), false);
-        assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
+        BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
+        assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
     /**
@@ -358,14 +375,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), true);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false);
@@ -376,14 +389,14 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
+
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
@@ -391,10 +404,14 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
     /**
@@ -419,14 +436,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity oldPrevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), true);
 
@@ -437,31 +450,35 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(null).when(balanceDao).getBefore(accountId, prevDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(oldPrevBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
 
-        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<BalanceEntity> balanceArgumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, prevDay);
-        verify(balanceDao).update(argumentCaptor.capture(), eq(oldPrevBalanceEntity));
+        verify(balanceDao).update(balanceArgumentCaptor.capture(), eq(oldPrevBalanceEntity));
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.5"), false);
-        assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
+        BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
+        assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
     /**
@@ -487,14 +504,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10"), false);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), true);
@@ -505,14 +518,14 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(beforeBalanceEntity).when(balanceDao).getBefore(accountId, prevDay);
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
+
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
@@ -520,10 +533,14 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).getBefore(accountId, prevDay);
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
     /**
@@ -549,14 +566,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
 
@@ -567,31 +580,35 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(null).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(thisBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
 
-        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<BalanceEntity> balanceArgumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
-        verify(balanceDao).update(argumentCaptor.capture(), eq(thisBalanceEntity));
+        verify(balanceDao).update(balanceArgumentCaptor.capture(), eq(thisBalanceEntity));
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.25"), false);
-        assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
+        BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
+        assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
     /**
@@ -618,14 +635,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false);
@@ -638,16 +651,15 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(prevBalanceEntity));
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
 
-        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<BalanceEntity> balanceArgumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
@@ -655,15 +667,20 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
-        verify(balanceDao).update(argumentCaptor.capture(), eq(prevBalanceEntity));
+        verify(balanceDao).update(balanceArgumentCaptor.capture(), eq(prevBalanceEntity));
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
 
         BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.5"), false);
-        assertEntityEquals(expectedBalanceEntity, argumentCaptor.getValue());
+        BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
+        assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
     /**
@@ -691,14 +708,10 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         AccountEntity accountEntity = new AccountEntity(accountId, 4, "01", accountTitle);
         CategoryEntity categoryEntity = new CategoryEntity(categoryId, "02", categoryTitle);
-        OperationDto newDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
-        OperationEntity newEntity = new OperationEntity(operationId, accountId, categoryId,
+        OperationDto dto = new OperationDto(operationId, accountId, null, categoryId, null,
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        OperationDto resultDto = new OperationDto(operationId, accountId, null, categoryId, null,
-                thisDay, newAmount, newNote);
         BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10"), false);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
@@ -711,14 +724,14 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(oldEntity).when(operationDao).get(operationId);
-        doReturn(1).when(operationDao).update(newEntity, oldEntity);
-        doReturn(newEntity).when(converter).convertToEntity(newDto);
-        doReturn(resultDto).when(converter).convertToDto(newEntity);
+        doReturn(1).when(operationDao).update(any(OperationEntity.class), oldEntity);
 
         OperationDto expected = new OperationDto(operationId, accountId, accountTitle, categoryId, categoryTitle,
                 thisDay, newAmount, newNote);
-        OperationDto actual = service.update(newDto);
+        OperationDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
+
+        ArgumentCaptor<OperationEntity> operationArgumentCaptor = ArgumentCaptor.forClass(OperationEntity.class);
 
         verify(accountDao).get(accountId);
         verify(categoryDao).get(categoryId);
@@ -727,10 +740,14 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(operationDao).get(operationId);
-        verify(operationDao).update(newEntity, oldEntity);
-        verify(converter).convertToEntity(newDto);
-        verify(converter).convertToDto(newEntity);
+        verify(operationDao).update(operationArgumentCaptor.capture(), eq(oldEntity));
+
         verifyNoMoreDaoInteractions();
+
+        OperationEntity expectedOperationEntity = new OperationEntity(operationId, accountId, categoryId,
+                thisDay, newAmount, newNote);
+        OperationEntity actualOperationEntity = operationArgumentCaptor.getValue();
+        assertEntityEquals(expectedOperationEntity, actualOperationEntity);
     }
 
 }
