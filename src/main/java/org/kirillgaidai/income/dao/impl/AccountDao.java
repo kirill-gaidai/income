@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -92,6 +93,13 @@ public class AccountDao extends SerialDao<AccountEntity> implements IAccountDao 
         String sql = "SELECT COUNT(*) FROM accounts WHERE currency_id = :currency_id";
         Map<String, Object> params = Collections.singletonMap("currency_id", currencyId);
         return namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
+    }
+
+    @Override
+    public List<AccountEntity> getList(Integer currencyId) {
+        String sql = "SELECT id, currency_id, sort, title FROM accounts WHERE currency_id = :currency_id ORDER BY sort";
+        Map<String, Object> params = Collections.singletonMap("currency_id", currencyId);
+        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
     }
 
 }
