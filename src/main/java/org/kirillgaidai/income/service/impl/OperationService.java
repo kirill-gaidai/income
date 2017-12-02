@@ -189,7 +189,7 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
         Integer accountId = dto.getAccountId();
         Integer categoryId = dto.getCategoryId();
         LocalDate thisDay = dto.getDay();
-        BigDecimal amount = dto.getAmount();
+        BigDecimal newAmount = dto.getAmount();
 
         validateId(id);
 
@@ -200,6 +200,7 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
         BalanceEntity prevBalanceEntity = serviceHelper.getBalanceEntity(accountId, thisDay, -1);
 
         LocalDate prevDay = prevBalanceEntity.getDay();
+        BigDecimal oldAmount = oldOperationEntity.getAmount();
 
         if (prevBalanceEntity.getManual() && thisBalanceEntity.getManual()) {
             return updateOperation(dto, oldOperationEntity, accountEntity, categoryEntity);
@@ -207,8 +208,8 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
 
         if (prevBalanceEntity.getManual()) {
             if (balanceDao.getAfter(accountId, thisDay) == null) {
-                BigDecimal newAmount = prevBalanceEntity.getAmount().subtract(amount);
-                BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay, newAmount, false);
+                BigDecimal newBalanceAmount = thisBalanceEntity.getAmount().add(oldAmount).subtract(newAmount);
+                BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay, newBalanceAmount, false);
                 serviceHelper.updateBalanceEntity(newBalanceEntity, thisBalanceEntity);
             }
             return updateOperation(dto, oldOperationEntity, accountEntity, categoryEntity);
@@ -216,20 +217,20 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
 
         if (thisBalanceEntity.getManual()) {
             if (balanceDao.getBefore(accountId, prevDay) == null) {
-                BigDecimal newAmount = thisBalanceEntity.getAmount().add(amount);
-                BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay, newAmount, false);
+                BigDecimal newBalanceAmount = prevBalanceEntity.getAmount().subtract(oldAmount).add(newAmount);
+                BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay, newBalanceAmount, false);
                 serviceHelper.updateBalanceEntity(newBalanceEntity, prevBalanceEntity);
             }
             return updateOperation(dto, oldOperationEntity, accountEntity, categoryEntity);
         }
 
         if (balanceDao.getAfter(accountId, thisDay) == null) {
-            BigDecimal newAmount = prevBalanceEntity.getAmount().subtract(amount);
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay, newAmount, false);
+            BigDecimal newBalanceAmount = thisBalanceEntity.getAmount().add(oldAmount).subtract(newAmount);
+            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay, newBalanceAmount, false);
             serviceHelper.updateBalanceEntity(newBalanceEntity, thisBalanceEntity);
         } else if (balanceDao.getBefore(accountId, prevDay) == null) {
-            BigDecimal newAmount = thisBalanceEntity.getAmount().add(amount);
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay, newAmount, false);
+            BigDecimal newBalanceAmount = prevBalanceEntity.getAmount().subtract(oldAmount).add(newAmount);
+            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay, newBalanceAmount, false);
             serviceHelper.updateBalanceEntity(newBalanceEntity, prevBalanceEntity);
         }
         return updateOperation(dto, oldOperationEntity, accountEntity, categoryEntity);

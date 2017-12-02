@@ -28,6 +28,23 @@ import static org.mockito.Mockito.verify;
 public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
     /**
+     * Test dto is null
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNull() throws Exception {
+        try {
+            service.update(null);
+            throwUnreachableException();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Dto is null", e.getMessage());
+        }
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
      * Operation isn't found
      *
      * @throws Exception exception
@@ -253,7 +270,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), true);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11"), true);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10"), true);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
@@ -312,7 +329,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), true);
-        BalanceEntity oldThisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
+        BalanceEntity oldThisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("7.75"), false);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
         doReturn(categoryEntity).when(categoryDao).get(categoryId);
@@ -342,7 +359,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         verifyNoMoreDaoInteractions();
 
-        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.25"), false);
+        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("7.25"), false);
         BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
         assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
 
@@ -380,8 +397,8 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), true);
-        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
-        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("7.75"), false);
+        BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("7.75"), false);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
         doReturn(categoryEntity).when(categoryDao).get(categoryId);
@@ -440,7 +457,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        BalanceEntity oldPrevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
+        BalanceEntity oldPrevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), true);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
@@ -471,7 +488,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         verifyNoMoreDaoInteractions();
 
-        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.5"), false);
+        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.5"), false);
         BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
         assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
 
@@ -508,8 +525,8 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10"), false);
-        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("11"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), true);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
@@ -571,7 +588,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
         BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
-        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("7.75"), false);
 
         doReturn(accountEntity).when(accountDao).get(accountId);
         doReturn(categoryEntity).when(categoryDao).get(categoryId);
@@ -601,7 +618,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         verifyNoMoreDaoInteractions();
 
-        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.25"), false);
+        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("7.25"), false);
         BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
         assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
 
@@ -639,7 +656,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false);
 
@@ -673,7 +690,7 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
 
         verifyNoMoreDaoInteractions();
 
-        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.5"), false);
+        BalanceEntity expectedBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.5"), false);
         BalanceEntity actualBalanceEntity = balanceArgumentCaptor.getValue();
         assertEntityEquals(expectedBalanceEntity, actualBalanceEntity);
 
@@ -712,8 +729,8 @@ public class OperationServiceUpdateTest extends OperationServiceBaseTest {
                 thisDay, newAmount, newNote);
         OperationEntity oldEntity = new OperationEntity(operationId, accountId, categoryId,
                 thisDay, oldAmount, oldNote);
-        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("10"), false);
-        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10"), false);
+        BalanceEntity beforeBalanceEntity = new BalanceEntity(accountId, beforeDay, new BigDecimal("11"), false);
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11"), false);
         BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("8.75"), false);
         BalanceEntity afterBalanceEntity = new BalanceEntity(accountId, afterDay, new BigDecimal("8.75"), false);
 
