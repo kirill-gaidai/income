@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,25 +56,9 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     @Override
     public List<OperationDto> getList(
             Set<Integer> accountIds, Set<Integer> categoryIds, LocalDate firstDay, LocalDate lastDay) {
+        LOGGER.debug("Entering method");
         return populateAdditionalFields(getDao().getList(accountIds, categoryIds, firstDay, lastDay).stream()
                 .map(converter::convertToDto).collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<OperationDto> getList(Set<Integer> accountIds, LocalDate day) {
-        return populateAdditionalFields(getDao().getList(accountIds, Collections.emptySet(), day, day).stream()
-                .map(converter::convertToDto).collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<OperationDto> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
-        return populateAdditionalFields(getDao().getList(accountIds, Collections.singleton(categoryId), day, day)
-                .stream().map(converter::convertToDto).collect(Collectors.toList()));
-    }
-
-    @Override
-    public OperationDto get(Set<Integer> accountIds, Integer categoryId, LocalDate day) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

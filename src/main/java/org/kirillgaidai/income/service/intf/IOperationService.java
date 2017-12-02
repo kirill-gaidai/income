@@ -11,10 +11,4 @@ public interface IOperationService extends ISerialService<OperationDto> {
     List<OperationDto> getList(
             Set<Integer> accountIds, Set<Integer> categoryIds, LocalDate firstDay, LocalDate lastDay);
 
-    List<OperationDto> getList(Set<Integer> accountIds, LocalDate day);
-
-    List<OperationDto> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId);
-
-    OperationDto get(Set<Integer> accountIds, Integer categoryId, LocalDate day);
-
 }

@@ -46,7 +46,7 @@ public class OperationController {
             @RequestParam("return_last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnLastDay) {
         ModelAndView modelAndView = new ModelAndView("operation/form");
 
-        modelAndView.addObject("operationDto", operationService.get(accountIds, categoryId ,day));
+        // modelAndView.addObject("operationDto", operationService.get(accountIds, categoryId ,day));
         if (accountIds.size() != 1) {
             modelAndView.addObject("accountDtoList", accountService.getList(accountIds));
         }
