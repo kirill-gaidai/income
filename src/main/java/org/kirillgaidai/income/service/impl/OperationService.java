@@ -85,7 +85,8 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
         BalanceEntity prevBalanceEntity = balanceDao.getBefore(accountId, thisDay);
         if (thisBalanceEntity == null && prevBalanceEntity == null) {
             // If no operations for account at this day or before, then error
-            String message = String.format("Balance for account with id %d at or before %s not found", accountId, thisDay);
+            String message =
+                    String.format("Balance for account with id %d at or before %s not found", accountId, thisDay);
             LOGGER.error(message);
             throw new IncomeServiceNotFoundException(message);
         }
