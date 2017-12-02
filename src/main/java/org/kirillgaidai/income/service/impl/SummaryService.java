@@ -22,6 +22,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,8 @@ public class SummaryService implements ISummaryService {
     public SummaryDto getSummaryDto(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
         List<BalanceEntity> initialBalanceEntityList = balanceDao.getList(accountIds, firstDay.minusDays(1L));
         List<BalanceEntity> balanceEntityList = balanceDao.getList(accountIds, firstDay, lastDay);
-        List<OperationEntity> operationEntityList = operationDao.getList(accountIds, firstDay, lastDay);
+        List<OperationEntity> operationEntityList =
+                operationDao.getList(accountIds, Collections.emptySet(), firstDay, lastDay);
 
         Set<Integer> categoryIds = operationEntityList
                 .stream().map(OperationEntity::getCategoryId).collect(Collectors.toSet());

@@ -30,24 +30,6 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     }
 
     @Override
-    public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
-        LOGGER.debug("Entering method");
-        return getList(accountIds, Collections.emptySet(), firstDay, lastDay);
-    }
-
-    @Override
-    public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day) {
-        LOGGER.debug("Entering method");
-        return getList(accountIds, Collections.emptySet(), day, day);
-    }
-
-    @Override
-    public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
-        LOGGER.debug("Entering method");
-        return getList(accountIds, Collections.singleton(categoryId), day, day);
-    }
-
-    @Override
     public List<OperationEntity> getList(
             Set<Integer> accountIds, Set<Integer> categoryIds, LocalDate firstDay, LocalDate lastDay) {
         LOGGER.debug("Entering method");

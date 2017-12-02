@@ -10,6 +10,7 @@ import org.mockito.internal.util.collections.Sets;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class OperationServiceGetListByAccountIdsAndDayTest extends OperationServ
                 new AccountEntity(accountId2, 31, "02", "account2")
         );
 
-        doReturn(operationEntityList).when(operationDao).getList(accountIds, day);
+        doReturn(operationEntityList).when(operationDao).getList(accountIds, Collections.emptySet(), day, day);
         doReturn(categoryEntityList).when(categoryDao).getList(categoryIds);
         doReturn(accountEntityList).when(accountDao).getList(accountIds);
 
@@ -63,7 +64,7 @@ public class OperationServiceGetListByAccountIdsAndDayTest extends OperationServ
         List<OperationDto> actual = service.getList(accountIds, day);
         assertEntityListEquals(expected, actual);
 
-        verify(operationDao).getList(accountIds, day);
+        verify(operationDao).getList(accountIds, Collections.emptySet(), day, day);
         verify(categoryDao).getList(categoryIds);
         verify(accountDao).getList(accountIds);
 
