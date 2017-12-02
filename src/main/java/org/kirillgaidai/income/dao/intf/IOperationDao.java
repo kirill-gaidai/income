@@ -14,6 +14,9 @@ public interface IOperationDao extends ISerialDao<OperationEntity> {
 
     List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId);
 
+    List<OperationEntity> getList(
+            Set<Integer> accountIds, Set<Integer> categoryIds, LocalDate firstDay, LocalDate lastDay);
+
     int getCountByAccountId(Integer accountId);
 
     int getCountByCategoryId(Integer categoryId);

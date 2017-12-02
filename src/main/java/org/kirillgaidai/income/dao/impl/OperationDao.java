@@ -32,47 +32,40 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     @Override
     public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate firstDay, LocalDate lastDay) {
         LOGGER.debug("Entering method");
-        if (accountIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        String sql = "SELECT id, account_id, category_id, day, amount, note FROM operations " +
-                "WHERE (account_id IN (:account_ids)) AND (day BETWEEN :first_day AND :last_day) ORDER BY id";
-        Map<String, Object> params = new HashMap<>();
-        params.put("account_ids", accountIds);
-        params.put("first_day", Date.valueOf(firstDay));
-        params.put("last_day", Date.valueOf(lastDay));
-        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
+        return getList(accountIds, Collections.emptySet(), firstDay, lastDay);
     }
 
     @Override
     public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day) {
         LOGGER.debug("Entering method");
-        if (accountIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        String sql = "SELECT id, account_id, category_id, day, amount, note FROM operations " +
-                "WHERE (account_id IN (:account_ids)) AND (day = :day) ORDER BY id";
-        Map<String, Object> params = new HashMap<>();
-        params.put("account_ids", accountIds);
-        params.put("day", Date.valueOf(day));
-        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
+        return getList(accountIds, Collections.emptySet(), day, day);
     }
 
     @Override
     public List<OperationEntity> getList(Set<Integer> accountIds, LocalDate day, Integer categoryId) {
+        LOGGER.debug("Entering method");
+        return getList(accountIds, Collections.singleton(categoryId), day, day);
+    }
+
+    @Override
+    public List<OperationEntity> getList(
+            Set<Integer> accountIds, Set<Integer> categoryIds, LocalDate firstDay, LocalDate lastDay) {
         LOGGER.debug("Entering method");
         if (accountIds.isEmpty()) {
             return Collections.emptyList();
         }
 
         String sql = "SELECT id, account_id, category_id, day, amount, note FROM operations " +
-                "WHERE (account_id IN (:account_ids)) AND (day = :day) AND (category_id = :category_id) ORDER BY id";
+                "WHERE (account_id IN (:account_ids)) ";
         Map<String, Object> params = new HashMap<>();
         params.put("account_ids", accountIds);
-        params.put("day", Date.valueOf(day));
-        params.put("category_id", categoryId);
+        if (!categoryIds.isEmpty()) {
+            sql += "AND (category_id IN (:category_ids)) ";
+            params.put("category_ids", categoryIds);
+        }
+        sql += "AND (day BETWEEN :first_day AND :last_day) ORDER BY id";
+        params.put("first_day", Date.valueOf(firstDay));
+        params.put("last_day", Date.valueOf(lastDay));
         return namedParameterJdbcTemplate.query(sql, params, rowMapper);
     }
 
