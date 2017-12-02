@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Set;
 
 @Controller
@@ -54,9 +55,11 @@ public class OperationController {
         }
 
         if (categoryId == null) {
-            modelAndView.addObject("operationDtoList", operationService.getList(accountIds, day));
+            modelAndView.addObject("operationDtoList",
+                    operationService.getList(accountIds, Collections.emptySet(), day, day));
         } else {
-            modelAndView.addObject("operationDtoList", operationService.getList(accountIds, day, categoryId));
+            modelAndView.addObject("operationDtoList",
+                    operationService.getList(accountIds, Collections.singleton(categoryId), day, day));
         }
 
         modelAndView.addObject("returnAccountIds", returnAccountIds);

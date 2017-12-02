@@ -55,6 +55,13 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     }
 
     @Override
+    public List<OperationDto> getList(
+            Set<Integer> accountIds, Set<Integer> categoryIds, LocalDate firstDay, LocalDate lastDay) {
+        return populateAdditionalFields(getDao().getList(accountIds, categoryIds, firstDay, lastDay).stream()
+                .map(converter::convertToDto).collect(Collectors.toList()));
+    }
+
+    @Override
     public List<OperationDto> getList(Set<Integer> accountIds, LocalDate day) {
         return populateAdditionalFields(getDao().getList(accountIds, Collections.emptySet(), day, day).stream()
                 .map(converter::convertToDto).collect(Collectors.toList()));
