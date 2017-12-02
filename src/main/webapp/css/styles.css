@@ -15,3 +15,7 @@ table.list th {
 .inline-form {
     display: inline;
 }
+
+textarea, input, select {
+    min-width: 200px;
+}

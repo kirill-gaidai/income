@@ -5,6 +5,7 @@ import org.kirillgaidai.income.rest.dto.account.AccountGetRestDto;
 import org.kirillgaidai.income.rest.dto.account.AccountUpdateRestDto;
 import org.kirillgaidai.income.rest.mappers.IGenericRestDtoMapper;
 import org.kirillgaidai.income.service.dto.AccountDto;
+import org.kirillgaidai.income.service.intf.IAccountService;
 import org.kirillgaidai.income.service.intf.IGenericService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rest/account")
@@ -31,10 +34,21 @@ public class AccountRest
     }
 
     @Override
+    protected IAccountService getService() {
+        return (IAccountService) service;
+    }
+
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AccountGetRestDto> getList() {
         return super.getList();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = "currencyId")
+    public List<AccountGetRestDto> getList(@RequestParam("currencyId") Integer currencyId) {
+        return getService().getList(currencyId).stream().map(mapper::toRestDto).collect(Collectors.toList());
     }
 
     @Override

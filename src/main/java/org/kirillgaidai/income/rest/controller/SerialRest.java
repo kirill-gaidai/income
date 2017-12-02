@@ -26,13 +26,13 @@ public abstract class SerialRest<GT extends ISerialGetRestDto, CT extends IGener
 
     @Override
     public GT get(Integer id) {
-        LOGGER.debug("Getting entity");
+        LOGGER.debug("Entering method");
         return mapper.toRestDto(getService().get(id));
     }
 
     @Override
     public void delete(Integer id) {
-        LOGGER.debug("Deleting entity");
+        LOGGER.debug("Entering method");
         getService().delete(id);
     }
 

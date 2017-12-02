@@ -130,14 +130,21 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     protected String getDeleteOptimisticSql() {
         LOGGER.debug("Entering method");
         return "DELETE FROM operations WHERE (id = :id) AND " +
-                "(account_id = :account_id) AND (category_id = :category_id) AND " +
+                "(account_id = :account_id) AND (category_id = :category_id) AND (day = :day) AND " +
                 "(amount = :amount) AND (note = :note)";
     }
 
     @Override
     protected Map<String, Object> getDeleteOptimisticParamsMap(OperationEntity entity) {
         LOGGER.debug("Entering method");
-        return getUpdateParamsMap(entity);
+        Map<String, Object> params = new HashMap<>();
+        params.put(ID_FIELD, entity.getId());
+        params.put("account_id", entity.getAccountId());
+        params.put("category_id", entity.getCategoryId());
+        params.put("day", Date.valueOf(entity.getDay()));
+        params.put("amount", entity.getAmount());
+        params.put("note", entity.getNote());
+        return params;
     }
 
     @Override
