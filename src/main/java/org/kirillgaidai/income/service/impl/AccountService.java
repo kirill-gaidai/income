@@ -37,6 +37,26 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
+    protected IAccountDao getDao() {
+        return (IAccountDao) dao;
+    }
+
+    @Override
+    public List<AccountDto> getList(Integer currencyId) {
+        LOGGER.debug("Entering method");
+        if (currencyId == null) {
+            String message = "Currency id is null";
+            LOGGER.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        CurrencyEntity currencyEntity = serviceHelper.getCurrencyEntity(currencyId);
+        return getDao().getList(currencyId).stream().map(converter::convertToDto).peek(dto -> {
+            dto.setCurrencyCode(currencyEntity.getCode());
+            dto.setCurrencyTitle(currencyEntity.getTitle());
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public AccountDto get(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);
@@ -130,8 +150,9 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
         LOGGER.debug("Entering method");
         super.validateDto(dto);
         if (dto.getCurrencyId() == null) {
-            LOGGER.error("Currency id is null");
-            throw new IllegalArgumentException("Currency id is null");
+            String message = "Currency id is null";
+            LOGGER.error(message);
+            throw new IllegalArgumentException(message);
         }
     }
 
