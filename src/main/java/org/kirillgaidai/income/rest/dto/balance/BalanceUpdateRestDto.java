@@ -1,5 +1,6 @@
 package org.kirillgaidai.income.rest.dto.balance;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kirillgaidai.income.rest.dto.IGenericCreateRestDto;
 import org.kirillgaidai.income.rest.dto.IGenericUpdateRestDto;
@@ -16,6 +17,7 @@ public class BalanceUpdateRestDto implements IGenericCreateRestDto, IGenericUpda
     @Min(1)
     private Integer accountId;
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate day;
     @JsonProperty

@@ -1,5 +1,6 @@
 package org.kirillgaidai.income.rest.dto.operation;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kirillgaidai.income.rest.dto.IGenericCreateRestDto;
 
@@ -20,6 +21,7 @@ public class OperationCreateRestDto implements IGenericCreateRestDto {
     @Min(1)
     private Integer categoryId;
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate day;
     @JsonProperty
