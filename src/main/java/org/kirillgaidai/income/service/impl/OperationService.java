@@ -359,8 +359,20 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     @Override
     protected OperationDto populateAdditionalFields(OperationDto dto) {
         LOGGER.debug("Entering method");
-        AccountEntity accountEntity = accountDao.get(dto.getAccountId());
-        CategoryEntity categoryEntity = categoryDao.get(dto.getCategoryId());
+        Integer accountId = dto.getAccountId();
+        Integer categoryId = dto.getCategoryId();
+        if (accountId == null) {
+            String message = "Account id is null";
+            LOGGER.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        if (categoryId == null) {
+            String message = "Category id is null";
+            LOGGER.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        AccountEntity accountEntity = serviceHelper.getAccountEntity(accountId);
+        CategoryEntity categoryEntity = serviceHelper.getCategoryEntity(categoryId);
         dto.setAccountTitle(accountEntity.getTitle());
         dto.setCategoryTitle(categoryEntity.getTitle());
         return dto;
