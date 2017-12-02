@@ -176,7 +176,7 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     @Override
     public int getCountByCategoryId(Integer categoryId) {
         LOGGER.debug("Entering method");
-        String sql = "SELECT COUNT(*) FROM operations WHERE account_id = :category_id";
+        String sql = "SELECT COUNT(*) FROM operations WHERE category_id = :category_id";
         Map<String, Object> params = Collections.singletonMap("category_id", categoryId);
         return namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
     }

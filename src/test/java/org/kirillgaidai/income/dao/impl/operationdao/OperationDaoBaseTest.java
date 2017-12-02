@@ -31,8 +31,10 @@ public abstract class OperationDaoBaseTest {
     final protected Integer ACCOUNT_ID_1 = 10;
     final protected Integer ACCOUNT_ID_2 = 11;
     final protected Integer ACCOUNT_ID_3 = 12;
+    final protected Integer ACCOUNT_ID_4 = 13;
     final protected Integer CATEGORY_ID_1 = 20;
     final protected Integer CATEGORY_ID_2 = 21;
+    final protected Integer CATEGORY_ID_3 = 22;
     final protected LocalDate DAY_0 = LocalDate.of(2017, 3, 4);
     final protected LocalDate DAY_1 = LocalDate.of(2017, 3, 5);
     final protected LocalDate DAY_2 = LocalDate.of(2017, 3, 6);
