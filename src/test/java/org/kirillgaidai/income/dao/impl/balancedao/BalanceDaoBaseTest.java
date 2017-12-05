@@ -2,14 +2,10 @@ package org.kirillgaidai.income.dao.impl.balancedao;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.kirillgaidai.income.dao.config.PersistenceTestConfig;
 import org.kirillgaidai.income.dao.entity.BalanceEntity;
+import org.kirillgaidai.income.dao.impl.DaoBaseTest;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -25,9 +21,7 @@ import java.util.Map;
  *
  * @author Kirill Gaidai
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceTestConfig.class)
-public abstract class BalanceDaoBaseTest {
+public abstract class BalanceDaoBaseTest extends DaoBaseTest {
 
     final protected Integer ACCOUNT_ID_1 = 10;
     final protected Integer ACCOUNT_ID_2 = 11;
@@ -47,9 +41,6 @@ public abstract class BalanceDaoBaseTest {
 
     @Autowired
     protected IBalanceDao balanceDao;
-
-    @Autowired
-    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Before
     public void setUp() throws Exception {

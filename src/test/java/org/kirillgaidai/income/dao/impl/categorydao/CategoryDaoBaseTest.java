@@ -2,14 +2,10 @@ package org.kirillgaidai.income.dao.impl.categorydao;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.kirillgaidai.income.dao.config.PersistenceTestConfig;
 import org.kirillgaidai.income.dao.entity.CategoryEntity;
+import org.kirillgaidai.income.dao.impl.DaoBaseTest;
 import org.kirillgaidai.income.dao.intf.ICategoryDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,9 +18,7 @@ import java.util.Map;
  *
  * @author Kirill Gaidai
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceTestConfig.class)
-public abstract class CategoryDaoBaseTest {
+public abstract class CategoryDaoBaseTest extends DaoBaseTest {
 
     final protected List<CategoryEntity> orig = Collections.unmodifiableList(Arrays.asList(
             new CategoryEntity(3, "01", "category1"),
@@ -34,9 +28,6 @@ public abstract class CategoryDaoBaseTest {
 
     @Autowired
     protected ICategoryDao categoryDao;
-
-    @Autowired
-    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Before
     public void setUp() throws Exception {
