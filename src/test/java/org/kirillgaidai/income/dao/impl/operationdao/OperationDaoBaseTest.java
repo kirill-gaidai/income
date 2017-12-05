@@ -1,6 +1,5 @@
 package org.kirillgaidai.income.dao.impl.operationdao;
 
-import org.junit.After;
 import org.junit.Before;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
 import org.kirillgaidai.income.dao.impl.DaoBaseTest;
@@ -11,9 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * {@link org.kirillgaidai.income.dao.impl.OperationDao} base test
@@ -53,23 +50,7 @@ public abstract class OperationDaoBaseTest extends DaoBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        String sql = "INSERT INTO operations(id, account_id, category_id, day, amount, note) " +
-                "VALUES(:id, :account_id, :category_id, :day, :amount, :note)";
-        for (OperationEntity entity : orig) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("id", entity.getId());
-            params.put("account_id", entity.getAccountId());
-            params.put("category_id", entity.getCategoryId());
-            params.put("day", entity.getDay());
-            params.put("amount", entity.getAmount());
-            params.put("note", entity.getNote());
-            namedParameterJdbcTemplate.update(sql, params);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        namedParameterJdbcTemplate.update("DELETE FROM operations", Collections.emptyMap());
+        orig.forEach(this::insertOperationEntity);
     }
 
 }

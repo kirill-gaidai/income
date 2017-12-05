@@ -1,6 +1,5 @@
 package org.kirillgaidai.income.dao.impl.balancedao;
 
-import org.junit.After;
 import org.junit.Before;
 import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.impl.DaoBaseTest;
@@ -8,13 +7,10 @@ import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * {@link org.kirillgaidai.income.dao.impl.BalanceDao} base test
@@ -44,21 +40,7 @@ public abstract class BalanceDaoBaseTest extends DaoBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        String sql = "INSERT INTO balances(account_id, day, amount, manual) " +
-                "VALUES(:account_id, :day, :amount, :manual)";
-        for (BalanceEntity entity : orig) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("account_id", entity.getAccountId());
-            params.put("day", Date.valueOf(entity.getDay()));
-            params.put("amount", entity.getAmount());
-            params.put("manual", entity.getManual());
-            namedParameterJdbcTemplate.update(sql, params);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        namedParameterJdbcTemplate.update("DELETE FROM balances", Collections.emptyMap());
+        orig.forEach(this::insertBalanceEntity);
     }
 
 }

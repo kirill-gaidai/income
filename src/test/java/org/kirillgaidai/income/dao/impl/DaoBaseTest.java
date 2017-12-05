@@ -1,5 +1,6 @@
 package org.kirillgaidai.income.dao.impl;
 
+import org.junit.After;
 import org.junit.runner.RunWith;
 import org.kirillgaidai.income.dao.config.PersistenceTestConfig;
 import org.kirillgaidai.income.dao.entity.AccountEntity;
@@ -23,6 +24,15 @@ public abstract class DaoBaseTest {
 
     @Autowired
     protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @After
+    public void tearDown() throws Exception {
+        deleteAccountEntities();
+        deleteCategoryEntities();
+        deleteCurrencyEntities();
+        deleteBalanceEntities();
+        deleteOperationEntities();
+    }
 
     protected void insertAccountEntity(AccountEntity entity) {
         String sql = "INSERT INTO accounts(id, currency_id, sort, title) VALUES(:id, :currency_id, :sort, :title)";
@@ -80,21 +90,21 @@ public abstract class DaoBaseTest {
     protected void deleteAccountEntities() {
         namedParameterJdbcTemplate.update("DELETE FROM accounts", Collections.emptyMap());
     }
-    
+
     protected void deleteBalanceEntities() {
         namedParameterJdbcTemplate.update("DELETE FROM balances", Collections.emptyMap());
     }
-    
+
     protected void deleteCategoryEntities() {
         namedParameterJdbcTemplate.update("DELETE FROM categories", Collections.emptyMap());
     }
-    
+
     protected void deleteCurrencyEntities() {
         namedParameterJdbcTemplate.update("DELETE FROM currencies", Collections.emptyMap());
     }
-    
+
     protected void deleteOperationEntities() {
         namedParameterJdbcTemplate.update("DELETE FROM operations", Collections.emptyMap());
     }
-    
+
 }
