@@ -38,7 +38,7 @@ public class CategoryDao extends SerialDao<CategoryEntity> implements ICategoryD
     @Override
     protected Map<String, Object> getUpdateOptimisticParamsMap(CategoryEntity newEntity, CategoryEntity oldEntity) {
         Map<String, Object> params = getUpdateParamsMap(newEntity);
-        params.put("old_id", oldEntity.getSort());
+        params.put("old_id", oldEntity.getId());
         params.put("old_sort", oldEntity.getSort());
         params.put("old_title", oldEntity.getTitle());
         return params;
