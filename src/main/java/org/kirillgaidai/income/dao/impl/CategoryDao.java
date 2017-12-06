@@ -32,12 +32,13 @@ public class CategoryDao extends SerialDao<CategoryEntity> implements ICategoryD
 
     @Override
     protected String getUpdateOptimisticSql() {
-        return getUpdateSql() + " AND (sort = :old_sort) AND (title = :old_title)";
+        return getUpdateSql() + " AND (id = :old_id) AND (sort = :old_sort) AND (title = :old_title)";
     }
 
     @Override
     protected Map<String, Object> getUpdateOptimisticParamsMap(CategoryEntity newEntity, CategoryEntity oldEntity) {
         Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_id", oldEntity.getSort());
         params.put("old_sort", oldEntity.getSort());
         params.put("old_title", oldEntity.getTitle());
         return params;

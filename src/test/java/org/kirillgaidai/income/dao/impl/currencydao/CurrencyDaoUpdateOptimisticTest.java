@@ -11,6 +11,17 @@ import static org.kirillgaidai.income.utils.TestUtils.assertEntityListEquals;
 
 public class CurrencyDaoUpdateOptimisticTest extends CurrencyDaoBaseTest {
 
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testOldIdNotEqual() throws Exception {
+        CurrencyEntity newEntity = new CurrencyEntity(3, "cc4", "currency4", 1);
+        CurrencyEntity oldEntity = new CurrencyEntity(0, "cc1", "currency1", 4);
+        int affectedRows = currencyDao.update(oldEntity, newEntity);
+        assertEquals(0, affectedRows);
+    }
+
     @Test
     public void testSuccessful() throws Exception {
         CurrencyEntity newEntity = new CurrencyEntity(3, "cc4", "currency4", 2);
