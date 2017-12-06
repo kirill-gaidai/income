@@ -34,12 +34,15 @@ public class AccountDao extends SerialDao<AccountEntity> implements IAccountDao 
 
     @Override
     protected String getUpdateOptimisticSql() {
-        return getUpdateSql() + " AND (currency_id = :old_currency_id) AND (sort = :old_sort) AND (title = :old_title)";
+        return getUpdateSql() +
+                " AND (id = :old_id) AND (currency_id = :old_currency_id)" +
+                " AND (sort = :old_sort) AND (title = :old_title)";
     }
 
     @Override
     protected Map<String, Object> getUpdateOptimisticParamsMap(AccountEntity newEntity, AccountEntity oldEntity) {
         Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_id", oldEntity.getId());
         params.put("old_currency_id", oldEntity.getCurrencyId());
         params.put("old_sort", oldEntity.getSort());
         params.put("old_title", oldEntity.getTitle());
