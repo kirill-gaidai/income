@@ -15,12 +15,12 @@ import static org.kirillgaidai.income.utils.TestUtils.assertEntityListEquals;
 public class CategoryDaoDeleteOptimisticTest extends CategoryDaoBaseTest {
 
     /**
-     * Test not found
+     * Test id changed
      *
      * @throws Exception exception
      */
     @Test
-    public void testNotFound() throws Exception {
+    public void testIdChanged() throws Exception {
         CategoryEntity entity = new CategoryEntity(0, "01", "category1");
         int affectedRows = categoryDao.delete(entity);
         assertEquals(0, affectedRows);

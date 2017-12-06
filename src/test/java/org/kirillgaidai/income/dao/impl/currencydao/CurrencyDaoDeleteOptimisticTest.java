@@ -13,12 +13,12 @@ import static org.kirillgaidai.income.utils.TestUtils.assertEntityListEquals;
 public class CurrencyDaoDeleteOptimisticTest extends CurrencyDaoBaseTest {
 
     /**
-     * Test not found
+     * Test id changed
      *
      * @throws Exception exception
      */
     @Test
-    public void testNotFound() throws Exception {
+    public void testIdChanged() throws Exception {
         CurrencyEntity entity = new CurrencyEntity(0, "cc1", "currency1", 4);
         int affectedRows = currencyDao.delete(entity);
         assertEquals(0, affectedRows);
