@@ -19,7 +19,8 @@ public class IncomeControllerException extends IncomeException {
         super(cause);
     }
 
-    public IncomeControllerException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public IncomeControllerException(
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

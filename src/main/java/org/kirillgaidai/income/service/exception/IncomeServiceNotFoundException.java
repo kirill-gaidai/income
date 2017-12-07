@@ -2,7 +2,7 @@ package org.kirillgaidai.income.service.exception;
 
 public class IncomeServiceNotFoundException extends IncomeServiceException {
 
-    public IncomeServiceNotFoundException(final String message) {
+    public IncomeServiceNotFoundException(String message) {
         super(message);
     }
 

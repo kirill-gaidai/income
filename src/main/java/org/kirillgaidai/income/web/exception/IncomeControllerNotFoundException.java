@@ -6,15 +6,15 @@ public class IncomeControllerNotFoundException extends IncomeControllerException
         super();
     }
 
-    public IncomeControllerNotFoundException(final String message) {
+    public IncomeControllerNotFoundException(String message) {
         super(message);
     }
 
-    public IncomeControllerNotFoundException(final String message, final Throwable cause) {
+    public IncomeControllerNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public IncomeControllerNotFoundException(final Throwable cause) {
+    public IncomeControllerNotFoundException(Throwable cause) {
         super(cause);
     }
 
