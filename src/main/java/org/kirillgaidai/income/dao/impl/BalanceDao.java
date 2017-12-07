@@ -143,12 +143,15 @@ public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao
 
     @Override
     protected String getUpdateOptimisticSql() {
-        return getUpdateSql() + " AND (amount = :old_amount) AND (manual = :old_manual)";
+        return getUpdateSql() + " AND (account_id = :old_account_id) AND (day = :old_day)" +
+                " AND (amount = :old_amount) AND (manual = :old_manual)";
     }
 
     @Override
     protected Map<String, Object> getUpdateOptimisticParamsMap(BalanceEntity newEntity, BalanceEntity oldEntity) {
         Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_account_id", oldEntity.getAccountId());
+        params.put("old_day", Date.valueOf(oldEntity.getDay()));
         params.put("old_amount", oldEntity.getAmount());
         params.put("old_manual", oldEntity.getManual());
         return params;
@@ -157,7 +160,12 @@ public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao
     @Override
     protected String getDeleteOptimisticSql() {
         return "DELETE FROM balances " +
-                "WHERE (account_id = :account_id) AND (day = :day) AND (amount = :amount) AND (manual = :manual)";
+                "WHERE (account_id = :account_id) AND (day = :day) AND (amount = :amount) AND (manual = :manual)" +
+                " AND ((SELECT COUNT(*) FROM operations WHERE (account_id = :account_id) AND (day = :day)) = 0) " +
+                " AND (((SELECT COUNT(*) FROM balances WHERE (account_id = :account_id) AND (day < :day)) <> 0) OR" +
+                " ((SELECT COUNT(*) FROM (SELECT account_id, day FROM balances WHERE (account_id = :account_id)" +
+                " AND (day > :day) ORDER BY day LIMIT 1) AS b" +
+                " INNER JOIN operations AS o ON (b.account_id = o.account_id) AND (b.day = o.day)) = 0))";
     }
 
     @Override
@@ -171,5 +179,5 @@ public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao
         Map<String, Object> params = Collections.singletonMap("account_id", accountId);
         return namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
     }
-    
+
 }
