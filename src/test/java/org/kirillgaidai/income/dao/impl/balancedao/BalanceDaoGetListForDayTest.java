@@ -20,6 +20,18 @@ import static org.kirillgaidai.income.utils.TestUtils.assertEntityListEquals;
 public class BalanceDaoGetListForDayTest extends BalanceDaoBaseTest {
 
     /**
+     * Test empty
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testEmpty() throws Exception {
+        List<BalanceEntity> expected = Collections.emptyList();
+        List<BalanceEntity> actual = balanceDao.getList(Collections.emptySet(), DAY_1);
+        assertEntityListEquals(expected, actual);
+    }
+
+    /**
      * Test balance at this day
      *
      * @throws Exception exception

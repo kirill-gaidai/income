@@ -27,7 +27,7 @@ public class OperationDaoUpdateTest extends OperationDaoBaseTest {
     public void testSuccessful() throws Exception {
         OperationEntity entity = new OperationEntity(1, ACCOUNT_ID_2, CATEGORY_ID_2, DAY_2, new BigDecimal("409.6"),
                 "Note 13");
-        OperationEntity expectedEntity = new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1,
+        OperationEntity expectedEntity = new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_2, DAY_1,
                 new BigDecimal("409.6"), "Note 13");
         int affectedRows = operationDao.update(entity);
         assertEquals(1, affectedRows);

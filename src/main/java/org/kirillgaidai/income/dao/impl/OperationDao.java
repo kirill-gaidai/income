@@ -60,29 +60,25 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     @Override
     protected String getUpdateSql() {
         LOGGER.debug("Entering method");
-        return "UPDATE operations SET amount = :amount, note = :note WHERE id = :id";
-    }
-
-    @Override
-    protected Map<String, Object> getUpdateParamsMap(OperationEntity entity) {
-        LOGGER.debug("Entering method");
-        Map<String, Object> params = new HashMap<>();
-        params.put(ID_FIELD, entity.getId());
-        params.put("amount", entity.getAmount());
-        params.put("note", entity.getNote());
-        return params;
+        return "UPDATE operations SET category_id = :category_id, amount = :amount, note = :note WHERE id = :id";
     }
 
     @Override
     protected String getUpdateOptimisticSql() {
         LOGGER.debug("Entering method");
-        return getUpdateSql() + " AND (amount = :old_amount) AND (note = :old_note)";
+        return getUpdateSql() + " AND (account_id = :account_id) AND (day = :day) AND (id = :old_id)" +
+                " AND (account_id = :old_account_id) AND (category_id = :old_category_id) AND (day = :old_day)" +
+                " AND (amount = :old_amount) AND (note = :old_note)";
     }
 
     @Override
     protected Map<String, Object> getUpdateOptimisticParamsMap(OperationEntity newEntity, OperationEntity oldEntity) {
         LOGGER.debug("Entering method");
         Map<String, Object> params = getUpdateParamsMap(newEntity);
+        params.put("old_id", oldEntity.getId());
+        params.put("old_account_id", oldEntity.getAccountId());
+        params.put("old_category_id", oldEntity.getCategoryId());
+        params.put("old_day", Date.valueOf(oldEntity.getDay()));
         params.put("old_amount", oldEntity.getAmount());
         params.put("old_note", oldEntity.getNote());
         return params;
@@ -137,14 +133,7 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     @Override
     protected Map<String, Object> getDeleteOptimisticParamsMap(OperationEntity entity) {
         LOGGER.debug("Entering method");
-        Map<String, Object> params = new HashMap<>();
-        params.put(ID_FIELD, entity.getId());
-        params.put("account_id", entity.getAccountId());
-        params.put("category_id", entity.getCategoryId());
-        params.put("day", Date.valueOf(entity.getDay()));
-        params.put("amount", entity.getAmount());
-        params.put("note", entity.getNote());
-        return params;
+        return getUpdateParamsMap(entity);
     }
 
     @Override

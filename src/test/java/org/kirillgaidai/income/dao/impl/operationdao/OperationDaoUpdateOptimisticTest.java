@@ -13,57 +13,152 @@ import static org.kirillgaidai.income.utils.TestUtils.assertEntityListEquals;
 public class OperationDaoUpdateOptimisticTest extends OperationDaoBaseTest {
 
     /**
+     * Test id changed
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testIdChanged() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(0, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test account id changed
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testAccountIdChanged() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_4, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test category id changed
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testCategoryIdChanged() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_2, DAY_1, new BigDecimal("0.1"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test day changed
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testDayChanged() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_0, new BigDecimal("0.1"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test amount changed
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testAmountChanged() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.5"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test note changed
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNoteChanged() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note X");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test id not found
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testIdNotFound() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(0, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test account id not found
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testAccountIdNotFound() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_4, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
+     * Test day not found
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testDayNotFound() throws Exception {
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_0, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note 1");
+        testFailure(newEntity, oldEntity);
+    }
+
+    /**
      * Test successful
      *
      * @throws Exception exception
      */
     @Test
     public void testSuccessful() throws Exception {
-        OperationEntity newEntity = new OperationEntity(1, ACCOUNT_ID_2, CATEGORY_ID_2, DAY_2, new BigDecimal("409.6"),
-                "Note 13");
-        OperationEntity oldEntity = orig.get(0);
-        OperationEntity expectedEntity = new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1,
-                new BigDecimal("409.6"), "Note 13");
-        List<OperationEntity> expected = new ArrayList<>(orig);
-        expected.set(0, expectedEntity);
-        int affectedRows = operationDao.update(newEntity, oldEntity);
-        assertEquals(1, affectedRows);
-        List<OperationEntity> actual = operationDao.getList();
-        assertEntityListEquals(expected, actual);
+        OperationEntity newEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_3, DAY_1, new BigDecimal("0.3"), "Note 0");
+        OperationEntity oldEntity =
+                new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"), "Note 1");
+        List<OperationEntity> expected = new ArrayList<>();
+        expected.add(0, newEntity);
+        expected.addAll(orig.subList(1, orig.size()));
+        assertEquals(1, operationDao.update(newEntity, oldEntity));
+        assertEntityListEquals(expected, operationDao.getList());
     }
 
-    /**
-     * Test not found
-     *
-     * @throws Exception exception
-     */
-    @Test
-    public void testNotFound() throws Exception {
-        OperationEntity newEntity = new OperationEntity(0, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("409.6"),
-                "Note 13");
-        OperationEntity oldEntity = new OperationEntity(0, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.1"),
-                "Note 1");
-        int affectedRows = operationDao.update(newEntity, oldEntity);
-        assertEquals(0, affectedRows);
-        List<OperationEntity> actual = operationDao.getList();
-        assertEntityListEquals(orig, actual);
-    }
-
-    /**
-     * Test already updated
-     *
-     * @throws Exception exception
-     */
-    @Test
-    public void testAlreadyUpdated() throws Exception {
-        OperationEntity newEntity = new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("409.6"),
-                "Note 13");
-        OperationEntity oldEntity = new OperationEntity(1, ACCOUNT_ID_1, CATEGORY_ID_1, DAY_1, new BigDecimal("0.2"),
-                "Note 1");
-        int affectedRows = operationDao.update(newEntity, oldEntity);
-        assertEquals(0, affectedRows);
-        List<OperationEntity> actual = operationDao.getList();
-        assertEntityListEquals(orig, actual);
+    private void testFailure(OperationEntity newEntity, OperationEntity oldEntity) throws Exception {
+        assertEquals(0, operationDao.update(newEntity, oldEntity));
+        assertEntityListEquals(orig, operationDao.getList());
     }
 
 }
