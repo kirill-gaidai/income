@@ -32,8 +32,16 @@ Application.prototype.isoStrToDate = function(str) {
 };
 
 Application.prototype.dateToIsoStr = function(date) {
-    let fullYear = (date.getFullYear() + "").padStart(4, "0");
-    let month = (date.getMonth() + 1 + "").padStart(2, "0");
-    let date = (date.getDate() + "").padStart(2, "0");
-    return fullYear + "-" + month + "-" + date;
+    let year = date.getFullYear() + "";
+    let month = date.getMonth() + 1 + "";
+    let day = date.getDate() + "";
+
+    if (month.length < 2) {
+        month = "0" + month;
+    }
+    if (day.length < 2) {
+        day = "0" + day;
+    }
+
+    return year + "-" + month + "-" + day;
 };

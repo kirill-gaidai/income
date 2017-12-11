@@ -41,7 +41,7 @@
         </tr>
         <tr>
             <td><label for="edBalanceDay">Day</label></td>
-            <td><input type="text" id="edBalanceDay" readonly></td>
+            <td><input type="text" id="edBalanceDay"></td>
         </tr>
         <tr>
             <td><label for="edBalanceAmount">Amount</label></td>
@@ -98,18 +98,20 @@
     </table>
 </div>
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Day</th>
-        <th>Account</th>
-        <th>Category</th>
-        <th>Amount</th>
-        <th>Note</th>
-    </tr>
-</table>
+<div id="lsOperations">
+    <table class="list">
+        <tr>
+            <th>ID</th>
+            <th>Day</th>
+            <th>Account</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Note</th>
+        </tr>
+    </table>
+</div>
 
-<div id="container"></div>
+<div id="lsSummaries"></div>
 
 <script src="${scriptUrl}"></script>
 </body>
