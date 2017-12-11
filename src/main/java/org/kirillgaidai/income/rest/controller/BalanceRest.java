@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/rest/balance")
+@RequestMapping("/rest/balances")
 public class BalanceRest
         extends GenericRest<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto>
         implements IGenericRest<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto> {

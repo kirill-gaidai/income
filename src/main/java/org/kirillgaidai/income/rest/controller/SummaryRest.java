@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-@RequestMapping("/rest/summary")
+@RequestMapping("/rest/summaries")
 @RestController
 public class SummaryRest {
 

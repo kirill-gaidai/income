@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/rest/account")
+@RequestMapping("/rest/accounts")
 public class AccountRest
         extends SerialRest<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto, AccountDto>
         implements ISerialRest<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto> {

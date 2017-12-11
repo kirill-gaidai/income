@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/category")
+@RequestMapping("/rest/categories")
 public class CategoryRest
         extends SerialRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto>
         implements ISerialRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto> {
