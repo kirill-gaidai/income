@@ -4,12 +4,15 @@ import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.entity.CategoryEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
+import org.kirillgaidai.income.dao.entity.IGenericEntity;
+import org.kirillgaidai.income.dao.entity.ISerialEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
 import org.kirillgaidai.income.dao.intf.IAccountDao;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.dao.intf.ICategoryDao;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.dao.intf.IOperationDao;
+import org.kirillgaidai.income.dao.intf.ISerialDao;
 import org.kirillgaidai.income.service.exception.IncomeServiceDependentOnException;
 import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.exception.optimistic.IncomeServiceOptimisticCreateException;
@@ -21,6 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class ServiceHelper {
@@ -119,6 +126,56 @@ public class ServiceHelper {
             String message = String.format("Operation with id %d not found", operationId);
             LOGGER.error(message);
             throw new IncomeServiceNotFoundException(message);
+        }
+        return result;
+    }
+
+    private <E extends ISerialEntity> E getEntity(Integer id, ISerialDao<E> dao, Class<E> clazz) {
+        LOGGER.debug("Entering method");
+        E result = dao.get(id);
+        if (result == null) {
+            String message = String.format("%s with id %d not found", getEntityName(clazz), id);
+            LOGGER.error(message);
+            throw new IncomeServiceNotFoundException(message);
+        }
+        return result;
+    }
+
+    public List<AccountEntity> getAccountListByIds(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return getListByIds(ids, accountDao, AccountEntity.class);
+    }
+
+    public List<CategoryEntity> getCategoryListByIds(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return getListByIds(ids, categoryDao, CategoryEntity.class);
+    }
+
+    public List<CurrencyEntity> getCurrencyListByIds(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return getListByIds(ids, currencyDao, CurrencyEntity.class);
+    }
+
+    public List<OperationEntity> getOperationListByIds(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return getListByIds(ids, operationDao, OperationEntity.class);
+    }
+
+    private <E extends ISerialEntity> List<E> getListByIds(Set<Integer> ids, ISerialDao<E> dao, Class<E> clazz) {
+        LOGGER.debug("Entering method");
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<E> result = dao.getList(ids);
+        if (result.size() != ids.size()) {
+            Set<Integer> resultIds = result.stream().map(E::getId).collect(Collectors.toSet());
+            for (Integer id : ids) {
+                if (!resultIds.contains(id)) {
+                    String message = String.format("%s with id %d not found", getEntityName(clazz), id);
+                    LOGGER.error(message);
+                    throw new IncomeServiceNotFoundException(message);
+                }
+            }
         }
         return result;
     }
@@ -295,6 +352,11 @@ public class ServiceHelper {
             LOGGER.error(message);
             throw new IncomeServiceDependentOnException(message);
         }
+    }
+
+    private String getEntityName(Class<? extends IGenericEntity> clazz) {
+        String className = clazz.getName();
+        return className.substring(0, className.length() - 6);
     }
 
 }

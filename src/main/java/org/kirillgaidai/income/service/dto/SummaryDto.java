@@ -1,31 +1,58 @@
 package org.kirillgaidai.income.service.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 public class SummaryDto {
 
+    private LocalDate firstDay;
+    private LocalDate lastDay;
+    private CurrencyDto currencyDto;
     private List<AccountDto> accountDtoList;
     private List<CategoryDto> categoryDtoList;
-    private List<SummaryDtoRow> summaryDtoRowList;
-    private List<BigDecimal> totalAmounts;
-    private BigDecimal totalAmountsSummary;
+    private List<BalanceDto> initialBalanceDtoList;
+    private List<BalanceDto> balanceDtoList;
+    private List<OperationDto> operationDtoList;
 
     public SummaryDto() {
     }
 
     public SummaryDto(
-            List<AccountDto> accountDtoList,
-            List<CategoryDto> categoryDtoList,
-            List<SummaryDtoRow> summaryDtoRowList,
-            List<BigDecimal> totalAmounts,
-            BigDecimal totalAmountsSummary) {
+            LocalDate firstDay, LocalDate lastDay, CurrencyDto currencyDto, List<AccountDto> accountDtoList,
+            List<CategoryDto> categoryDtoList, List<BalanceDto> initialBalanceDtoList, List<BalanceDto> balanceDtoList,
+            List<OperationDto> operationDtoList) {
+        this.firstDay = firstDay;
+        this.lastDay = lastDay;
+        this.currencyDto = currencyDto;
         this.accountDtoList = accountDtoList;
         this.categoryDtoList = categoryDtoList;
-        this.summaryDtoRowList = summaryDtoRowList;
-        this.totalAmounts = totalAmounts;
-        this.totalAmountsSummary = totalAmountsSummary;
+        this.initialBalanceDtoList = initialBalanceDtoList;
+        this.balanceDtoList = balanceDtoList;
+        this.operationDtoList = operationDtoList;
+    }
+
+    public LocalDate getFirstDay() {
+        return firstDay;
+    }
+
+    public void setFirstDay(LocalDate firstDay) {
+        this.firstDay = firstDay;
+    }
+
+    public LocalDate getLastDay() {
+        return lastDay;
+    }
+
+    public void setLastDay(LocalDate lastDay) {
+        this.lastDay = lastDay;
+    }
+
+    public CurrencyDto getCurrencyDto() {
+        return currencyDto;
+    }
+
+    public void setCurrencyDto(CurrencyDto currencyDto) {
+        this.currencyDto = currencyDto;
     }
 
     public List<AccountDto> getAccountDtoList() {
@@ -44,101 +71,28 @@ public class SummaryDto {
         this.categoryDtoList = categoryDtoList;
     }
 
-    public List<SummaryDtoRow> getSummaryDtoRowList() {
-        return summaryDtoRowList;
+    public List<BalanceDto> getInitialBalanceDtoList() {
+        return initialBalanceDtoList;
     }
 
-    public void setSummaryDtoRowList(List<SummaryDtoRow> summaryDtoRowList) {
-        this.summaryDtoRowList = summaryDtoRowList;
+    public void setInitialBalanceDtoList(List<BalanceDto> initialBalanceDtoList) {
+        this.initialBalanceDtoList = initialBalanceDtoList;
     }
 
-    public List<BigDecimal> getTotalAmounts() {
-        return totalAmounts;
+    public List<BalanceDto> getBalanceDtoList() {
+        return balanceDtoList;
     }
 
-    public void setTotalAmounts(List<BigDecimal> totalAmounts) {
-        this.totalAmounts = totalAmounts;
+    public void setBalanceDtoList(List<BalanceDto> balanceDtoList) {
+        this.balanceDtoList = balanceDtoList;
     }
 
-    public BigDecimal getTotalAmountsSummary() {
-        return totalAmountsSummary;
+    public List<OperationDto> getOperationDtoList() {
+        return operationDtoList;
     }
 
-    public void setTotalAmountsSummary(BigDecimal totalAmountsSummary) {
-        this.totalAmountsSummary = totalAmountsSummary;
-    }
-
-    public static class SummaryDtoRow {
-
-        private LocalDate day;
-        private BigDecimal difference;
-        private List<BigDecimal> balances;
-        private BigDecimal balancesSummary;
-        private List<BigDecimal> amounts;
-        private BigDecimal amountsSummary;
-
-        public SummaryDtoRow() {
-        }
-
-        public SummaryDtoRow(
-                LocalDate day, BigDecimal difference, List<BigDecimal> balances, BigDecimal balancesSummary,
-                List<BigDecimal> amounts, BigDecimal amountsSummary) {
-            this.day = day;
-            this.difference = difference;
-            this.balances = balances;
-            this.balancesSummary = balancesSummary;
-            this.amounts = amounts;
-            this.amountsSummary = amountsSummary;
-        }
-
-        public LocalDate getDay() {
-            return day;
-        }
-
-        public void setDay(LocalDate day) {
-            this.day = day;
-        }
-
-        public BigDecimal getDifference() {
-            return difference;
-        }
-
-        public void setDifference(BigDecimal difference) {
-            this.difference = difference;
-        }
-
-        public List<BigDecimal> getBalances() {
-            return balances;
-        }
-
-        public void setBalances(List<BigDecimal> balances) {
-            this.balances = balances;
-        }
-
-        public BigDecimal getBalancesSummary() {
-            return balancesSummary;
-        }
-
-        public void setBalancesSummary(BigDecimal balancesSummary) {
-            this.balancesSummary = balancesSummary;
-        }
-
-        public List<BigDecimal> getAmounts() {
-            return amounts;
-        }
-
-        public void setAmounts(List<BigDecimal> amounts) {
-            this.amounts = amounts;
-        }
-
-        public BigDecimal getAmountsSummary() {
-            return amountsSummary;
-        }
-
-        public void setAmountsSummary(BigDecimal amountsSummary) {
-            this.amountsSummary = amountsSummary;
-        }
-
+    public void setOperationDtoList(List<OperationDto> operationDtoList) {
+        this.operationDtoList = operationDtoList;
     }
 
 }

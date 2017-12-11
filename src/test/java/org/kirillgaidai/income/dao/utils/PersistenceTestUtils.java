@@ -26,13 +26,6 @@ public class PersistenceTestUtils {
         assertEquals(expected, actual);
     }
 
-    public static void assertBigDecimalListEquals(List<BigDecimal> expected, List<BigDecimal> actual) {
-        assertEquals(expected.size(), actual.size());
-        for (int index = 0; index < expected.size(); index++) {
-            assertBigDecimalEquals(expected.get(index), actual.get(index));
-        }
-    }
-
     public static void assertRateEntityListEquals(List<RateEntity> expected, List<RateEntity> actual) {
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
