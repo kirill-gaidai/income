@@ -3,8 +3,9 @@
 
 <spring:url var="stylesUrl" value="/css/styles.css"/>
 <spring:url var="jQueryUrl" value="/js/jquery-3.2.1.js"/>
-<spring:url var="scriptUrl" value="/js/account.js"/>
+<spring:url var="applicationUrl" value="/js/application.js"/>
 <spring:url var="appCtx" value="/"/>
+<spring:url var="scriptUrl" value="/js/accounts.js"/>
 
 <!DOCTYPE html>
 <html>
@@ -13,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="${stylesUrl}"/>
     <script src="${jQueryUrl}"></script>
     <script>
-        var appCtx = "${appCtx}".substr(0, "${appCtx}".length - 1);
+        let appCtx = "${appCtx}".substr(0, "${appCtx}".length - 1);
     </script>
 </head>
 <body>
@@ -61,3 +62,4 @@
 
 <script src="${scriptUrl}"></script>
 </body>
+</html>

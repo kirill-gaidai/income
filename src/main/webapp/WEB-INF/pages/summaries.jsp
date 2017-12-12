@@ -4,14 +4,14 @@
 <spring:url var="stylesUrl" value="/css/styles.css"/>
 <spring:url var="jQueryUrl" value="/js/jquery-3.2.1.js"/>
 <spring:url var="applicationUrl" value="/js/application.js"/>
-<spring:url var="scriptUrl" value="/js/summary.js"/>
 <spring:url var="appCtx" value="/"/>
+<spring:url var="scriptUrl" value="/js/summaries.js"/>
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Summary</title>
+    <title>Summaries</title>
     <link rel="stylesheet" type="text/css" href="${stylesUrl}"/>
     <script src="${jQueryUrl}"></script>
     <script>

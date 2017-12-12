@@ -1,32 +1,23 @@
 "use strict";
 
+"use strict";
+
 document.addEventListener("DOMContentLoaded", function () {
 
     var listElem = document.getElementById("list").firstElementChild;
 
     var formElem = document.getElementById("form");
     var idElem = document.getElementById("id");
-    var currencyIdElem = document.getElementById("currencyId");
-    var sortElem = document.getElementById("sort");
+    var codeElem = document.getElementById("code");
     var titleElem = document.getElementById("title");
+    var accuracyElem = document.getElementById("accuracy");
     var saveBtnElem = document.getElementById("save");
     var newBtnElem = document.getElementById("new");
 
     var entityList = [];
     var currentEntity = null;
 
-    var resourceUrl = appCtx + "/rest/account";
-    var currencyResourceUrl = appCtx + "/rest/currency";
-
-    jQuery.getJSON(currencyResourceUrl, function (data) {
-        data.forEach(function (entity) {
-            var optionElem = document.createElement("option");
-            optionElem.value = entity.id;
-            optionElem.text = "[" + entity.code + "] " + entity.title;
-            currencyIdElem.add(optionElem);
-        });
-        currencyIdElem.value = null;
-    });
+    var resourceUrl = appCtx + "/rest/currencies";
 
     jQuery.getJSON(resourceUrl, function (data) {
         entityList = data;
@@ -110,25 +101,25 @@ document.addEventListener("DOMContentLoaded", function () {
     function getEntityFromForm() {
         return {
             id: idElem.value ? idElem.value : null,
-            currencyId: currencyIdElem.value ? +currencyIdElem.value : null,
-            sort: sortElem.value,
-            title: titleElem.value
+            code: codeElem.value,
+            title: titleElem.value,
+            accuracy: accuracyElem.value
         };
     }
 
     function clearForm() {
         currentEntity = null;
         idElem.value = "";
-        currencyIdElem.value = null;
-        sortElem.value = "";
+        codeElem.value = "";
         titleElem.value = "";
+        accuracyElem.value = "";
     }
 
     function fillForm(entity) {
         idElem.value = entity.id;
-        currencyIdElem.value = entity.currencyId;
-        sortElem.value = entity.sort;
+        codeElem.value = entity.code;
         titleElem.value = entity.title;
+        accuracyElem.value = entity.accuracy;
     }
 
     function appendRow(entity) {
@@ -138,13 +129,11 @@ document.addEventListener("DOMContentLoaded", function () {
         var cellElem = rowElem.appendChild(document.createElement("td"));
         cellElem.innerText = entity.id;
         cellElem = rowElem.appendChild(document.createElement("td"));
-        cellElem.innerText = entity.currencyCode;
-        cellElem = rowElem.appendChild(document.createElement("td"));
-        cellElem.innerText = entity.currencyTitle;
-        cellElem = rowElem.appendChild(document.createElement("td"));
-        cellElem.innerText = entity.sort;
+        cellElem.innerText = entity.code;
         cellElem = rowElem.appendChild(document.createElement("td"));
         cellElem.innerText = entity.title;
+        cellElem = rowElem.appendChild(document.createElement("td"));
+        cellElem.innerText = entity.accuracy;
         cellElem = rowElem.appendChild(document.createElement("td"));
         var btnElem = cellElem.appendChild(document.createElement("button"));
         btnElem.innerText = "Edit";
@@ -156,18 +145,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateRow(rowElem, entity) {
         rowElem.children[0].innerText = entity.id;
-        rowElem.children[1].innerText = entity.currencyCode;
-        rowElem.children[2].innerText = entity.currencyTitle;
-        rowElem.children[3].innerText = entity.sort;
-        rowElem.children[4].innerText = entity.title;
+        rowElem.children[1].innerText = entity.code;
+        rowElem.children[2].innerText = entity.title;
+        rowElem.children[3].innerText = entity.accuracy;
     }
 
     function copyEntity(source, target) {
         target.id = source.id;
-        target.currencyCode = source.currencyCode;
-        target.currencyTitle = source.currencyTitle;
-        target.sort = source.sort;
+        target.code = source.code;
         target.title = source.title;
+        target.accuracy = source.accuracy;
     }
 
 });

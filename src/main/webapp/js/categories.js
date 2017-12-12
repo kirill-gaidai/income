@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var entityList = [];
     var currentEntity = null;
 
-    var resourceUrl = appCtx + "/rest/category";
+    var resourceUrl = appCtx + "/rest/categories";
 
     jQuery.getJSON(resourceUrl, function (data) {
         entityList = data;
