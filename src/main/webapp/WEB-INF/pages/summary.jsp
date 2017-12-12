@@ -65,7 +65,7 @@
     <table class="form">
         <tr>
             <td><label for="edOperationId">ID</label></td>
-            <td><input type="text" id="edOperationId" readonly></td>
+            <td><input type="text" id="edOperationId" disabled></td>
         </tr>
         <tr>
             <td><label for="edOperationDay">Day</label></td>
@@ -110,6 +110,8 @@
             <th>Actions</th>
         </tr>
     </table>
+    <button id="btOperationsNew">New</button>
+    <button id="btOperationsCancel">Cancel</button>
 </div>
 
 <hr>

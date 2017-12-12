@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
         edOperationNote: document.getElementById("edOperationNote"),
 
         lsOperations: document.getElementById("lsOperations"),
+        btOperationsNew: document.getElementById("btOperationsNew"),
+        btOperationsCancel: document.getElementById("btOperationsCancel"),
 
         lsSummaries: document.getElementById("lsSummaries")
     };
@@ -132,6 +134,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function doOnLsOperationBtEditClick() {
+        let operation = this.parentElement.parentElement.operation;
+        clearLsOperations(true);
+        clearFmBalance(true);
+        showFmOperation(operation);
+    }
+
     function clearFmBalance(hide) {
         formComponents.fmBalance.hidden = hide;
         formComponents.cbBalanceAccount.value = null;
@@ -145,9 +154,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function showFmBalance(balanceEntity) {
         formComponents.fmBalance.hidden = false;
         formComponents.cbBalanceAccount.value = balanceEntity.accountId;
-        formComponents.cbBalanceAccount.enabled = false;
+        formComponents.cbBalanceAccount.disabled = true;
         formComponents.edBalanceDay.value = application.dateToIsoStr(balanceEntity.day);
-        formComponents.edBalanceDay.enabled = false;
+        formComponents.edBalanceDay.disabled = true;
         formComponents.edBalanceAmount.value = balanceEntity.amount;
         formComponents.chbBalanceManual.checked = balanceEntity.manual;
     }
@@ -156,9 +165,9 @@ document.addEventListener("DOMContentLoaded", function () {
         formComponents.fmOperation.hidden = hide;
         formComponents.edOperationId.value = "";
         formComponents.edOperationDay.value = "";
-        formComponents.edOperationDay.enabled = true;
+        formComponents.edOperationDay.disabled = false;
         formComponents.cbOperationAccount.value = null;
-        formComponents.cbOperationAccount.enabled = true;
+        formComponents.cbOperationAccount.disabled = false;
         formComponents.cbOperationCategory.value = null;
         formComponents.edOperationAmount.value = "";
         formComponents.edOperationNote.value = "";
@@ -168,14 +177,14 @@ document.addEventListener("DOMContentLoaded", function () {
         formComponents.fmOperation.hidden = false;
         formComponents.edOperationId.value = operationEntity.id;
         formComponents.edOperationDay.value = application.dateToIsoStr(operationEntity.day);
-        formComponents.edOperationDay.enabled = false;
+        formComponents.edOperationDay.disabled = true;
         formComponents.cbOperationAccount.value = operationEntity.accountId;
-        formComponents.cbOperationAccount.enabled = false;
+        formComponents.cbOperationAccount.disabled = true;
         formComponents.cbOperationCategory.value = operationEntity.categoryId;
         formComponents.edOperationAmount.value = operationEntity.amount;
         formComponents.edOperationNote.value = operationEntity.note;
     }
-    
+
     function clearLsOperations(hide) {
         formComponents.lsOperations.hidden = hide;
         let elem = formComponents.lsOperations.firstElementChild.firstElementChild;
@@ -203,13 +212,20 @@ document.addEventListener("DOMContentLoaded", function () {
             rowElem.appendChild(document.createElement("td")).innerText = operation.note;
 
             let cellElem = rowElem.appendChild(document.createElement("td"));
+
+            let btElem = cellElem.appendChild(document.createElement("button"));
+            btElem.innerText = "Edit";
+            btElem.addEventListener("click", doOnLsOperationBtEditClick);
+            btElem = cellElem.appendChild(document.createElement("button"));
+            btElem.innerText = "Delete";
         });
     }
 
     function render(model) {
         formComponents.lsSummaries.innerHTML = "";
-        let tbodyElem = formComponents.lsSummaries.appendChild(document.createElement("table")).appendChild(document.createElement("tbody"))
-        let rowElem = tbodyElem.appendChild(document.createElement("tr"));
+        let tableElem = formComponents.lsSummaries.appendChild(document.createElement("table"));
+        let bodyElem = tableElem.appendChild(document.createElement("tbody"));
+        let rowElem = bodyElem.appendChild(document.createElement("tr"));
         rowElem.appendChild(document.createElement("th")).innerText = "Day";
         rowElem.appendChild(document.createElement("th")).innerText = "Difference";
         model.accountTitles.forEach(title => rowElem.appendChild(document.createElement("th")).innerText = title);
@@ -217,8 +233,8 @@ document.addEventListener("DOMContentLoaded", function () {
         model.categoryTitles.forEach(title => rowElem.appendChild(document.createElement("th")).innerText = title);
         rowElem.appendChild(document.createElement("th")).innerText = "Sum";
         model.rows.forEach(row => {
-            let rowElem = tbodyElem.appendChild(document.createElement("tr"));
-            rowElem.appendChild(document.createElement("td")).innerText = formatDate(row.day);
+            let rowElem = bodyElem.appendChild(document.createElement("tr"));
+            rowElem.appendChild(document.createElement("td")).innerText = application.dateToIsoStr(row.day);
             rowElem.appendChild(document.createElement("td")).innerText = row.difference;
             row.balanceAmounts.forEach(amount => {
                 let elem = rowElem.appendChild(document.createElement("td"));
@@ -233,10 +249,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             rowElem.appendChild(document.createElement("td")).innerText = row.operationAmountsSum;
         });
-
-        function formatDate(day) {
-            return day.toLocaleString("ru", {year: "numeric", month: "numeric", day: "numeric"});
-        }
     }
 
     function transform(entity, accountIds, categoryIds) {
@@ -260,23 +272,22 @@ document.addEventListener("DOMContentLoaded", function () {
         }, new Map());
 
         // balance amounts before first day
-        let balanceAmounts = (new Array(accountMap.size)).fill(null);
-        entity.initialBalances.forEach(initialBalance => {
-            if (accountMap.has(initialBalance.accountId)) {
-                balanceAmounts[accountMap.get(initialBalance.accountId)] = {
-                    value: initialBalance.amount,
-                    balance: initialBalance
-                };
+        let balanceAmounts = accountIds.reduce((array, accountId) => {
+            array.push({
+                value: 0,
+                balance: {accountId: accountId, day: entity.firstDay, amount: 0, manual: false}
+            });
+            return array;
+        }, []);
+        entity.initialBalances.reduce((array, balance) => {
+            if (accountMap.has(balance.accountId)) {
+                let node = array[accountMap.get(balance.accountId)];
+                node.value = balance.amount;
+                node.balance.amount = balance.amount;
+                node.balance.manual = balance.manual;
             }
-        });
-        accountMap.forEach((columnId, accountId) => {
-            if (balanceAmounts[columnId] === null) {
-                balanceAmounts[columnId] = {
-                    value: 0,
-                    balance: {accountId: accountId, day: entity.firstDay, amount: 0, manual: false}
-                }
-            }
-        });
+            return array;
+        }, balanceAmounts);
 
         let result = {
             accountTitles: (new Array(accountMap.size)).fill("N/A"),
@@ -296,23 +307,35 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        for (let day = new Date(+entity.firstDay); day <= entity.lastDay; day.setDate(day.getDate() + 1)) {
+        for (let day = application.cloneDate(entity.firstDay); day <= entity.lastDay; day = application.increaseDate(day)) {
             let resultRow = {};
+            resultRow.day = day;
+            resultRow.difference = 0;
             result.rows.push(resultRow);
 
             let timestamp = +day;
-            resultRow.day = new Date(timestamp);
-            resultRow.difference = 0;
             populateRowBalances(resultRow, accountMap,
-                balanceMap.has(timestamp) ? balanceMap.get(timestamp) : new Map(), balanceAmounts);
+                balanceMap.has(timestamp) ? balanceMap.get(timestamp) : new Map(), balanceAmounts, day);
             populateRowOperations(resultRow, accountMap, categoryMap,
                 operationMap.has(timestamp) ? operationMap.get(timestamp) : new Map());
         }
 
         return result;
 
-        function populateRowBalances(row, accountMap, balanceDayMap, balanceAmounts) {
+        function populateRowBalances(row, accountMap, balanceDayMap, balanceAmounts, day) {
             row.difference = -balanceAmounts.reduce((sum, node) => sum + node.value, 0);
+
+            balanceAmounts.forEach((node, index, array) => {
+                array[index] = {
+                    value: node.value,
+                    balance: {
+                        accountId: node.balance.accountId,
+                        day: day,
+                        amount: node.balance.amount,
+                        manual: false,
+                    }
+                }
+            });
 
             accountMap.forEach((columnId, accountId) => {
                 if (balanceDayMap.has(accountId)) {
@@ -325,9 +348,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             row.balanceAmounts = balanceAmounts.slice();
-            let balanceAmountsSum = balanceAmounts.reduce((sum, node) => sum + node.value, 0);
-            row.balanceAmountsSum = balanceAmountsSum;
-            row.difference += balanceAmountsSum;
+            row.balanceAmountsSum = balanceAmounts.reduce((sum, node) => sum + node.value, 0);
+            row.difference += row.balanceAmountsSum;
         }
 
         function populateRowOperations(row, accountMap, categoryMap, operationDayMap) {

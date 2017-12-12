@@ -45,3 +45,11 @@ Application.prototype.dateToIsoStr = function(date) {
 
     return year + "-" + month + "-" + day;
 };
+
+Application.prototype.cloneDate = function(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
+Application.prototype.increaseDate = function(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+};
