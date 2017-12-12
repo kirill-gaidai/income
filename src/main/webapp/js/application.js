@@ -14,16 +14,13 @@ function Application() {
 let application = new Application();
 
 Application.prototype.populateSelectOptions = function(selectElem, entityList, keyFieldName, valueFieldName) {
-    while (selectElem.firstChild) {
-        selectElem.remove(selectElem.firstChild);
-    }
+    selectElem.innerHTML = "";
     entityList.forEach(entity => {
         let optionElem = document.createElement("option");
         optionElem.value = entity[keyFieldName];
         optionElem.text = entity[valueFieldName];
         selectElem.add(optionElem);
     });
-    selectElem.value = null;
 };
 
 Application.prototype.isoStrToDate = function(str) {

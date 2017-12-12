@@ -57,21 +57,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function doOnLsAccountsOrCategoriesCheck() {
-        let accountIds = getCheckedIds(formComponents.lsAccounts);
-        let categoryIds = getCheckedIds(formComponents.lsCategories);
-        render(transform(entity, accountIds, categoryIds));
-
-        function getCheckedIds(elem) {
-            let result = [];
-            let children = elem.children;
-            for (let index = 0; index < children.length; index++) {
-                let checkbox = children[index].firstElementChild;
-                if (checkbox.checked) {
-                    result.push(+checkbox.value);
-                }
-            }
-            return result;
-        }
+        let accountIds = getCheckedAccounts();
+        let categoryIds = getCheckedCategories();
+        render(transform(entity, Array.from(accountIds), Array.from(categoryIds)));
     }
 
     function doOnLsSummariesClick(event) {
@@ -114,46 +102,43 @@ document.addEventListener("DOMContentLoaded", function () {
             application.populateSelectOptions(formComponents.cbOperationAccount, data.accounts, "id", "title");
             application.populateSelectOptions(formComponents.cbBalanceAccount, data.accounts, "id", "title");
 
-            let accountIds = [];
-            let categoryIds = [];
-            entity.operations.forEach(operation => {
-                if (accountIds.indexOf(operation.accountId) === -1) {
-                    accountIds.push(operation.accountId);
-                }
-                if (categoryIds.indexOf(operation.categoryId) === -1) {
-                    categoryIds.push(operation.categoryId);
-                }
-            });
-            accountIds.sort();
-            categoryIds.sort();
+            renderAccountList(entity.accounts);
+            renderCategoryList(entity.categories);
+            let accountIds = entity.operations.reduce((set, operation) => set.add(operation.accountId), new Set());
+            let categoryIds = entity.operations.reduce((set, operation) => set.add(operation.categoryId), new Set());
+            setCheckedAccounts(accountIds);
+            setCheckedCategories(categoryIds);
 
-            renderList(formComponents.lsAccounts, entity.accounts, accountIds);
-            renderList(formComponents.lsCategories, entity.categories, categoryIds);
-            render(transform(entity, accountIds, categoryIds));
+            render(transform(entity, Array.from(accountIds), Array.from(categoryIds)));
 
-            function renderList(elem, list, checked) {
-                elem.innerHTML = "";
-                list.forEach(item => {
-                    let labelElem = elem.appendChild(document.createElement("label"));
-                    let checkBoxElem = labelElem.appendChild(document.createElement("input"));
-                    checkBoxElem.type = "checkbox";
-                    checkBoxElem.value = item.id;
-                    checkBoxElem.checked = checked.indexOf(item.id) !== -1;
-                    checkBoxElem.addEventListener("change", doOnLsAccountsOrCategoriesCheck);
-                    labelElem.appendChild(document.createTextNode(item.title));
-                });
-            }
         });
     }
 
     function doOnBtBalanceSaveClick() {
-        let balance = {
+        let entity = {
             accountId: +formComponents.edBalanceAmount.value,
             day: formComponents.edBalanceDay.value,
             amount: +formComponents.edBalanceAmount.value,
             manual: formComponents.chbBalanceManual.checked
         };
-        jQuery.ajax()
+        jQuery.ajax({
+            url: application.resourceUrls.balances,
+            method: "post",
+            data: JSON.stringify(entity),
+            contentType: "application/json",
+            dataType: "json",
+            success: doOnPostSuccess,
+            error: doOnError
+        });
+
+        function doOnPostSuccess(data) {
+
+        }
+
+        function doOnError() {
+            console.log("error");
+        }
+
     }
 
     function doOnBtOperationSaveClick() {
@@ -417,7 +402,12 @@ document.addEventListener("DOMContentLoaded", function () {
         function populateRowOperations(row, accountMap, categoryMap, operationDayMap, day) {
             row.operationAmountsSum = 0;
             row.operationAmounts = [];
-            categoryMap.forEach(() => row.operationAmounts.push({type: "operations", sum: 0, day: day, operations: []}));
+            categoryMap.forEach(() => row.operationAmounts.push({
+                type: "operations",
+                sum: 0,
+                day: day,
+                operations: []
+            }));
 
             accountMap.forEach((accountColumnId, accountId) => {
                 let operationDayAccountMap = getChildStructure(operationDayMap, accountId);
@@ -450,6 +440,68 @@ document.addEventListener("DOMContentLoaded", function () {
             let result = new childProto();
             parentMap.set(key, result);
             return result;
+        }
+    }
+
+    function renderAccountList(accountList) {
+        formComponents.lsAccounts.innerHTML = "";
+        accountList.forEach(account => {
+            let labelElem = formComponents.lsAccounts.appendChild(document.createElement("label"));
+            let checkBoxElem = labelElem.appendChild(document.createElement("input"));
+            checkBoxElem.type = "checkbox";
+            checkBoxElem.value = account.id;
+            checkBoxElem.checked = false;
+            checkBoxElem.addEventListener("change", doOnLsAccountsOrCategoriesCheck);
+            labelElem.appendChild(document.createTextNode(account.title));
+        });
+    }
+
+    function getCheckedAccounts() {
+        let result = new Set();
+        for (let elem = formComponents.lsAccounts.firstElementChild; elem; elem = elem.nextElementSibling) {
+            let chbAccount = elem.firstElementChild;
+            if (chbAccount.checked) {
+                result.add(+chbAccount.value);
+            }
+        }
+        return result;
+    }
+
+    function setCheckedAccounts(accountIds) {
+        for (let elem = formComponents.lsAccounts.firstElementChild; elem; elem = elem.nextElementSibling) {
+            let chbAccount = elem.firstElementChild;
+            chbAccount.checked = accountIds.has(+chbAccount.value);
+        }
+    }
+
+    function renderCategoryList(categoryList) {
+        formComponents.lsCategories.innerHTML = "";
+        categoryList.forEach(category => {
+            let labelElem = formComponents.lsCategories.appendChild(document.createElement("label"));
+            let checkBoxElem = labelElem.appendChild(document.createElement("input"));
+            checkBoxElem.type = "checkbox";
+            checkBoxElem.value = category.id;
+            checkBoxElem.checked = false;
+            checkBoxElem.addEventListener("change", doOnLsAccountsOrCategoriesCheck);
+            labelElem.appendChild(document.createTextNode(category.title));
+        });
+    }
+
+    function getCheckedCategories() {
+        let result = new Set();
+        for (let elem = formComponents.lsCategories.firstElementChild; elem; elem = elem.nextElementSibling) {
+            let chbCategory = elem.firstElementChild;
+            if (chbCategory.checked) {
+                result.add(+chbCategory.value);
+            }
+        }
+        return result;
+    }
+
+    function setCheckedCategories(categoryIds) {
+        for (let elem = formComponents.lsCategories.firstElementChild; elem; elem = elem.nextElementSibling) {
+            let chbCategory = elem.firstElementChild;
+            chbCategory.checked = categoryIds.has(+chbCategory.value);
         }
     }
 

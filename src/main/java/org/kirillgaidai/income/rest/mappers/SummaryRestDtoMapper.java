@@ -4,6 +4,7 @@ import org.kirillgaidai.income.rest.dto.SummaryRestDto;
 import org.kirillgaidai.income.rest.dto.account.AccountCreateRestDto;
 import org.kirillgaidai.income.rest.dto.account.AccountGetRestDto;
 import org.kirillgaidai.income.rest.dto.account.AccountUpdateRestDto;
+import org.kirillgaidai.income.rest.dto.balance.BalanceCreateRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceGetRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceUpdateRestDto;
 import org.kirillgaidai.income.rest.dto.category.CategoryCreateRestDto;
@@ -31,7 +32,7 @@ public class SummaryRestDtoMapper {
 
     final private IGenericRestDtoMapper<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto, AccountDto>
             accountMapper;
-    final private IGenericRestDtoMapper<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto>
+    final private IGenericRestDtoMapper<BalanceGetRestDto, BalanceCreateRestDto, BalanceUpdateRestDto, BalanceDto>
             balanceMapper;
     final private IGenericRestDtoMapper<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto>
             categoryMapper;
@@ -44,7 +45,7 @@ public class SummaryRestDtoMapper {
     public SummaryRestDtoMapper(
             IGenericRestDtoMapper<AccountGetRestDto, AccountCreateRestDto, AccountUpdateRestDto, AccountDto>
                     accountMapper,
-            IGenericRestDtoMapper<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto>
+            IGenericRestDtoMapper<BalanceGetRestDto, BalanceCreateRestDto, BalanceUpdateRestDto, BalanceDto>
                     balanceMapper,
             IGenericRestDtoMapper<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto>
                     categoryMapper,
