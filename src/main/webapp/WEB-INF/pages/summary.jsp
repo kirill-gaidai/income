@@ -107,9 +107,12 @@
             <th>Category</th>
             <th>Amount</th>
             <th>Note</th>
+            <th>Actions</th>
         </tr>
     </table>
 </div>
+
+<hr>
 
 <div id="lsSummaries"></div>
 

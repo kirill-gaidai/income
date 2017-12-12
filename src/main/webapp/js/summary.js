@@ -68,9 +68,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         if (target.balance) {
+            clearFmOperation(true);
             showFmBalance(target.balance);
+            clearLsOperations(true);
         }
         if (target.operations) {
+            clearFmOperation(true);
+            clearFmBalance(true);
+            showLsOperations(target.operations);
         }
     }
 
@@ -171,12 +176,34 @@ document.addEventListener("DOMContentLoaded", function () {
         formComponents.edOperationNote.value = operationEntity.note;
     }
     
-    function clearLsOperations() {
-        formComponents.lsOperations.hidden = true;
-        let elem = formComponents.lsOperations.firstElementChild;
+    function clearLsOperations(hide) {
+        formComponents.lsOperations.hidden = hide;
+        let elem = formComponents.lsOperations.firstElementChild.firstElementChild;
         while (elem.children.length > 1) {
-            elem.remove(elem.lastElementChild);
+            elem.removeChild(elem.lastElementChild);
         }
+    }
+
+    function showLsOperations(operationList) {
+        formComponents.lsOperations.hidden = false;
+        let elem = formComponents.lsOperations.firstElementChild.firstElementChild;
+        while (elem.children.length > 1) {
+            elem.removeChild(elem.lastElementChild);
+        }
+
+        operationList.forEach(operation => {
+            let rowElem = elem.appendChild(document.createElement("tr"));
+            rowElem.operation = operation;
+
+            rowElem.appendChild(document.createElement("td")).innerText = operation.id;
+            rowElem.appendChild(document.createElement("td")).innerText = application.dateToIsoStr(operation.day);
+            rowElem.appendChild(document.createElement("td")).innerText = operation.accountTitle;
+            rowElem.appendChild(document.createElement("td")).innerText = operation.categoryTitle;
+            rowElem.appendChild(document.createElement("td")).innerText = operation.amount;
+            rowElem.appendChild(document.createElement("td")).innerText = operation.note;
+
+            let cellElem = rowElem.appendChild(document.createElement("td"));
+        });
     }
 
     function render(model) {
