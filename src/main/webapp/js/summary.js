@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function doOnLsAccountsOrCategoriesCheck() {
         let accountIds = getCheckedAccounts();
         let categoryIds = getCheckedCategories();
-        render(transform(entity, Array.from(accountIds), Array.from(categoryIds)));
+        renderLsSummaries(transform(entity, Array.from(accountIds), Array.from(categoryIds)));
     }
 
     function doOnLsSummariesClick(event) {
@@ -85,38 +85,12 @@ document.addEventListener("DOMContentLoaded", function () {
         let currencyId = formComponents.cbFilterCurrencies.value;
         let firstDay = formComponents.edFilterFirstDay.value;
         let lastDay = formComponents.edFilterLastDay.value;
-        jQuery.getJSON(application.resourceUrls.summaries, {
-            currency_id: +currencyId,
-            first_day: firstDay,
-            last_day: lastDay
-        }, data => {
-            entity = data;
-            entity.firstDay = application.isoStrToDate(entity.firstDay);
-            entity.lastDay = application.isoStrToDate(entity.lastDay);
-            entity.initialBalances.forEach(balance => balance.day = application.isoStrToDate(balance.day));
-            entity.balances.forEach(balance => balance.day = application.isoStrToDate(balance.day));
-            entity.operations.forEach(operation => operation.day = application.isoStrToDate(operation.day));
-
-            // filling combo boxes
-            application.populateSelectOptions(formComponents.cbOperationCategory, data.categories, "id", "title");
-            application.populateSelectOptions(formComponents.cbOperationAccount, data.accounts, "id", "title");
-            application.populateSelectOptions(formComponents.cbBalanceAccount, data.accounts, "id", "title");
-
-            renderAccountList(entity.accounts);
-            renderCategoryList(entity.categories);
-            let accountIds = entity.operations.reduce((set, operation) => set.add(operation.accountId), new Set());
-            let categoryIds = entity.operations.reduce((set, operation) => set.add(operation.categoryId), new Set());
-            setCheckedAccounts(accountIds);
-            setCheckedCategories(categoryIds);
-
-            render(transform(entity, Array.from(accountIds), Array.from(categoryIds)));
-
-        });
+        fetchSummaries(currencyId, firstDay, lastDay, false);
     }
 
     function doOnBtBalanceSaveClick() {
-        let entity = {
-            accountId: +formComponents.edBalanceAmount.value,
+        let balance = {
+            accountId: +formComponents.cbBalanceAccount.value,
             day: formComponents.edBalanceDay.value,
             amount: +formComponents.edBalanceAmount.value,
             manual: formComponents.chbBalanceManual.checked
@@ -124,25 +98,35 @@ document.addEventListener("DOMContentLoaded", function () {
         jQuery.ajax({
             url: application.resourceUrls.balances,
             method: "post",
-            data: JSON.stringify(entity),
+            data: JSON.stringify(balance),
             contentType: "application/json",
             dataType: "json",
             success: doOnPostSuccess,
             error: doOnError
         });
-
-        function doOnPostSuccess(data) {
-
-        }
-
-        function doOnError() {
-            console.log("error");
-        }
-
     }
 
     function doOnBtOperationSaveClick() {
-
+        let id = formComponents.edOperationId.value;
+        let operation = {
+            accountId: +formComponents.cbOperationAccount.value,
+            categoryId: +formComponents.cbOperationCategory.value,
+            day: formComponents.edOperationDay.value,
+            amount: +formComponents.edOperationAmount.value,
+            note: formComponents.edOperationNote.value
+        };
+        if (id) {
+            operation.id = +id;
+        }
+        jQuery.ajax({
+            url: application.resourceUrls.operations,
+            method: id ? "put" : "post",
+            data: JSON.stringify(operation),
+            contentType: "application/json",
+            dataType: "json",
+            success: doOnPostSuccess,
+            error: doOnError
+        });
     }
 
     function doOnLsOperationBtEditClick() {
@@ -150,6 +134,16 @@ document.addEventListener("DOMContentLoaded", function () {
         clearLsOperations();
         clearFmBalance();
         showFmOperation(operation);
+    }
+
+    function doOnLsOperationBtDeleteClick() {
+        let id = this.parentElement.parentElement.operation.id;
+        jQuery.ajax({
+            url: application.resourceUrls.operations + "/" + id,
+            method: "delete",
+            success: doOnPostSuccess,
+            error: doOnError
+        });
     }
 
     function doOnBtOperationsNewClick() {
@@ -244,10 +238,51 @@ document.addEventListener("DOMContentLoaded", function () {
             btElem.addEventListener("click", doOnLsOperationBtEditClick);
             btElem = cellElem.appendChild(document.createElement("button"));
             btElem.innerText = "Delete";
+            btElem.addEventListener("click", doOnLsOperationBtDeleteClick);
         });
     }
 
-    function render(model) {
+    // ----- Summaries list -----
+
+    function fetchSummaries(currencyId, firstDay, lastDay, refresh) {
+        jQuery.getJSON(application.resourceUrls.summaries, {
+            currency_id: +currencyId,
+            first_day: firstDay,
+            last_day: lastDay
+        }, data => {
+            data.firstDay = application.isoStrToDate(data.firstDay);
+            data.lastDay = application.isoStrToDate(data.lastDay);
+            data.initialBalances.forEach(balance => balance.day = application.isoStrToDate(balance.day));
+            data.balances.forEach(balance => balance.day = application.isoStrToDate(balance.day));
+            data.operations.forEach(operation => operation.day = application.isoStrToDate(operation.day));
+
+            // filling combo boxes
+            application.populateSelectOptions(formComponents.cbOperationCategory, data.categories, "id", "title");
+            application.populateSelectOptions(formComponents.cbOperationAccount, data.accounts, "id", "title");
+            application.populateSelectOptions(formComponents.cbBalanceAccount, data.accounts, "id", "title");
+
+            let accountIds = refresh
+                ? getCheckedAccounts()
+                : data.operations.reduce((set, operation) => set.add(operation.accountId), new Set());
+            let categoryIds = refresh
+                ? getCheckedCategories()
+                : data.operations.reduce((set, operation) => set.add(operation.categoryId), new Set());
+
+            renderAccountList(data.accounts);
+            renderCategoryList(data.categories);
+            setCheckedAccounts(accountIds);
+            setCheckedCategories(categoryIds);
+
+            renderLsSummaries(transform(data, Array.from(accountIds), Array.from(categoryIds)));
+
+            entity = data;
+            clearFmBalance();
+            clearFmOperation();
+            clearLsOperations();
+        });
+    }
+
+    function renderLsSummaries(model) {
         formComponents.lsSummaries.innerHTML = "";
         let tableElem = formComponents.lsSummaries.appendChild(document.createElement("table"));
         tableElem.className = "list";
@@ -443,6 +478,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // ----- Accounts checkbox list -----
+
     function renderAccountList(accountList) {
         formComponents.lsAccounts.innerHTML = "";
         accountList.forEach(account => {
@@ -474,6 +511,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // ----- Categories checkbox list -----
+
     function renderCategoryList(categoryList) {
         formComponents.lsCategories.innerHTML = "";
         categoryList.forEach(category => {
@@ -503,6 +542,17 @@ document.addEventListener("DOMContentLoaded", function () {
             let chbCategory = elem.firstElementChild;
             chbCategory.checked = categoryIds.has(+chbCategory.value);
         }
+    }
+
+    // ----- General -----
+
+    function doOnError() {
+        console.log("error");
+    }
+
+    function doOnPostSuccess() {
+        fetchSummaries(entity.currency.id,
+            application.dateToIsoStr(entity.firstDay), application.dateToIsoStr(entity.lastDay), true);
     }
 
 });

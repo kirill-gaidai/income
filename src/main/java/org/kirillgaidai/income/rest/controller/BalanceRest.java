@@ -67,7 +67,7 @@ public class BalanceRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BalanceGetRestDto create(BalanceCreateRestDto newRestDto) {
+    public BalanceGetRestDto create(@RequestBody BalanceCreateRestDto newRestDto) {
         LOGGER.debug("Entering method");
         return super.create(newRestDto);
     }

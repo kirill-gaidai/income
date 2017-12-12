@@ -27,10 +27,19 @@
     <label>Last day: <input id="edFilterLastDay" type="text" value="2017-12-05"></label>
     <button id="btFilterSearch">Search</button>
 </div>
+
 <hr>
+
 <div id="lsAccounts"></div>
+
 <hr>
+
 <div id="lsCategories"></div>
+
+<hr>
+
+<div id="lsSummaries"></div>
+
 <hr>
 
 <div id="fmBalance">
@@ -112,10 +121,6 @@
     <button id="btOperationsNew">New</button>
     <button id="btOperationsCancel">Cancel</button>
 </div>
-
-<hr>
-
-<div id="lsSummaries"></div>
 
 <script src="${scriptUrl}"></script>
 </body>
