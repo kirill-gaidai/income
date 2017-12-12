@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,14 +63,14 @@ public class AccountRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public AccountGetRestDto create(@RequestBody AccountCreateRestDto newRestDto) {
+    public AccountGetRestDto create(@Valid @RequestBody AccountCreateRestDto newRestDto) {
         return super.create(newRestDto);
     }
 
     @Override
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public AccountGetRestDto update(@RequestBody AccountUpdateRestDto restDto) {
+    public AccountGetRestDto update(@Valid @RequestBody AccountUpdateRestDto restDto) {
         return super.update(restDto);
     }
 

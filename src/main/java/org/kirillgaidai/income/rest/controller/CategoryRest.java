@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -51,7 +52,7 @@ public class CategoryRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CategoryGetRestDto create(@RequestBody CategoryCreateRestDto newRestDto) {
+    public CategoryGetRestDto create(@Valid @RequestBody CategoryCreateRestDto newRestDto) {
         return super.create(newRestDto);
     }
 
@@ -59,7 +60,7 @@ public class CategoryRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CategoryGetRestDto update(@RequestBody CategoryUpdateRestDto restDto) {
+    public CategoryGetRestDto update(@Valid @RequestBody CategoryUpdateRestDto restDto) {
         return super.update(restDto);
     }
 

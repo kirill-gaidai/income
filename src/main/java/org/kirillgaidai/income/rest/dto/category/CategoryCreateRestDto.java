@@ -3,17 +3,18 @@ package org.kirillgaidai.income.rest.dto.category;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kirillgaidai.income.rest.dto.IGenericCreateRestDto;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class CategoryCreateRestDto implements IGenericCreateRestDto {
 
     @JsonProperty
-    @NotNull
+    @NotEmpty
     @Size(min = 1, max = 10)
     private String sort;
     @JsonProperty
-    @NotNull
+    @NotEmpty
     @Size(min = 1, max = 250)
     private String title;
 

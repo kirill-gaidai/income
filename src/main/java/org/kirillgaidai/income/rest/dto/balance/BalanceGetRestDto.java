@@ -3,6 +3,7 @@ package org.kirillgaidai.income.rest.dto.balance;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kirillgaidai.income.rest.dto.IGenericGetRestDto;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 public class BalanceGetRestDto extends BalanceUpdateRestDto implements IGenericGetRestDto {
 
     @JsonProperty
-    @NotNull
+    @NotEmpty
     @Size(min = 1, max = 250)
     private String accountTitle;
 

@@ -14,10 +14,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <spring.version>4.3.9.RELEASE</spring.version>
-        <log4j.verison>2.8.2</log4j.verison>
+        <spring.version>4.3.13.RELEASE</spring.version>
+        <log4j.verison>2.10.0</log4j.verison>
         <slf4j.version>1.7.25</slf4j.version>
-        <jackson.verion>2.8.9</jackson.verion>
+        <jackson.verion>2.9.2</jackson.verion>
+        <hibernate.validator.version>6.0.5.Final</hibernate.validator.version>
     </properties>
 
     <dependencies>
@@ -127,9 +128,9 @@
 
         <!-- Hibernate Validator -->
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.4.1.Final</version>
+            <version>${hibernate.validator.version}</version>
         </dependency>
         
         <!-- JUnit -->

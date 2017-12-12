@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -67,7 +68,7 @@ public class BalanceRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BalanceGetRestDto create(@RequestBody BalanceCreateRestDto newRestDto) {
+    public BalanceGetRestDto create(@Valid @RequestBody BalanceCreateRestDto newRestDto) {
         LOGGER.debug("Entering method");
         return super.create(newRestDto);
     }
@@ -76,7 +77,7 @@ public class BalanceRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BalanceGetRestDto update(@RequestBody BalanceUpdateRestDto restDto) {
+    public BalanceGetRestDto update(@Valid @RequestBody BalanceUpdateRestDto restDto) {
         LOGGER.debug("Entering method");
         return super.update(restDto);
     }

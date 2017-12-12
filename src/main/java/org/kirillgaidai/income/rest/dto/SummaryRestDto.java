@@ -8,6 +8,7 @@ import org.kirillgaidai.income.rest.dto.category.CategoryGetRestDto;
 import org.kirillgaidai.income.rest.dto.currency.CurrencyGetRestDto;
 import org.kirillgaidai.income.rest.dto.operation.OperationGetRestDto;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,21 +25,27 @@ public class SummaryRestDto {
     private LocalDate lastDay;
     @NotNull
     @JsonProperty
+    @Valid
     private CurrencyGetRestDto currency;
     @NotNull
     @JsonProperty
+    @Valid
     private List<AccountGetRestDto> accounts;
     @NotNull
     @JsonProperty
+    @Valid
     private List<CategoryGetRestDto> categories;
     @NotNull
     @JsonProperty
+    @Valid
     private List<BalanceGetRestDto> initialBalances;
     @NotNull
     @JsonProperty
+    @Valid
     private List<BalanceGetRestDto> balances;
     @NotNull
     @JsonProperty
+    @Valid
     private List<OperationGetRestDto> operations;
 
     public SummaryRestDto() {

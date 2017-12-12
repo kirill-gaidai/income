@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -48,7 +49,7 @@ public class CurrencyRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CurrencyGetRestDto create(@RequestBody CurrencyCreateRestDto newRestDto) {
+    public CurrencyGetRestDto create(@Valid @RequestBody CurrencyCreateRestDto newRestDto) {
         return super.create(newRestDto);
     }
 
@@ -56,7 +57,7 @@ public class CurrencyRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CurrencyGetRestDto update(@RequestBody CurrencyUpdateRestDto restDto) {
+    public CurrencyGetRestDto update(@Valid @RequestBody CurrencyUpdateRestDto restDto) {
         return super.update(restDto);
     }
 

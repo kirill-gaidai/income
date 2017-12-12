@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -75,7 +76,7 @@ public class OperationRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OperationGetRestDto create(@RequestBody OperationCreateRestDto newRestDto) {
+    public OperationGetRestDto create(@Valid @RequestBody OperationCreateRestDto newRestDto) {
         LOGGER.debug("Entering method");
         return super.create(newRestDto);
     }
@@ -84,7 +85,7 @@ public class OperationRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OperationGetRestDto update(@RequestBody OperationUpdateRestDto restDto) {
+    public OperationGetRestDto update(@Valid @RequestBody OperationUpdateRestDto restDto) {
         LOGGER.debug("Entering method");
         return super.update(restDto);
     }

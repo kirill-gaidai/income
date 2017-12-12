@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kirillgaidai.income.rest.dto.IGenericCreateRestDto;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -26,6 +27,7 @@ public class OperationCreateRestDto implements IGenericCreateRestDto {
     private LocalDate day;
     @JsonProperty
     @NotNull
+    @Digits(integer = 10, fraction = 4)
     private BigDecimal amount;
     @JsonProperty
     @NotNull

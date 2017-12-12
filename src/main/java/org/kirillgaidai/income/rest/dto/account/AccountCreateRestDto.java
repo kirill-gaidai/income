@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kirillgaidai.income.rest.dto.IGenericCreateRestDto;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -14,11 +15,11 @@ public class AccountCreateRestDto implements IGenericCreateRestDto {
     @Min(1)
     private Integer currencyId;
     @JsonProperty
-    @NotNull
+    @NotEmpty
     @Size(min = 1, max = 10)
     private String sort;
     @JsonProperty
-    @NotNull
+    @NotEmpty
     @Size(min = 1, max = 250)
     private String title;
 
