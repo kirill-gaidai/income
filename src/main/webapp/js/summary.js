@@ -26,6 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
         cbOperationCategory: document.getElementById("cbOperationCategory"),
         edOperationAmount: document.getElementById("edOperationAmount"),
         edOperationNote: document.getElementById("edOperationNote"),
+        btOperationSave: document.getElementById("btOperationSave"),
+        btOperationCancel: document.getElementById("btOperationCancel"),
 
         lsOperations: document.getElementById("lsOperations"),
         btOperationsNew: document.getElementById("btOperationsNew"),
@@ -36,17 +38,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let entity = null;
     let currencies = [];
+    let day = null;
+
     formComponents.btFilterSearch.addEventListener("click", doOnBtFilterSearchClick);
     formComponents.lsSummaries.addEventListener("click", doOnLsSummariesClick);
-    clearFmBalance(true);
-    clearFmOperation(true);
-    clearLsOperations(true);
+    formComponents.btOperationsNew.addEventListener("click", doOnBtOperationsNewClick);
+    formComponents.btBalanceCancel.addEventListener("click", doOnBtCancelClick);
+    formComponents.btOperationsCancel.addEventListener("click", doOnBtCancelClick);
+    formComponents.btOperationCancel.addEventListener("click", doOnBtCancelClick);
+
+    doOnBtCancelClick();
+
     jQuery.getJSON(application.resourceUrls.currencies, data => {
         currencies = data;
         application.populateSelectOptions(formComponents.cbFilterCurrencies, data, "id", "title");
     });
 
-    function doOnAccountsOrCategoryCheck() {
+    function doOnLsAccountsOrCategoriesCheck() {
         let accountIds = getCheckedIds(formComponents.lsAccounts);
         let categoryIds = getCheckedIds(formComponents.lsCategories);
         render(transform(entity, accountIds, categoryIds));
@@ -66,18 +74,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function doOnLsSummariesClick(event) {
         let target = event.target;
-        if (this !== formComponents.lsSummaries || target.tagName !== "TD") {
+        if (this !== formComponents.lsSummaries || target.tagName !== "TD" || !target.node) {
             return;
         }
-        if (target.balance) {
-            clearFmOperation(true);
-            showFmBalance(target.balance);
-            clearLsOperations(true);
+        if (target.node.type === "balance") {
+            clearFmOperation();
+            showFmBalance(target.node.balance);
+            clearLsOperations();
+            day = target.node.balance.day;
         }
-        if (target.operations) {
-            clearFmOperation(true);
-            clearFmBalance(true);
-            showLsOperations(target.operations);
+        if (target.node.type === "operations") {
+            clearFmOperation();
+            clearFmBalance();
+            showLsOperations(target.node.operations);
+            day = target.node.day;
         }
     }
 
@@ -127,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     checkBoxElem.type = "checkbox";
                     checkBoxElem.value = item.id;
                     checkBoxElem.checked = checked.indexOf(item.id) !== -1;
-                    checkBoxElem.addEventListener("change", doOnAccountsOrCategoryCheck);
+                    checkBoxElem.addEventListener("change", doOnLsAccountsOrCategoriesCheck);
                     labelElem.appendChild(document.createTextNode(item.title));
                 });
             }
@@ -136,13 +146,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function doOnLsOperationBtEditClick() {
         let operation = this.parentElement.parentElement.operation;
-        clearLsOperations(true);
-        clearFmBalance(true);
+        clearLsOperations();
+        clearFmBalance();
         showFmOperation(operation);
     }
 
-    function clearFmBalance(hide) {
-        formComponents.fmBalance.hidden = hide;
+    function doOnBtOperationsNewClick() {
+        clearLsOperations();
+        clearFmBalance();
+        clearFmOperation(day);
+    }
+
+    function doOnBtCancelClick() {
+        clearLsOperations();
+        clearFmBalance();
+        clearFmOperation();
+    }
+
+    function clearFmBalance() {
+        formComponents.fmBalance.hidden = true;
         formComponents.cbBalanceAccount.value = null;
         formComponents.cbBalanceAccount.enabled = true;
         formComponents.edBalanceDay.value = "";
@@ -161,11 +183,10 @@ document.addEventListener("DOMContentLoaded", function () {
         formComponents.chbBalanceManual.checked = balanceEntity.manual;
     }
 
-    function clearFmOperation(hide) {
-        formComponents.fmOperation.hidden = hide;
+    function clearFmOperation(day) {
+        formComponents.fmOperation.hidden = arguments.length === 0;
         formComponents.edOperationId.value = "";
-        formComponents.edOperationDay.value = "";
-        formComponents.edOperationDay.disabled = false;
+        formComponents.edOperationDay.value = arguments.length === 0 ? "" : application.dateToIsoStr(day);
         formComponents.cbOperationAccount.value = null;
         formComponents.cbOperationAccount.disabled = false;
         formComponents.cbOperationCategory.value = null;
@@ -177,7 +198,6 @@ document.addEventListener("DOMContentLoaded", function () {
         formComponents.fmOperation.hidden = false;
         formComponents.edOperationId.value = operationEntity.id;
         formComponents.edOperationDay.value = application.dateToIsoStr(operationEntity.day);
-        formComponents.edOperationDay.disabled = true;
         formComponents.cbOperationAccount.value = operationEntity.accountId;
         formComponents.cbOperationAccount.disabled = true;
         formComponents.cbOperationCategory.value = operationEntity.categoryId;
@@ -185,8 +205,8 @@ document.addEventListener("DOMContentLoaded", function () {
         formComponents.edOperationNote.value = operationEntity.note;
     }
 
-    function clearLsOperations(hide) {
-        formComponents.lsOperations.hidden = hide;
+    function clearLsOperations() {
+        formComponents.lsOperations.hidden = true;
         let elem = formComponents.lsOperations.firstElementChild.firstElementChild;
         while (elem.children.length > 1) {
             elem.removeChild(elem.lastElementChild);
@@ -204,14 +224,19 @@ document.addEventListener("DOMContentLoaded", function () {
             let rowElem = elem.appendChild(document.createElement("tr"));
             rowElem.operation = operation;
 
-            rowElem.appendChild(document.createElement("td")).innerText = operation.id;
-            rowElem.appendChild(document.createElement("td")).innerText = application.dateToIsoStr(operation.day);
-            rowElem.appendChild(document.createElement("td")).innerText = operation.accountTitle;
-            rowElem.appendChild(document.createElement("td")).innerText = operation.categoryTitle;
-            rowElem.appendChild(document.createElement("td")).innerText = operation.amount;
-            rowElem.appendChild(document.createElement("td")).innerText = operation.note;
-
             let cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = operation.id;
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = application.dateToIsoStr(operation.day);
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = operation.accountTitle;
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = operation.categoryTitle;
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = operation.amount;
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = operation.note;
+            cellElem = rowElem.appendChild(document.createElement("td"));
 
             let btElem = cellElem.appendChild(document.createElement("button"));
             btElem.innerText = "Edit";
@@ -224,30 +249,60 @@ document.addEventListener("DOMContentLoaded", function () {
     function render(model) {
         formComponents.lsSummaries.innerHTML = "";
         let tableElem = formComponents.lsSummaries.appendChild(document.createElement("table"));
+        tableElem.className = "list";
+
         let bodyElem = tableElem.appendChild(document.createElement("tbody"));
+
         let rowElem = bodyElem.appendChild(document.createElement("tr"));
-        rowElem.appendChild(document.createElement("th")).innerText = "Day";
-        rowElem.appendChild(document.createElement("th")).innerText = "Difference";
-        model.accountTitles.forEach(title => rowElem.appendChild(document.createElement("th")).innerText = title);
-        rowElem.appendChild(document.createElement("th")).innerText = "Sum";
-        model.categoryTitles.forEach(title => rowElem.appendChild(document.createElement("th")).innerText = title);
-        rowElem.appendChild(document.createElement("th")).innerText = "Sum";
+
+        let cellElem = rowElem.appendChild(document.createElement("th"));
+        cellElem.innerText = "Day";
+
+        cellElem = rowElem.appendChild(document.createElement("th"));
+        cellElem.innerText = "Difference";
+
+        model.accountTitles.forEach(title => {
+            let cellElem = rowElem.appendChild(document.createElement("th"));
+            cellElem.innerText = title;
+        });
+
+        cellElem = rowElem.appendChild(document.createElement("th"));
+        cellElem.innerText = "Sum";
+
+        model.categoryTitles.forEach(title => {
+            let cellElem = rowElem.appendChild(document.createElement("th"));
+            cellElem.innerText = title;
+        });
+
+        cellElem = rowElem.appendChild(document.createElement("th"));
+        cellElem.innerText = "Sum";
+
         model.rows.forEach(row => {
             let rowElem = bodyElem.appendChild(document.createElement("tr"));
-            rowElem.appendChild(document.createElement("td")).innerText = application.dateToIsoStr(row.day);
-            rowElem.appendChild(document.createElement("td")).innerText = row.difference;
-            row.balanceAmounts.forEach(amount => {
-                let elem = rowElem.appendChild(document.createElement("td"));
-                elem.innerText = amount.value;
-                elem.balance = amount.balance;
+
+            let cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = application.dateToIsoStr(row.day);
+
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = row.difference;
+
+            row.balanceAmounts.forEach(node => {
+                let cellElem = rowElem.appendChild(document.createElement("td"));
+                cellElem.innerText = node.balance.amount;
+                cellElem.node = node;
             });
-            rowElem.appendChild(document.createElement("td")).innerText = row.balanceAmountsSum;
+
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = row.balanceAmountsSum;
+
             row.operationAmounts.forEach(node => {
-                let elem = rowElem.appendChild(document.createElement("td"));
-                elem.innerText = node.sum;
-                elem.operations = node.operations;
+                let cellElem = rowElem.appendChild(document.createElement("td"));
+                cellElem.innerText = node.sum;
+                cellElem.node = node;
             });
-            rowElem.appendChild(document.createElement("td")).innerText = row.operationAmountsSum;
+
+            cellElem = rowElem.appendChild(document.createElement("td"));
+            cellElem.innerText = row.operationAmountsSum;
         });
     }
 
@@ -317,52 +372,37 @@ document.addEventListener("DOMContentLoaded", function () {
             populateRowBalances(resultRow, accountMap,
                 balanceMap.has(timestamp) ? balanceMap.get(timestamp) : new Map(), balanceAmounts, day);
             populateRowOperations(resultRow, accountMap, categoryMap,
-                operationMap.has(timestamp) ? operationMap.get(timestamp) : new Map());
+                operationMap.has(timestamp) ? operationMap.get(timestamp) : new Map(), day);
         }
 
         return result;
 
         function populateRowBalances(row, accountMap, balanceDayMap, balanceAmounts, day) {
-            row.difference = -balanceAmounts.reduce((sum, node) => sum + node.value, 0);
-
+            row.difference = -balanceAmounts.reduce((sum, node) => sum + node.balance.amount, 0);
+            // creating default balances for this day
             balanceAmounts.forEach((node, index, array) => {
                 array[index] = {
-                    value: node.value,
-                    balance: {
-                        accountId: node.balance.accountId,
-                        day: day,
-                        amount: node.balance.amount,
-                        manual: false,
-                    }
+                    type: "balance",
+                    balance: {accountId: node.balance.accountId, day: day, amount: node.balance.amount, manual: false}
                 }
             });
-
+            // setting balances if they exist for day and account, otherwise default balances stay
             accountMap.forEach((columnId, accountId) => {
                 if (balanceDayMap.has(accountId)) {
-                    let balance = balanceDayMap.get(accountId);
-                    balanceAmounts[columnId] = {
-                        value: balance.amount,
-                        balance: balance
-                    };
+                    balanceAmounts[columnId].balance = balanceDayMap.get(accountId);
                 }
             });
 
             row.balanceAmounts = balanceAmounts.slice();
-            row.balanceAmountsSum = balanceAmounts.reduce((sum, node) => sum + node.value, 0);
+            row.balanceAmountsSum = balanceAmounts.reduce((sum, node) => sum + node.balance.amount, 0);
             row.difference += row.balanceAmountsSum;
         }
 
-        function populateRowOperations(row, accountMap, categoryMap, operationDayMap) {
-            row.operationAmounts = [];
-            for (let index = 0; index < categoryMap.size; index++) {
-                row.operationAmounts.push({
-                    sum: 0,
-                    operations: []
-                })
-            }
-
+        function populateRowOperations(row, accountMap, categoryMap, operationDayMap, day) {
             row.operationAmountsSum = 0;
-            row.difference = 0;
+            row.operationAmounts = [];
+            categoryMap.forEach(() => row.operationAmounts.push({type: "operations", sum: 0, day: day, operations: []}));
+
             accountMap.forEach((accountColumnId, accountId) => {
                 let operationDayAccountMap = getChildStructure(operationDayMap, accountId);
                 if (operationDayAccountMap === null) {

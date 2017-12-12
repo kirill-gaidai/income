@@ -69,7 +69,7 @@
         </tr>
         <tr>
             <td><label for="edOperationDay">Day</label></td>
-            <td><input type="text" id="edOperationDay"></td>
+            <td><input type="text" id="edOperationDay" disabled></td>
         </tr>
         <tr>
             <td><label for="cbOperationAccount">Account</label></td>
@@ -90,7 +90,6 @@
         <tr>
             <td></td>
             <td>
-                <button id="btOperationNew">New</button>
                 <button id="btOperationSave">Save</button>
                 <button id="btOperationCancel">Cancel</button>
             </td>
