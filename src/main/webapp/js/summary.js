@@ -46,6 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
     formComponents.btBalanceCancel.addEventListener("click", doOnBtCancelClick);
     formComponents.btOperationsCancel.addEventListener("click", doOnBtCancelClick);
     formComponents.btOperationCancel.addEventListener("click", doOnBtCancelClick);
+    formComponents.btBalanceSave.addEventListener("click", doOnBtBalanceSaveClick);
+    formComponents.btOperationSave.addEventListener("click", doOnBtOperationSaveClick);
 
     doOnBtCancelClick();
 
@@ -142,6 +144,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
         });
+    }
+
+    function doOnBtBalanceSaveClick() {
+        let balance = {
+            accountId: +formComponents.edBalanceAmount.value,
+            day: formComponents.edBalanceDay.value,
+            amount: +formComponents.edBalanceAmount.value,
+            manual: formComponents.chbBalanceManual.checked
+        };
+        jQuery.ajax()
+    }
+
+    function doOnBtOperationSaveClick() {
+
     }
 
     function doOnLsOperationBtEditClick() {

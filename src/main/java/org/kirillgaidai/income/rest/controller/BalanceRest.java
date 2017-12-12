@@ -1,5 +1,6 @@
 package org.kirillgaidai.income.rest.controller;
 
+import org.kirillgaidai.income.rest.dto.balance.BalanceCreateRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceGetRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceUpdateRestDto;
 import org.kirillgaidai.income.rest.mappers.IGenericRestDtoMapper;
@@ -25,15 +26,15 @@ import java.util.Set;
 @RestController
 @RequestMapping("/rest/balances")
 public class BalanceRest
-        extends GenericRest<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto>
-        implements IGenericRest<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto> {
+        extends GenericRest<BalanceGetRestDto, BalanceCreateRestDto, BalanceUpdateRestDto, BalanceDto>
+        implements IGenericRest<BalanceGetRestDto, BalanceCreateRestDto, BalanceUpdateRestDto> {
 
     final private static Logger LOGGER = LoggerFactory.getLogger(BalanceRest.class);
 
     @Autowired
     public BalanceRest(
             IBalanceService service,
-            IGenericRestDtoMapper<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto> mapper) {
+            IGenericRestDtoMapper<BalanceGetRestDto, BalanceCreateRestDto, BalanceUpdateRestDto, BalanceDto> mapper) {
         super(service, mapper);
     }
 
@@ -48,8 +49,7 @@ public class BalanceRest
             @RequestParam("firstDay") LocalDate firstDay,
             @RequestParam("lastDay") LocalDate lastDay,
             @RequestParam("accountId") Set<Integer> accountIds) {
-        LOGGER.debug("Getting balance list. firstDay=\"{}\", lastDay=\"{}\", accountIds=\"{}\"", firstDay, lastDay,
-                accountIds);
+        LOGGER.debug("Entering method");
         return Collections.emptyList();
     }
 
@@ -59,16 +59,26 @@ public class BalanceRest
     public BalanceUpdateRestDto get(
             @RequestParam("day") LocalDate day,
             @RequestParam("accountId") Integer accountId) {
-        LOGGER.debug("Getting balance. day=\"{}\", accountId=\"{}\"", day, accountId);
+        LOGGER.debug("Entering method");
         return mapper.toRestDto(getService().get(accountId, day));
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BalanceGetRestDto create(BalanceCreateRestDto newRestDto) {
+        LOGGER.debug("Entering method");
+        return super.create(newRestDto);
+    }
+
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public BalanceGetRestDto update(@RequestBody BalanceUpdateRestDto restDto) {
-        LOGGER.debug("Updating balance");
-        return null;
+        LOGGER.debug("Entering method");
+        return super.update(restDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -76,7 +86,7 @@ public class BalanceRest
     public void delete(
             @RequestParam("day") LocalDate day,
             @RequestParam("accountId") Integer accountId) {
-        LOGGER.debug("Deleting balance. day=\"{}\", accountId=\"{}\"", day, accountId);
+        LOGGER.debug("Entering method");
     }
 
 }

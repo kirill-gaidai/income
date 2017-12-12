@@ -1,5 +1,6 @@
 package org.kirillgaidai.income.rest.mappers;
 
+import org.kirillgaidai.income.rest.dto.balance.BalanceCreateRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceGetRestDto;
 import org.kirillgaidai.income.rest.dto.balance.BalanceUpdateRestDto;
 import org.kirillgaidai.income.service.dto.BalanceDto;
@@ -7,7 +8,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BalanceRestDtoMapper
-        implements IGenericRestDtoMapper<BalanceGetRestDto, BalanceUpdateRestDto, BalanceUpdateRestDto, BalanceDto> {
+        implements IGenericRestDtoMapper<BalanceGetRestDto, BalanceCreateRestDto, BalanceUpdateRestDto, BalanceDto> {
+
+    @Override
+    public BalanceDto toDto(BalanceCreateRestDto newRestDto) {
+        return newRestDto == null ? null : new BalanceDto(newRestDto.getAccountId(), null, newRestDto.getDay(),
+                newRestDto.getAmount(), newRestDto.getManual());
+    }
 
     public BalanceDto toDto(BalanceUpdateRestDto newRestDto) {
         return newRestDto == null ? null : new BalanceDto(newRestDto.getAccountId(), null, newRestDto.getDay(),
