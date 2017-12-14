@@ -10,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class CategoryService extends SerialService<CategoryDto, CategoryEntity> implements ICategoryService {
@@ -25,6 +29,21 @@ public class CategoryService extends SerialService<CategoryDto, CategoryEntity> 
     }
 
     @Override
+    @Transactional
+    public List<CategoryDto> getList() {
+        LOGGER.debug("Entering method");
+        return super.getList();
+    }
+
+    @Override
+    @Transactional
+    public List<CategoryDto> getList(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return super.getList(ids);
+    }
+
+    @Override
+    @Transactional
     public CategoryDto get(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);
@@ -32,6 +51,7 @@ public class CategoryService extends SerialService<CategoryDto, CategoryEntity> 
     }
 
     @Override
+    @Transactional
     public CategoryDto create(CategoryDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
@@ -41,6 +61,7 @@ public class CategoryService extends SerialService<CategoryDto, CategoryEntity> 
     }
 
     @Override
+    @Transactional
     public CategoryDto update(CategoryDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
@@ -53,6 +74,7 @@ public class CategoryService extends SerialService<CategoryDto, CategoryEntity> 
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,6 +55,21 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     }
 
     @Override
+    @Transactional
+    public List<OperationDto> getList(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return super.getList(ids);
+    }
+
+    @Override
+    @Transactional
+    public List<OperationDto> getList() {
+        LOGGER.debug("Entering method");
+        return super.getList();
+    }
+
+    @Override
+    @Transactional
     public List<OperationDto> getList(
             Set<Integer> accountIds, Set<Integer> categoryIds, LocalDate firstDay, LocalDate lastDay) {
         LOGGER.debug("Entering method");
@@ -62,6 +78,7 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     }
 
     @Override
+    @Transactional
     public OperationDto get(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);
@@ -69,6 +86,7 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     }
 
     @Override
+    @Transactional
     public OperationDto create(OperationDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
@@ -182,6 +200,7 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
     }
 
     @Override
+    @Transactional
     public OperationDto update(OperationDto dto) {
         LOGGER.trace("Entering method");
         validateDto(dto);
@@ -266,6 +285,7 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
      * @param id - operation id
      */
     @Override
+    @Transactional
     public void delete(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);

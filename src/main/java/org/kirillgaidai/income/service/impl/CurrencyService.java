@@ -10,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class CurrencyService extends SerialService<CurrencyDto, CurrencyEntity> implements ICurrencyService {
@@ -25,6 +29,21 @@ public class CurrencyService extends SerialService<CurrencyDto, CurrencyEntity> 
     }
 
     @Override
+    @Transactional
+    public List<CurrencyDto> getList() {
+        LOGGER.debug("Entering method");
+        return super.getList();
+    }
+
+    @Override
+    @Transactional
+    public List<CurrencyDto> getList(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return super.getList(ids);
+    }
+
+    @Override
+    @Transactional
     public CurrencyDto get(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);
@@ -32,6 +51,7 @@ public class CurrencyService extends SerialService<CurrencyDto, CurrencyEntity> 
     }
 
     @Override
+    @Transactional
     public CurrencyDto create(CurrencyDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
@@ -41,6 +61,7 @@ public class CurrencyService extends SerialService<CurrencyDto, CurrencyEntity> 
     }
 
     @Override
+    @Transactional
     public CurrencyDto update(CurrencyDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
@@ -53,6 +74,7 @@ public class CurrencyService extends SerialService<CurrencyDto, CurrencyEntity> 
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);

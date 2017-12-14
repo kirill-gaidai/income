@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,6 +45,14 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     }
 
     @Override
+    @Transactional
+    public List<BalanceDto> getList() {
+        LOGGER.debug("Entering method");
+        return super.getList();
+    }
+
+    @Override
+    @Transactional
     public BalanceDto get(Integer accountId, LocalDate day) {
         LOGGER.debug("Entering method");
         validateAccountIdAndDay(accountId, day);
@@ -70,6 +79,7 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     }
 
     @Override
+    @Transactional
     public BalanceDto create(BalanceDto dto) {
         LOGGER.debug("Entering method");
 
@@ -96,6 +106,7 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     }
 
     @Override
+    @Transactional
     public BalanceDto update(BalanceDto dto) {
         LOGGER.debug("Entering method");
 
@@ -114,6 +125,7 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     }
 
     @Override
+    @Transactional
     public BalanceDto save(BalanceDto dto) {
         LOGGER.debug("Entering method");
 

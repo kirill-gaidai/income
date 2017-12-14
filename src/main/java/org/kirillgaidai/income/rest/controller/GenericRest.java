@@ -35,13 +35,13 @@ public abstract class GenericRest<
     @Override
     public GT create(CT newRestDto) {
         LOGGER.debug("Entering method");
-        return mapper.toRestDto(service.save(mapper.toDto(newRestDto)));
+        return mapper.toRestDto(service.create(mapper.toDto(newRestDto)));
     }
 
     @Override
     public GT update(UT restDto) {
         LOGGER.debug("Entering method");
-        return mapper.toRestDto(service.save(mapper.toDto(restDto)));
+        return mapper.toRestDto(service.update(mapper.toDto(restDto)));
     }
 
 }

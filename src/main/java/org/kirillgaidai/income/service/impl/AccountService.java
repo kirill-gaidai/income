@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,21 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
+    @Transactional
+    public List<AccountDto> getList() {
+        LOGGER.debug("Entering method");
+        return super.getList();
+    }
+
+    @Override
+    @Transactional
+    public List<AccountDto> getList(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return super.getList(ids);
+    }
+
+    @Override
+    @Transactional
     public List<AccountDto> getList(Integer currencyId) {
         LOGGER.debug("Entering method");
         if (currencyId == null) {
@@ -57,6 +73,7 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
+    @Transactional
     public AccountDto get(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);
@@ -64,6 +81,7 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
+    @Transactional
     public AccountDto create(AccountDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
@@ -77,6 +95,7 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
+    @Transactional
     public AccountDto update(AccountDto dto) {
         LOGGER.debug("Entering method");
         validateDto(dto);
@@ -93,6 +112,7 @@ public class AccountService extends SerialService<AccountDto, AccountEntity> imp
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         LOGGER.debug("Entering method");
         validateId(id);
