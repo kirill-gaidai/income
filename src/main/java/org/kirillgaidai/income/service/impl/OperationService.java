@@ -206,14 +206,16 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
         validateDto(dto);
 
         Integer id = dto.getId();
-        Integer accountId = dto.getAccountId();
         Integer categoryId = dto.getCategoryId();
-        LocalDate thisDay = dto.getDay();
         BigDecimal newAmount = dto.getAmount();
 
         validateId(id);
 
         OperationEntity oldOperationEntity = serviceHelper.getOperationEntity(id);
+
+        Integer accountId = oldOperationEntity.getAccountId();
+        LocalDate thisDay = oldOperationEntity.getDay();
+
         AccountEntity accountEntity = serviceHelper.getAccountEntity(accountId);
         CategoryEntity categoryEntity = serviceHelper.getCategoryEntity(categoryId);
         BalanceEntity thisBalanceEntity = serviceHelper.getBalanceEntity(accountId, thisDay, 0);
@@ -271,6 +273,8 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
         LOGGER.debug("Entering method");
 
         OperationEntity newOperationEntity = converter.convertToEntity(operationDto);
+        newOperationEntity.setAccountId(oldOperationEntity.getAccountId());
+        newOperationEntity.setDay(oldOperationEntity.getDay());
         serviceHelper.updateOperationEntity(newOperationEntity, oldOperationEntity);
         OperationDto result = converter.convertToDto(newOperationEntity);
 

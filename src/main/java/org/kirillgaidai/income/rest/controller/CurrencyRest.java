@@ -6,6 +6,8 @@ import org.kirillgaidai.income.rest.dto.currency.CurrencyUpdateRestDto;
 import org.kirillgaidai.income.rest.mappers.IGenericRestDtoMapper;
 import org.kirillgaidai.income.service.dto.CurrencyDto;
 import org.kirillgaidai.income.service.intf.IGenericService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,9 +27,13 @@ public class CurrencyRest
         extends SerialRest<CurrencyGetRestDto, CurrencyCreateRestDto, CurrencyUpdateRestDto, CurrencyDto>
         implements ISerialRest<CurrencyGetRestDto, CurrencyCreateRestDto, CurrencyUpdateRestDto> {
 
+    final private static Logger LOGGER = LoggerFactory.getLogger(CurrencyRest.class);
+
     @Autowired
-    public CurrencyRest(IGenericService<CurrencyDto> service, IGenericRestDtoMapper<CurrencyGetRestDto,
-            CurrencyCreateRestDto, CurrencyUpdateRestDto, CurrencyDto> mapper) {
+    public CurrencyRest(
+            IGenericService<CurrencyDto> service,
+            IGenericRestDtoMapper<
+                    CurrencyGetRestDto, CurrencyCreateRestDto, CurrencyUpdateRestDto, CurrencyDto> mapper) {
         super(service, mapper);
     }
 
@@ -35,6 +41,7 @@ public class CurrencyRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CurrencyGetRestDto> getList() {
+        LOGGER.debug("Entering method");
         return super.getList();
     }
 
@@ -42,22 +49,25 @@ public class CurrencyRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public CurrencyGetRestDto get(@PathVariable("id") Integer id) {
+        LOGGER.debug("Entering method");
         return super.get(id);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CurrencyGetRestDto create(@Valid @RequestBody CurrencyCreateRestDto newRestDto) {
+        LOGGER.debug("Entering method");
         return super.create(newRestDto);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CurrencyGetRestDto update(@Valid @RequestBody CurrencyUpdateRestDto restDto) {
+        LOGGER.debug("Entering method");
         return super.update(restDto);
     }
 
@@ -65,6 +75,7 @@ public class CurrencyRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Integer id) {
+        LOGGER.debug("Entering method");
         super.delete(id);
     }
 

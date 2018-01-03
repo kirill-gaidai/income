@@ -18,8 +18,8 @@ public class OperationRestDtoMapper implements
 
     @Override
     public OperationDto toDto(OperationUpdateRestDto restDto) {
-        return restDto == null ? null : new OperationDto(restDto.getId(), restDto.getAccountId(), null,
-                restDto.getCategoryId(), null, restDto.getDay(), restDto.getAmount(), restDto.getNote());
+        return restDto == null ? null : new OperationDto(restDto.getId(), null, null,
+                restDto.getCategoryId(), null, null, restDto.getAmount(), restDto.getNote());
     }
 
     @Override

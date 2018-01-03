@@ -1,17 +1,16 @@
 package org.kirillgaidai.income.rest.controller;
 
-import org.kirillgaidai.income.rest.dto.ResponseMessage;
 import org.kirillgaidai.income.rest.dto.category.CategoryCreateRestDto;
 import org.kirillgaidai.income.rest.dto.category.CategoryGetRestDto;
 import org.kirillgaidai.income.rest.dto.category.CategoryUpdateRestDto;
 import org.kirillgaidai.income.rest.mappers.IGenericRestDtoMapper;
 import org.kirillgaidai.income.service.dto.CategoryDto;
-import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.IGenericService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +27,13 @@ public class CategoryRest
         extends SerialRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto>
         implements ISerialRest<CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto> {
 
+    final private static Logger LOGGER = LoggerFactory.getLogger(CategoryRest.class);
+
     @Autowired
-    public CategoryRest(IGenericService<CategoryDto> service, IGenericRestDtoMapper<CategoryGetRestDto,
-            CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto> mapper) {
+    public CategoryRest(
+            IGenericService<CategoryDto> service,
+            IGenericRestDtoMapper<
+                    CategoryGetRestDto, CategoryCreateRestDto, CategoryUpdateRestDto, CategoryDto> mapper) {
         super(service, mapper);
     }
 
@@ -38,6 +41,7 @@ public class CategoryRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CategoryGetRestDto> getList() {
+        LOGGER.debug("Entering method");
         return super.getList();
     }
 
@@ -45,22 +49,25 @@ public class CategoryRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public CategoryGetRestDto get(@PathVariable("id") Integer id) {
+        LOGGER.debug("Entering method");
         return super.get(id);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CategoryGetRestDto create(@Valid @RequestBody CategoryCreateRestDto newRestDto) {
+        LOGGER.debug("Entering method");
         return super.create(newRestDto);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CategoryGetRestDto update(@Valid @RequestBody CategoryUpdateRestDto restDto) {
+        LOGGER.debug("Entering method");
         return super.update(restDto);
     }
 
@@ -68,13 +75,8 @@ public class CategoryRest
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Integer id) {
+        LOGGER.debug("Entering method");
         super.delete(id);
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(IncomeServiceNotFoundException.class)
-    public ResponseMessage handleNoFoundException(IncomeServiceNotFoundException exception) {
-        return new ResponseMessage(exception.getMessage());
     }
 
 }

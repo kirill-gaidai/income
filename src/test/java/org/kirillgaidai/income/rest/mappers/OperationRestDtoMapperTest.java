@@ -34,15 +34,15 @@ public class OperationRestDtoMapperTest {
 
     @Test
     public void testToDto_UpdateNotNull() throws Exception {
-        OperationUpdateRestDto dto = new OperationUpdateRestDto(1, 2, 3, day, amount, "note1");
-        OperationDto expected = new OperationDto(1, 2, null, 3, null, day, amount, "note1");
+        OperationUpdateRestDto dto = new OperationUpdateRestDto(1, 3, amount, "note1");
+        OperationDto expected = new OperationDto(1, null, null, 3, null, null, amount, "note1");
         OperationDto actual = mapper.toDto(dto);
         assertEntityEquals(expected, actual);
     }
 
     @Test
     public void testToDto_UpdateNull() throws Exception {
-        assertNull(mapper.toDto(null));
+        assertNull(mapper.toDto((OperationUpdateRestDto) null));
     }
 
     @Test

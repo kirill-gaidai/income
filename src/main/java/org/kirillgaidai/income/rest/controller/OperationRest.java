@@ -37,8 +37,10 @@ public class OperationRest
     private final static Logger LOGGER = LoggerFactory.getLogger(OperationRest.class);
 
     @Autowired
-    public OperationRest(IGenericService<OperationDto> service, IGenericRestDtoMapper<OperationGetRestDto,
-            OperationCreateRestDto, OperationUpdateRestDto, OperationDto> mapper) {
+    public OperationRest(
+            IGenericService<OperationDto> service,
+            IGenericRestDtoMapper<
+                    OperationGetRestDto, OperationCreateRestDto, OperationUpdateRestDto, OperationDto> mapper) {
         super(service, mapper);
     }
 
@@ -48,13 +50,16 @@ public class OperationRest
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<OperationGetRestDto> getList() {
         LOGGER.debug("Entering method");
-        throw new UnsupportedOperationException();
+        return super.getList();
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE,
+            params = {"first_day", "last_day", "account_id"})
     public List<OperationGetRestDto> getList(
             @RequestParam("first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate firstDay,
             @RequestParam("last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastDay,
@@ -74,8 +79,8 @@ public class OperationRest
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public OperationGetRestDto create(@Valid @RequestBody OperationCreateRestDto newRestDto) {
         LOGGER.debug("Entering method");
         return super.create(newRestDto);
@@ -83,8 +88,8 @@ public class OperationRest
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public OperationGetRestDto update(@Valid @RequestBody OperationUpdateRestDto restDto) {
         LOGGER.debug("Entering method");
         return super.update(restDto);
