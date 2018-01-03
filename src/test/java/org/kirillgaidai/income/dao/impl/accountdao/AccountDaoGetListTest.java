@@ -35,7 +35,7 @@ public class AccountDaoGetListTest extends AccountDaoBaseTest {
      */
     @Test
     public void testEmpty() throws Exception {
-        namedParameterJdbcTemplate.update("DELETE FROM accounts", Collections.emptyMap());
+        deleteAccountEntities();
         List<AccountEntity> expected = Collections.emptyList();
         List<AccountEntity> actual = accountDao.getList();
         assertEntityListEquals(expected, actual);

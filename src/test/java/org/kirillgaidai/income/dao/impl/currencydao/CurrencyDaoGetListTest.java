@@ -35,7 +35,7 @@ public class CurrencyDaoGetListTest extends CurrencyDaoBaseTest {
      */
     @Test
     public void testEmpty() throws Exception {
-        namedParameterJdbcTemplate.update("DELETE FROM currencies", Collections.emptyMap());
+        deleteCurrencyEntities();
         List<CurrencyEntity> expected = Collections.emptyList();
         List<CurrencyEntity> actual = currencyDao.getList();
         assertEntityListEquals(expected, actual);

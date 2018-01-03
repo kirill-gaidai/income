@@ -94,10 +94,4 @@ public class CurrencyDao extends SerialDao<CurrencyEntity> implements ICurrencyD
                 "AND (0 = (SELECT COUNT(*) FROM accounts WHERE currency_id = :id))";
     }
 
-    @Override
-    protected Map<String, Object> getDeleteOptimisticParamsMap(CurrencyEntity entity) {
-        LOGGER.debug("Entering method");
-        return getUpdateParamsMap(entity);
-    }
-
 }

@@ -35,7 +35,7 @@ public class CategoryDaoGetListTest extends CategoryDaoBaseTest {
      */
     @Test
     public void testEmpty() throws Exception {
-        namedParameterJdbcTemplate.update("DELETE FROM categories", Collections.emptyMap());
+        deleteCategoryEntities();
         List<CategoryEntity> expected = Collections.emptyList();
         List<CategoryEntity> actual = categoryDao.getList();
         assertEntityListEquals(expected, actual);

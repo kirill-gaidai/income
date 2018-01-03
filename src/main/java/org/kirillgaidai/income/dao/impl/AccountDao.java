@@ -87,11 +87,6 @@ public class AccountDao extends SerialDao<AccountEntity> implements IAccountDao 
     }
 
     @Override
-    protected Map<String, Object> getDeleteOptimisticParamsMap(AccountEntity entity) {
-        return getUpdateParamsMap(entity);
-    }
-
-    @Override
     public int getCountByCurrencyId(Integer currencyId) {
         String sql = "SELECT COUNT(*) FROM accounts WHERE currency_id = :currency_id";
         Map<String, Object> params = Collections.singletonMap("currency_id", currencyId);

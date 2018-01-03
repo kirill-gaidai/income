@@ -74,6 +74,8 @@ public abstract class GenericDao<T extends IGenericEntity> implements IGenericDa
 
     protected abstract String getDeleteOptimisticSql();
 
-    protected abstract Map<String, Object> getDeleteOptimisticParamsMap(T entity);
+    protected Map<String, Object> getDeleteOptimisticParamsMap(T entity) {
+        return getUpdateParamsMap(entity);
+    };
 
 }

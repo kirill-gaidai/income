@@ -6,24 +6,28 @@ import org.kirillgaidai.income.dao.entity.CategoryEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
 import org.kirillgaidai.income.dao.entity.RateEntity;
+import org.kirillgaidai.income.dao.entity.UserEntity;
 import org.kirillgaidai.income.dao.impl.AccountDao;
 import org.kirillgaidai.income.dao.impl.BalanceDao;
 import org.kirillgaidai.income.dao.impl.CategoryDao;
 import org.kirillgaidai.income.dao.impl.CurrencyDao;
 import org.kirillgaidai.income.dao.impl.OperationDao;
 import org.kirillgaidai.income.dao.impl.RateDao;
+import org.kirillgaidai.income.dao.impl.UserDao;
 import org.kirillgaidai.income.dao.intf.IAccountDao;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.dao.intf.ICategoryDao;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.dao.intf.IRateDao;
+import org.kirillgaidai.income.dao.intf.IUserDao;
 import org.kirillgaidai.income.dao.rowmappers.AccountEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.BalanceEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.CategoryEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.CurrencyEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.OperationEntityRowMapper;
 import org.kirillgaidai.income.dao.rowmappers.RateEntityRowMapper;
+import org.kirillgaidai.income.dao.rowmappers.UserEntityRowMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.RowMapper;
@@ -75,6 +79,11 @@ public class PersistenceTestConfig {
     }
 
     @Bean
+    public RowMapper<UserEntity> userEntityRowMapper() {
+        return new UserEntityRowMapper();
+    }
+
+    @Bean
     public RowMapper<RateEntity> rateEntityRowMapper() {
         return new RateEntityRowMapper();
     }
@@ -102,6 +111,11 @@ public class PersistenceTestConfig {
     @Bean
     public IOperationDao operationDao() {
         return new OperationDao(namedParameterJdbcTemplate(), operationEntityRowMapper());
+    }
+
+    @Bean
+    public IUserDao userDao() {
+        return new UserDao(namedParameterJdbcTemplate(), userEntityRowMapper());
     }
 
     @Bean

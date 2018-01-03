@@ -131,12 +131,6 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
     }
 
     @Override
-    protected Map<String, Object> getDeleteOptimisticParamsMap(OperationEntity entity) {
-        LOGGER.debug("Entering method");
-        return getUpdateParamsMap(entity);
-    }
-
-    @Override
     public int getCountByAccountId(Integer accountId) {
         LOGGER.debug("Entering method");
         String sql = "SELECT COUNT(*) FROM operations WHERE account_id = :account_id";

@@ -8,12 +8,14 @@ import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.entity.CategoryEntity;
 import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
+import org.kirillgaidai.income.dao.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +34,7 @@ public abstract class DaoBaseTest {
         deleteCurrencyEntities();
         deleteBalanceEntities();
         deleteOperationEntities();
+        deleteUserEntities();
     }
 
     protected void insertAccountEntity(AccountEntity entity) {
@@ -87,6 +90,20 @@ public abstract class DaoBaseTest {
         namedParameterJdbcTemplate.update(sql, params);
     }
 
+    protected void insertUserEntity(UserEntity entity) {
+        String sql = "INSERT INTO users(id, login, password, admin, blocked, token, expires) " +
+                "VALUES(:id, :login, :password, :admin, :blocked, :token, :expires)";
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", entity.getId());
+        params.put("login", entity.getLogin());
+        params.put("password", entity.getPassword());
+        params.put("admin", entity.getAdmin());
+        params.put("blocked", entity.getBlocked());
+        params.put("token", entity.getToken());
+        params.put("expires", Timestamp.valueOf(entity.getExpires()));
+        namedParameterJdbcTemplate.update(sql, params);
+    }
+
     protected void deleteAccountEntities() {
         namedParameterJdbcTemplate.update("DELETE FROM accounts", Collections.emptyMap());
     }
@@ -105,6 +122,10 @@ public abstract class DaoBaseTest {
 
     protected void deleteOperationEntities() {
         namedParameterJdbcTemplate.update("DELETE FROM operations", Collections.emptyMap());
+    }
+
+    protected void deleteUserEntities() {
+        namedParameterJdbcTemplate.update("DELETE FROM users", Collections.emptyMap());
     }
 
 }

@@ -78,9 +78,4 @@ public class CategoryDao extends SerialDao<CategoryEntity> implements ICategoryD
                 "AND (0 = (SELECT COUNT(*) FROM operations WHERE category_id = :id))";
     }
 
-    @Override
-    protected Map<String, Object> getDeleteOptimisticParamsMap(CategoryEntity entity) {
-        return getUpdateParamsMap(entity);
-    }
-
 }

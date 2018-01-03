@@ -169,11 +169,6 @@ public class BalanceDao extends GenericDao<BalanceEntity> implements IBalanceDao
     }
 
     @Override
-    protected Map<String, Object> getDeleteOptimisticParamsMap(BalanceEntity entity) {
-        return getUpdateParamsMap(entity);
-    }
-
-    @Override
     public int getCountByAccountId(Integer accountId) {
         String sql = "SELECT COUNT(*) FROM balances WHERE account_id = :account_id";
         Map<String, Object> params = Collections.singletonMap("account_id", accountId);

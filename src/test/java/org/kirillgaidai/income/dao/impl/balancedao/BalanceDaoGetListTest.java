@@ -33,7 +33,7 @@ public class BalanceDaoGetListTest extends BalanceDaoBaseTest {
      */
     @Test
     public void testEmpty() throws Exception {
-        namedParameterJdbcTemplate.update("DELETE FROM balances", Collections.emptyMap());
+        deleteBalanceEntities();
         List<BalanceEntity> expected = Collections.emptyList();
         List<BalanceEntity> actual = balanceDao.getList();
         assertEntityListEquals(expected, actual);
