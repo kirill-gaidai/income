@@ -8,7 +8,7 @@ import org.kirillgaidai.income.service.impl.CategoryService;
 import org.kirillgaidai.income.service.impl.ServiceBaseTest;
 import org.kirillgaidai.income.service.intf.ICategoryService;
 
-public class CategoryServiceBaseTest extends ServiceBaseTest {
+public abstract class CategoryServiceBaseTest extends ServiceBaseTest {
 
     final protected IGenericConverter<CategoryEntity, CategoryDto> converter = new CategoryConverter();
     final protected ICategoryService service = new CategoryService(categoryDao, serviceHelper, converter);

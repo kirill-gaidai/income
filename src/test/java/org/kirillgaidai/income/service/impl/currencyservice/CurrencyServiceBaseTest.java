@@ -8,7 +8,7 @@ import org.kirillgaidai.income.service.impl.CurrencyService;
 import org.kirillgaidai.income.service.impl.ServiceBaseTest;
 import org.kirillgaidai.income.service.intf.ICurrencyService;
 
-public class CurrencyServiceBaseTest extends ServiceBaseTest {
+public abstract class CurrencyServiceBaseTest extends ServiceBaseTest {
 
     final protected IGenericConverter<CurrencyEntity, CurrencyDto> converter = new CurrencyConverter();
     final protected ICurrencyService service = new CurrencyService(currencyDao, serviceHelper, converter);
