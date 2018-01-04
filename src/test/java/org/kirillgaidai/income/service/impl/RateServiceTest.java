@@ -9,6 +9,7 @@ import org.kirillgaidai.income.dao.intf.ICategoryDao;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
 import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.dao.intf.IRateDao;
+import org.kirillgaidai.income.dao.intf.IUserDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.converter.RateConverter;
 import org.kirillgaidai.income.service.dto.RateDto;
@@ -35,10 +36,11 @@ public class RateServiceTest {
     final private ICategoryDao categoryDao = mock(ICategoryDao.class);
     final private ICurrencyDao currencyDao = mock(ICurrencyDao.class);
     final private IOperationDao operationDao = mock(IOperationDao.class);
+    final private IUserDao userDao = mock(IUserDao.class);
     final private IRateDao rateDao = mock(IRateDao.class);
 
     final private ServiceHelper serviceHelper =
-            new ServiceHelper(accountDao, balanceDao, categoryDao, currencyDao, operationDao);
+            new ServiceHelper(accountDao, balanceDao, categoryDao, currencyDao, operationDao, userDao);
     final private IGenericConverter<RateEntity, RateDto> rateConverter = mock(RateConverter.class);
 
     final private IRateService rateService = new RateService(rateDao, serviceHelper, rateConverter);

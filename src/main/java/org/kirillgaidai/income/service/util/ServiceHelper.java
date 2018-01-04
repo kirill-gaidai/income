@@ -7,12 +7,15 @@ import org.kirillgaidai.income.dao.entity.CurrencyEntity;
 import org.kirillgaidai.income.dao.entity.IGenericEntity;
 import org.kirillgaidai.income.dao.entity.ISerialEntity;
 import org.kirillgaidai.income.dao.entity.OperationEntity;
+import org.kirillgaidai.income.dao.entity.UserEntity;
 import org.kirillgaidai.income.dao.intf.IAccountDao;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
 import org.kirillgaidai.income.dao.intf.ICategoryDao;
 import org.kirillgaidai.income.dao.intf.ICurrencyDao;
+import org.kirillgaidai.income.dao.intf.IGenericDao;
 import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.dao.intf.ISerialDao;
+import org.kirillgaidai.income.dao.intf.IUserDao;
 import org.kirillgaidai.income.service.exception.IncomeServiceDependentOnException;
 import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.exception.optimistic.IncomeServiceOptimisticCreateException;
@@ -39,6 +42,7 @@ public class ServiceHelper {
     final private ICategoryDao categoryDao;
     final private ICurrencyDao currencyDao;
     final private IOperationDao operationDao;
+    final private IUserDao userDao;
 
     @Autowired
     public ServiceHelper(
@@ -46,23 +50,19 @@ public class ServiceHelper {
             IBalanceDao balanceDao,
             ICategoryDao categoryDao,
             ICurrencyDao currencyDao,
-            IOperationDao operationDao) {
+            IOperationDao operationDao,
+            IUserDao userDao) {
         this.accountDao = accountDao;
         this.balanceDao = balanceDao;
         this.categoryDao = categoryDao;
         this.currencyDao = currencyDao;
         this.operationDao = operationDao;
+        this.userDao = userDao;
     }
 
     public AccountEntity getAccountEntity(Integer accountId) {
         LOGGER.debug("Entering method");
-        AccountEntity result = accountDao.get(accountId);
-        if (result == null) {
-            String message = String.format("Account with id %d not found", accountId);
-            LOGGER.error(message);
-            throw new IncomeServiceNotFoundException(message);
-        }
-        return result;
+        return getEntity(accountId, accountDao, AccountEntity.class);
     }
 
     public BalanceEntity getBalanceEntity(Integer accountId, LocalDate day, int precedence) {
@@ -99,35 +99,22 @@ public class ServiceHelper {
 
     public CategoryEntity getCategoryEntity(Integer categoryId) {
         LOGGER.debug("Entering method");
-        CategoryEntity result = categoryDao.get(categoryId);
-        if (result == null) {
-            String message = String.format("Category with id %d not found", categoryId);
-            LOGGER.error(message);
-            throw new IncomeServiceNotFoundException(message);
-        }
-        return result;
+        return getEntity(categoryId, categoryDao, CategoryEntity.class);
     }
 
     public CurrencyEntity getCurrencyEntity(Integer currencyId) {
         LOGGER.debug("Entering method");
-        CurrencyEntity result = currencyDao.get(currencyId);
-        if (result == null) {
-            String message = String.format("Currency with id %d not found", currencyId);
-            LOGGER.error(message);
-            throw new IncomeServiceNotFoundException(message);
-        }
-        return result;
+        return getEntity(currencyId, currencyDao, CurrencyEntity.class);
     }
 
     public OperationEntity getOperationEntity(Integer operationId) {
         LOGGER.debug("Entering method");
-        OperationEntity result = operationDao.get(operationId);
-        if (result == null) {
-            String message = String.format("Operation with id %d not found", operationId);
-            LOGGER.error(message);
-            throw new IncomeServiceNotFoundException(message);
-        }
-        return result;
+        return getEntity(operationId, operationDao, OperationEntity.class);
+    }
+
+    public UserEntity getUserEntity(Integer userId) {
+        LOGGER.debug("Entering method");
+        return getEntity(userId, userDao, UserEntity.class);
     }
 
     private <E extends ISerialEntity> E getEntity(Integer id, ISerialDao<E> dao, Class<E> clazz) {
@@ -161,6 +148,11 @@ public class ServiceHelper {
         return getListByIds(ids, operationDao, OperationEntity.class);
     }
 
+    public List<UserEntity> getUserListByIds(Set<Integer> ids) {
+        LOGGER.debug("Entering method");
+        return getListByIds(ids, userDao, UserEntity.class);
+    }
+
     private <E extends ISerialEntity> List<E> getListByIds(Set<Integer> ids, ISerialDao<E> dao, Class<E> clazz) {
         LOGGER.debug("Entering method");
         if (ids.isEmpty()) {
@@ -182,11 +174,7 @@ public class ServiceHelper {
 
     public void createAccountEntity(AccountEntity accountEntity) {
         LOGGER.debug("Entering method");
-        if (accountDao.insert(accountEntity) != 1) {
-            String message = "Account create failure";
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticCreateException(message);
-        }
+        createEntity(accountEntity, accountDao, AccountEntity.class);
     }
 
     public void createBalanceEntity(BalanceEntity balanceEntity) {
@@ -201,26 +189,28 @@ public class ServiceHelper {
 
     public void createCategoryEntity(CategoryEntity categoryEntity) {
         LOGGER.debug("Entering method");
-        if (categoryDao.insert(categoryEntity) != 1) {
-            String message = "Category create failure";
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticCreateException(message);
-        }
+        createEntity(categoryEntity, categoryDao, CategoryEntity.class);
     }
 
     public void createCurrencyEntity(CurrencyEntity currencyEntity) {
         LOGGER.debug("Entering method");
-        if (currencyDao.insert(currencyEntity) != 1) {
-            String message = "Currency create failure";
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticCreateException(message);
-        }
+        createEntity(currencyEntity, currencyDao, CurrencyEntity.class);
     }
 
     public void createOperationEntity(OperationEntity operationEntity) {
         LOGGER.debug("Entering method");
-        if (operationDao.insert(operationEntity) != 1) {
-            String message = "Operation create failure";
+        createEntity(operationEntity, operationDao, OperationEntity.class);
+    }
+
+    public void createUserEntity(UserEntity userEntity) {
+        LOGGER.debug("Entering method");
+        createEntity(userEntity, userDao, UserEntity.class);
+    }
+
+    private <E extends ISerialEntity> void createEntity(E entity, IGenericDao<E> dao, Class<E> clazz) {
+        LOGGER.debug("Entering method");
+        if (dao.insert(entity) != 1) {
+            String message = String.format("%s create failure", getEntityName(clazz));
             LOGGER.error(message);
             throw new IncomeServiceOptimisticCreateException(message);
         }
@@ -228,11 +218,7 @@ public class ServiceHelper {
 
     public void updateAccountEntity(AccountEntity newAccountEntity, AccountEntity oldAccountEntity) {
         LOGGER.debug("Entering method");
-        if (accountDao.update(newAccountEntity, oldAccountEntity) != 1) {
-            String message = String.format("Account with id %d update failure", newAccountEntity.getId());
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticUpdateException(message);
-        }
+        updateEntity(newAccountEntity, oldAccountEntity, accountDao, AccountEntity.class);
     }
 
     public void updateBalanceEntity(BalanceEntity newBalanceEntity, BalanceEntity oldBalanceEntity) {
@@ -247,26 +233,28 @@ public class ServiceHelper {
 
     public void updateCategoryEntity(CategoryEntity newCategoryEntity, CategoryEntity oldCategoryEntity) {
         LOGGER.debug("Entering method");
-        if (categoryDao.update(newCategoryEntity, oldCategoryEntity) != 1) {
-            String message = String.format("Category with id %d update failure", newCategoryEntity.getId());
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticUpdateException(message);
-        }
+        updateEntity(newCategoryEntity, oldCategoryEntity, categoryDao, CategoryEntity.class);
     }
 
     public void updateCurrencyEntity(CurrencyEntity newCurrencyEntity, CurrencyEntity oldCurrencyEntity) {
         LOGGER.debug("Entering method");
-        if (currencyDao.update(newCurrencyEntity, oldCurrencyEntity) != 1) {
-            String message = String.format("Currency with id %d update failure", newCurrencyEntity.getId());
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticUpdateException(message);
-        }
+        updateEntity(newCurrencyEntity, oldCurrencyEntity, currencyDao, CurrencyEntity.class);
     }
 
     public void updateOperationEntity(OperationEntity newOperationEntity, OperationEntity oldOperationEntity) {
         LOGGER.debug("Entering method");
-        if (operationDao.update(newOperationEntity, oldOperationEntity) != 1) {
-            String message = String.format("Operation with id %d update failure", newOperationEntity.getId());
+        updateEntity(newOperationEntity, oldOperationEntity, operationDao, OperationEntity.class);
+    }
+
+    public void updateUserEntity(UserEntity newUserEntity, UserEntity oldUserEntity) {
+        LOGGER.debug("Entering method");
+        updateEntity(newUserEntity, oldUserEntity, userDao, UserEntity.class);
+    }
+
+    private <E extends ISerialEntity> void updateEntity(E newEntity, E oldEntity, ISerialDao<E> dao, Class<E> clazz) {
+        LOGGER.debug("Entering method");
+        if (dao.update(newEntity, oldEntity) != 1) {
+            String message = String.format("%s with id %d update failure", getEntityName(clazz), newEntity.getId());
             LOGGER.error(message);
             throw new IncomeServiceOptimisticUpdateException(message);
         }
@@ -274,11 +262,7 @@ public class ServiceHelper {
 
     public void deleteAccountEntity(AccountEntity accountEntity) {
         LOGGER.debug("Entering method");
-        if (accountDao.delete(accountEntity) != 1) {
-            String message = String.format("Account with id %d delete failure", accountEntity.getId());
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticDeleteException(message);
-        }
+        deleteEntity(accountEntity, accountDao, AccountEntity.class);
     }
 
     public void deleteBalanceEntity(BalanceEntity balanceEntity) {
@@ -293,26 +277,28 @@ public class ServiceHelper {
 
     public void deleteCategoryEntity(CategoryEntity categoryEntity) {
         LOGGER.debug("Entering method");
-        if (categoryDao.delete(categoryEntity) != 1) {
-            String message = String.format("Category with id %d delete failure", categoryEntity.getId());
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticDeleteException(message);
-        }
+        deleteEntity(categoryEntity, categoryDao, CategoryEntity.class);
     }
 
     public void deleteCurrencyEntity(CurrencyEntity currencyEntity) {
         LOGGER.debug("Entering meyhod");
-        if (currencyDao.delete(currencyEntity) != 1) {
-            String message = String.format("Currency with id %d delete failure", currencyEntity.getId());
-            LOGGER.error(message);
-            throw new IncomeServiceOptimisticDeleteException(message);
-        }
+        deleteEntity(currencyEntity, currencyDao, CurrencyEntity.class);
     }
 
     public void deleteOperationEntity(OperationEntity operationEntity) {
         LOGGER.debug("Entering method");
-        if (operationDao.delete(operationEntity) != 1) {
-            String message = String.format("Operation with id %d delete failure", operationEntity.getId());
+        deleteEntity(operationEntity, operationDao, OperationEntity.class);
+    }
+
+    public void deleteUserEntity(UserEntity userEntity) {
+        LOGGER.debug("Entering method");
+        deleteEntity(userEntity, userDao, UserEntity.class);
+    }
+
+    private <E extends ISerialEntity> void deleteEntity(E entity, ISerialDao<E> dao, Class<E> clazz) {
+        LOGGER.debug("Entering method");
+        if (dao.delete(entity) != 1) {
+            String message = String.format("%s with id %d delete failure", getEntityName(clazz), entity.getId());
             LOGGER.error(message);
             throw new IncomeServiceOptimisticDeleteException(message);
         }
@@ -356,7 +342,7 @@ public class ServiceHelper {
 
     private String getEntityName(Class<? extends IGenericEntity> clazz) {
         String className = clazz.getName();
-        return className.substring(0, className.length() - 6);
+        return className.substring(className.lastIndexOf(".") + 1, className.length() - 6);
     }
 
 }
