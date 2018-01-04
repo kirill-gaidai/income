@@ -4,7 +4,7 @@ CREATE TABLE users (
   password VARCHAR(1024) NOT NULL,
   admin    BOOLEAN       NOT NULL,
   blocked  BOOLEAN       NOT NULL,
-  token    VARCHAR(20)   NOT NULL,
+  token    VARCHAR(36)   NOT NULL,
   expires  TIMESTAMP     NOT NULL,
   CONSTRAINT pk_users PRIMARY KEY (id)
 );

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS rates;
 DROP TABLE IF EXISTS balances;
 DROP TABLE IF EXISTS operations;
@@ -71,4 +72,15 @@ CREATE TABLE rates (
   CONSTRAINT fk_rates_currencies_currency_id_to FOREIGN KEY (currency_id_to) REFERENCES currencies (id)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT
+);
+
+CREATE TABLE users (
+  id       SERIAL        NOT NULL,
+  login    VARCHAR(10)   NOT NULL,
+  password VARCHAR(1024) NOT NULL,
+  admin    BOOLEAN       NOT NULL,
+  blocked  BOOLEAN       NOT NULL,
+  token    VARCHAR(36)   NOT NULL,
+  expires  TIMESTAMP     NOT NULL,
+  CONSTRAINT pk_users PRIMARY KEY (id)
 );
