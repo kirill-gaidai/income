@@ -40,9 +40,7 @@ public abstract class SerialDao<T extends ISerialEntity> extends GenericDao<T> i
     @Override
     public T get(Integer id) {
         try {
-            return namedParameterJdbcTemplate.queryForObject(
-                    getGetByIdSql(),
-                    Collections.singletonMap(ID_FIELD, id),
+            return namedParameterJdbcTemplate.queryForObject(getGetByIdSql(), Collections.singletonMap(ID_FIELD, id),
                     rowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;

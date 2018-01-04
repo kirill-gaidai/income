@@ -5,11 +5,15 @@ import org.kirillgaidai.income.dao.intf.IUserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,6 +108,25 @@ public class UserDao extends SerialDao<UserEntity> implements IUserDao {
         result.put("old_token", oldEntity.getToken());
         result.put("old_expires", Timestamp.valueOf(oldEntity.getExpires()));
         return result;
+    }
+
+    @Override
+    public UserEntity get(String token) {
+        LOGGER.debug("Entering method");
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+
+        String sql = "SELECT id, login, password, admin, blocked, token, expires FROM users WHERE token = :token";
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, Collections.singletonMap("token", token), rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            String message = "Duplicate user token in db";
+            LOGGER.error(message);
+            throw new IllegalStateException(message, e);
+        }
     }
 
 }
