@@ -111,7 +111,7 @@ public class UserDao extends SerialDao<UserEntity> implements IUserDao {
     }
 
     @Override
-    public UserEntity get(String token) {
+    public UserEntity getByToken(String token) {
         LOGGER.debug("Entering method");
         if (StringUtils.isEmpty(token)) {
             return null;
@@ -124,6 +124,25 @@ public class UserDao extends SerialDao<UserEntity> implements IUserDao {
             return null;
         } catch (IncorrectResultSizeDataAccessException e) {
             String message = "Duplicate user token in db";
+            LOGGER.error(message);
+            throw new IllegalStateException(message, e);
+        }
+    }
+
+    @Override
+    public UserEntity getByLogin(String login) {
+        LOGGER.debug("Entering method");
+        if (StringUtils.isEmpty(login)) {
+            return null;
+        }
+
+        String sql = "SELECT id, login, password, admin, blocked, token, expires FROM users WHERE login = :login";
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, Collections.singletonMap("login", login), rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            String message = "Duplicate user login in db";
             LOGGER.error(message);
             throw new IllegalStateException(message, e);
         }

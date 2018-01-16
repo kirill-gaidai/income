@@ -20,7 +20,7 @@ public class UserDaoGetByTokenTest extends UserDaoBaseTest {
     @Test
     public void testEmptyToken() throws Exception {
         String token = "";
-        UserEntity actual = userDao.get(token);
+        UserEntity actual = userDao.getByToken(token);
         assertNull(actual);
     }
 
@@ -32,7 +32,7 @@ public class UserDaoGetByTokenTest extends UserDaoBaseTest {
     @Test
     public void testNotFound() throws Exception {
         String token = "token";
-        UserEntity actual = userDao.get(token);
+        UserEntity actual = userDao.getByToken(token);
         assertNull(actual);
     }
 
@@ -49,7 +49,7 @@ public class UserDaoGetByTokenTest extends UserDaoBaseTest {
         userDao.insert(duplicateEntity);
 
         try {
-            userDao.get(token);
+            userDao.getByToken(token);
             throwUnreachableException();
         } catch (IllegalStateException e) {
             assertEquals("Duplicate user token in db", e.getMessage());
@@ -66,7 +66,7 @@ public class UserDaoGetByTokenTest extends UserDaoBaseTest {
         String token = "token1";
         UserEntity expected = new UserEntity(1, "admin", "s3cr3t!", true, false, token,
                 LocalDateTime.of(2018, 1, 2, 8, 45, 30));
-        UserEntity actual = userDao.get(token);
+        UserEntity actual = userDao.getByToken(token);
         assertEntityEquals(expected, actual);
     }
 

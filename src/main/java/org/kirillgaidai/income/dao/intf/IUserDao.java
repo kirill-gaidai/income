@@ -15,6 +15,14 @@ public interface IUserDao extends ISerialDao<UserEntity> {
      * @param token token
      * @return user entity
      */
-    UserEntity get(String token);
+    UserEntity getByToken(String token);
+
+    /**
+     * Returns user by login
+     *
+     * @param login login
+     * @return user entity
+     */
+    UserEntity getByLogin(String login);
 
 }
