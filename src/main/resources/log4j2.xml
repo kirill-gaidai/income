@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration monitorInterval="30">
+<Configuration monitorInterval="5">
 
     <Properties>
         <Property name="logsFolder">logs</Property>
@@ -24,13 +24,14 @@
     <!-- Logging levels: off, fatal, error, warn, info, debug, trace/all -->
 
     <Loggers>
-        <Logger name="org.kirillgaidai.income" level="debug" additivity="false">
+        <Logger name="org.kirillgaidai.income" level="fatal" additivity="false">
             <AppenderRef ref="console-appender"/>
-            <AppenderRef ref="file-appender"/>
+        </Logger>
+        <Logger name="org.springframework.security" level="fatal" additivity="false">
+            <AppenderRef ref="console-appender"/>
         </Logger>
         <Root level="error">
             <AppenderRef ref="console-appender"/>
-            <AppenderRef ref="file-appender"/>
         </Root>
     </Loggers>
 </Configuration>
