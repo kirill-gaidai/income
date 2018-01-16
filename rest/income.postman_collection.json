@@ -1,0 +1,703 @@
+{
+	"variables": [],
+	"info": {
+		"name": "income",
+		"_postman_id": "6ad59055-7463-1ddd-e06c-7369e143a8d0",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "accounts",
+			"description": "",
+			"item": [
+				{
+					"name": "get-accounts",
+					"request": {
+						"url": "localhost:8080/rest/rest/accounts",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get-accounts-by-currency-id",
+					"request": {
+						"url": {
+							"raw": "localhost:8080/rest/rest/accounts?currency_id=6",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"rest",
+								"rest",
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "currency_id",
+									"value": "6",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get-account-by-id",
+					"request": {
+						"url": "localhost:8080/rest/rest/accounts/4",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "post-account",
+					"request": {
+						"url": "localhost:8080/rest/rest/accounts",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currencyId\": 6,\n    \"sort\": \"00\",\n    \"title\": \"XXXX\"\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "put-account",
+					"request": {
+						"url": "localhost:8080/rest/rest/accounts",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 9,\n    \"currencyId\": 7,\n    \"sort\": \"99\",\n    \"title\": \"XXXXXX\"\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete-account",
+					"request": {
+						"url": "localhost:8080/rest/rest/accounts/9",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "balances",
+			"description": "",
+			"item": [
+				{
+					"name": "get-balances",
+					"request": {
+						"url": "localhost:8080/rest/rest/balances",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get-balance-by-day-and-account-id",
+					"request": {
+						"url": {
+							"raw": "localhost:8080/rest/rest/balances?day=2017-12-01&account_id=4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"rest",
+								"rest",
+								"balances"
+							],
+							"query": [
+								{
+									"key": "day",
+									"value": "2017-12-01",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "account_id",
+									"value": "4",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "post-balance",
+					"request": {
+						"url": "localhost:8080/rest/rest/balances",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": 5,\n    \"day\": \"2017-12-02\",\n    \"amount\": 100,\n    \"manual\": true\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "put-balance",
+					"request": {
+						"url": "localhost:8080/rest/rest/balances",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": 4,\n    \"day\": \"2017-12-01\",\n    \"amount\": 200,\n    \"manual\": true\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete-balance",
+					"request": {
+						"url": {
+							"raw": "localhost:8080/rest/rest/balances?day=2017-12-01&account_id=4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"rest",
+								"rest",
+								"balances"
+							],
+							"query": [
+								{
+									"key": "day",
+									"value": "2017-12-01",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "account_id",
+									"value": "4",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "categories",
+			"description": "",
+			"item": [
+				{
+					"name": "get-categories",
+					"request": {
+						"url": "localhost:8080/rest/rest/categories",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get-category-by-id",
+					"request": {
+						"url": "localhost:8080/rest/rest/categories/12",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "post-category",
+					"request": {
+						"url": "localhost:8080/rest/rest/categories",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sort\": \"01\",\n    \"title\": \"Перемещение\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "put-category",
+					"request": {
+						"url": "localhost:8080/rest/rest/categories",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": 13,\n    \"sort\": \"00\",\n    \"title\": \"XXXXX\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete-category",
+					"request": {
+						"url": "localhost:8080/rest/rest/categories/13",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "currencies",
+			"description": "",
+			"item": [
+				{
+					"name": "get-currencies",
+					"request": {
+						"url": "localhost:8080/rest/rest/currencies",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "get all currencies"
+					},
+					"response": []
+				},
+				{
+					"name": "get-currency-by-id",
+					"request": {
+						"url": "localhost:8080/rest/rest/currencies/6",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "post-currency",
+					"request": {
+						"url": "localhost:8080/rest/rest/currencies",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"BYR\",\n    \"title\": \"Белорусский рубль (2000)\",\n    \"accuracy\": 0\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "put-currency",
+					"request": {
+						"url": "localhost:8080/rest/rest/currencies",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"BYR\",\n    \"title\": \"Белорусский рубль (2000)\",\n    \"accuracy\": 0\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete-currency",
+					"request": {
+						"url": "localhost:8080/rest/rest/currencies/10",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "operations",
+			"description": "",
+			"item": [
+				{
+					"name": "get-operations",
+					"request": {
+						"url": "localhost:8080/rest/rest/operations",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get-operations-by-interval-and-account-id",
+					"request": {
+						"url": {
+							"raw": "localhost:8080/rest/rest/operations?first_day=2017-11-30&last_day=2017-12-02&account_id=4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"rest",
+								"rest",
+								"operations"
+							],
+							"query": [
+								{
+									"key": "first_day",
+									"value": "2017-11-30",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "last_day",
+									"value": "2017-12-02",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "account_id",
+									"value": "4",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get-operation-by-id",
+					"request": {
+						"url": "localhost:8080/rest/rest/operations/6",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "post-operation",
+					"request": {
+						"url": "localhost:8080/rest/rest/operations",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"accountId\": 4,\n\t\"day\": \"2017-12-02\",\n\t\"categoryId\": 7,\n\t\"amount\": 50,\n\t\"note\": \"Hello, World!\"\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "put-operation",
+					"request": {
+						"url": "localhost:8080/rest/rest/operations",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": 7,\n\t\"categoryId\": 7,\n\t\"amount\": 60,\n\t\"note\": \"Hello, World!\"\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete-operation",
+					"request": {
+						"url": "localhost:8080/rest/rest/operations/8",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "summaries",
+			"description": "",
+			"item": [
+				{
+					"name": "get-summaries",
+					"request": {
+						"url": {
+							"raw": "localhost:8080/rest/rest/summaries?first_day=2017-12-01&last_day=2017-12-05&currency_id=6",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"rest",
+								"rest",
+								"summaries"
+							],
+							"query": [
+								{
+									"key": "first_day",
+									"value": "2017-12-01",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "last_day",
+									"value": "2017-12-05",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "currency_id",
+									"value": "6",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
