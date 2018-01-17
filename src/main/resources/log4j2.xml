@@ -24,10 +24,10 @@
     <!-- Logging levels: off, fatal, error, warn, info, debug, trace/all -->
 
     <Loggers>
-        <Logger name="org.kirillgaidai.income" level="fatal" additivity="false">
+        <Logger name="org.kirillgaidai.income" level="off" additivity="false">
             <AppenderRef ref="console-appender"/>
         </Logger>
-        <Logger name="org.springframework.security" level="fatal" additivity="false">
+        <Logger name="org.springframework" level="off" additivity="false">
             <AppenderRef ref="console-appender"/>
         </Logger>
         <Root level="error">

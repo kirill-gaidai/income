@@ -38,8 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.requiresChannel().anyRequest().requiresSecure();
-        http.authorizeRequests().antMatchers("/", "/favicon.ico", "/login", "/css/**", "/js/**")
-                .permitAll();
+        http.authorizeRequests().antMatchers("/", "/favicon.ico", "/login", "/css/**", "/js/**",
+                "/accounts", "/categories", "/currencies", "/summaries", "/rest/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilterBefore(tokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
         http.formLogin().disable();
@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public Filter tokenAuthenticationProcessingFilter() throws Exception {
-        TokenAuthenticationProcessingFilter filter = new TokenAuthenticationProcessingFilter("/rest/**");
+        TokenAuthenticationProcessingFilter filter = new TokenAuthenticationProcessingFilter("/tmp/rest/**");
         filter.setAuthenticationSuccessHandler(new TokenAuthenticationSuccessHandler());
         filter.setAuthenticationFailureHandler(new TokenAuthenticationFailureHandler());
         filter.setAuthenticationManager(authenticationManagerBean());

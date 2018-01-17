@@ -1,7 +1,6 @@
 package org.kirillgaidai.income.web;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -13,9 +12,24 @@ public class HomeController {
         return "home";
     }
 
-    @RequestMapping("/{page}")
-    public String getCategory(@PathVariable("page") String page) {
-        return page;
+    @RequestMapping(value = "/accounts", method = RequestMethod.GET)
+    public String getAccountsPage() {
+        return "accounts";
+    }
+
+    @RequestMapping(value = "/categories", method = RequestMethod.GET)
+    public String getCategoriesPage() {
+        return "categories";
+    }
+
+    @RequestMapping(value = "/currencies", method = RequestMethod.GET)
+    public String getCurrenciesPage() {
+        return "currencies";
+    }
+
+    @RequestMapping(value = "/summaries", method = RequestMethod.GET)
+    public String getSummariesPage() {
+        return "summaries";
     }
 
 }
