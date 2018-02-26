@@ -152,6 +152,13 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     }
 
     @Override
+    public void delete(Integer accountId, LocalDate day) {
+        LOGGER.debug("Entering method");
+        validateAccountIdAndDay(accountId, day);
+        getDao().delete(accountId, day);
+    }
+
+    @Override
     protected List<BalanceDto> populateAdditionalFields(List<BalanceDto> dtoList) {
         LOGGER.debug("Entering method");
         if (dtoList.isEmpty()) {

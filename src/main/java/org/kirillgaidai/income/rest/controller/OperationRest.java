@@ -49,23 +49,17 @@ public class OperationRest
         return (IOperationService) super.getService();
     }
 
-    @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<OperationGetRestDto> getList() {
-        LOGGER.debug("Entering method");
-        return super.getList();
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE,
-            params = {"first_day", "last_day", "account_id"})
     public List<OperationGetRestDto> getList(
             @RequestParam("first_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate firstDay,
             @RequestParam("last_day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastDay,
-            @RequestParam("account_id") Set<Integer> accountIds) {
+            @RequestParam(value = "account_id", required = false) Set<Integer> accountIds,
+            @RequestParam(value = "category_id", required = false) Set<Integer> categoryIds) {
         LOGGER.debug("Entering method");
-        return getService().getList(accountIds, Collections.emptySet(), firstDay, lastDay).stream()
+        return getService()
+                .getList(accountIds == null ? Collections.emptySet() : accountIds,
+                        categoryIds == null ? Collections.emptySet() : categoryIds, firstDay, lastDay).stream()
                 .map(mapper::toRestDto).collect(Collectors.toList());
     }
 

@@ -79,11 +79,20 @@ public class BalanceRest
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/save", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BalanceGetRestDto save(@Valid @RequestBody BalanceUpdateRestDto restDto) {
+        LOGGER.debug("Entering method");
+        return mapper.toRestDto(service.save(mapper.toDto(restDto)));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.DELETE, params = {"day", "account_id"})
     public void delete(
             @RequestParam("day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day,
             @RequestParam("account_id") Integer accountId) {
         LOGGER.debug("Entering method");
+        getService().delete(accountId, day);
     }
 
 }
