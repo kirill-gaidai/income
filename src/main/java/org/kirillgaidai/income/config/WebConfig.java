@@ -2,6 +2,7 @@ package org.kirillgaidai.income.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
@@ -21,8 +22,19 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
+        registry.addResourceHandler(
+                "/index.html", "/favicon.ico",
+                "/styles.*.bundle.css",
+                "/inline.*.bundle.js", "/main.*.bundle.js", "/polyfills.*.bundle.js",
+                "/glyphicons-halflings-regular.*.eot", "/glyphicons-halflings-regular.*.woff",
+                "/glyphicons-halflings-regular.*.woff2", "/glyphicons-halflings-regular.*.svg",
+                "/glyphicons-halflings-regular.*.ttf"
+        ).addResourceLocations("/resources/");
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
     }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.BeanIds;
@@ -18,8 +19,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.Filter;
+import java.util.Collections;
 
 @EnableWebSecurity
 @Configuration
@@ -37,12 +42,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.requiresChannel().anyRequest().requiresSecure();
-        http.authorizeRequests().antMatchers("/", "/favicon.ico", "/login", "/css/**", "/js/**",
-                "/accounts", "/categories", "/currencies", "/summaries", "/rest/**").permitAll();
-        http.authorizeRequests().anyRequest().authenticated();
+        // http.requiresChannel().anyRequest().requiresSecure();
+        // http.authorizeRequests().antMatchers("/rest/**", "/logout").authenticated();
+        http.authorizeRequests().anyRequest().permitAll();
         http.addFilterBefore(tokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
         http.formLogin().disable();
+        http.cors();
     }
 
     @Override
@@ -67,6 +72,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setAuthenticationFailureHandler(new TokenAuthenticationFailureHandler());
         filter.setAuthenticationManager(authenticationManagerBean());
         return filter;
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList(HttpHeaders.CONTENT_TYPE));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }
