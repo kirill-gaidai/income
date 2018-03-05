@@ -6,6 +6,8 @@ import org.kirillgaidai.income.service.dto.UserDto;
 import org.mockito.internal.util.collections.Sets;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,8 +58,10 @@ public class UserServiceGetListByIdsTest extends UserServiceBaseTest {
         doReturn(entityList).when(userDao).getList(ids);
 
         List<UserDto> expected = Arrays.asList(
-                new UserDto(1, "admin", "s3cr3t!", true, false, "token1", LocalDateTime.of(2018, 1, 2, 8, 45, 30)),
-                new UserDto(2, "blocked", "pass", false, true, "token2", LocalDateTime.of(2018, 1, 2, 9, 45, 30))
+                new UserDto(1, "admin", "s3cr3t!", true, false, "token1",
+                        ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC)),
+                new UserDto(2, "blocked", "pass", false, true, "token2",
+                        ZonedDateTime.of(2018, 1, 2, 9, 45, 30, 0, ZoneOffset.UTC))
         );
         List<UserDto> actual = service.getList(ids);
         assertEntityListEquals(expected, actual);

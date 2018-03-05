@@ -2,12 +2,11 @@ package org.kirillgaidai.income.rest.dto.login;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class LoginResponseRestDto {
 
@@ -17,13 +16,13 @@ public class LoginResponseRestDto {
     private String token;
     @JsonProperty
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime expires;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+    private ZonedDateTime expires;
 
     public LoginResponseRestDto() {
     }
 
-    public LoginResponseRestDto(String token, LocalDateTime expires) {
+    public LoginResponseRestDto(String token, ZonedDateTime expires) {
         this.token = token;
         this.expires = expires;
     }
@@ -36,11 +35,11 @@ public class LoginResponseRestDto {
         this.token = token;
     }
 
-    public LocalDateTime getExpires() {
+    public ZonedDateTime getExpires() {
         return expires;
     }
 
-    public void setExpires(LocalDateTime expires) {
+    public void setExpires(ZonedDateTime expires) {
         this.expires = expires;
     }
 

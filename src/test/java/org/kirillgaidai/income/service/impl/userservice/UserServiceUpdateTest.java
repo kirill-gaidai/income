@@ -1,15 +1,15 @@
 package org.kirillgaidai.income.service.impl.userservice;
 
-import org.h2.engine.User;
 import org.junit.Test;
 import org.kirillgaidai.income.dao.entity.UserEntity;
 import org.kirillgaidai.income.service.dto.UserDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.exception.optimistic.IncomeServiceOptimisticUpdateException;
-import org.kirillgaidai.income.utils.TestUtils;
 import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
@@ -46,7 +46,7 @@ public class UserServiceUpdateTest extends UserServiceBaseTest {
     @Test
     public void testIdIsNull() throws Exception {
         UserDto dto = new UserDto(null, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
 
         try {
             service.update(dto);
@@ -68,7 +68,7 @@ public class UserServiceUpdateTest extends UserServiceBaseTest {
         Integer id = 1;
 
         UserDto dto = new UserDto(id, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
 
         doReturn(null).when(userDao).get(id);
 
@@ -94,7 +94,7 @@ public class UserServiceUpdateTest extends UserServiceBaseTest {
         Integer id = 1;
 
         UserDto dto = new UserDto(id, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
         UserEntity oldEntity = new UserEntity(id, "admin", "s3cr3t", false, true, "token0",
                 LocalDateTime.of(2018, 1, 2, 10, 45, 30));
 
@@ -131,7 +131,7 @@ public class UserServiceUpdateTest extends UserServiceBaseTest {
         Integer id = 1;
 
         UserDto dto = new UserDto(id, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
         UserEntity oldEntity = new UserEntity(id, "admin", "s3cr3t", false, true, "token0",
                 LocalDateTime.of(2018, 1, 2, 10, 45, 30));
 
@@ -139,7 +139,7 @@ public class UserServiceUpdateTest extends UserServiceBaseTest {
         doReturn(1).when(userDao).update(any(UserEntity.class), eq(oldEntity));
 
         UserDto expected = new UserDto(id, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
         UserDto actual = service.update(dto);
         assertEntityEquals(expected, actual);
 

@@ -7,6 +7,8 @@ import org.kirillgaidai.income.service.exception.optimistic.IncomeServiceOptimis
 import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
@@ -44,7 +46,7 @@ public class UserServiceCreateTest extends UserServiceBaseTest {
     @Test
     public void testFailure() throws Exception {
         UserDto dto = new UserDto(null, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
 
         doReturn(0).when(userDao).insert(any(UserEntity.class));
 
@@ -76,12 +78,12 @@ public class UserServiceCreateTest extends UserServiceBaseTest {
     public void testSuccessful() throws Exception {
         Integer id = 1;
         UserDto dto = new UserDto(null, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
 
         doAnswer(getSerialEntityInsertAnswer(id)).when(userDao).insert(any(UserEntity.class));
 
         UserDto expected = new UserDto(id, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
         UserDto actual = service.create(dto);
         assertEntityEquals(expected, actual);
 

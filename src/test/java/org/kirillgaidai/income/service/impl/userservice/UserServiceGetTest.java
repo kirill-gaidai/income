@@ -6,6 +6,8 @@ import org.kirillgaidai.income.service.dto.UserDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
@@ -70,7 +72,7 @@ public class UserServiceGetTest extends UserServiceBaseTest {
         doReturn(entity).when(userDao).get(id);
 
         UserDto expected = new UserDto(id, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
         UserDto actual = service.get(id);
         assertEntityEquals(expected, actual);
 

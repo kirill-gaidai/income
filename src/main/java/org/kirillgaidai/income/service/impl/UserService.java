@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -101,9 +102,17 @@ public class UserService extends SerialService<UserDto, UserEntity> implements I
     @Transactional
     public boolean isLoggedIn(String token) {
         LOGGER.debug("Entering method");
+
+        // User is logged in when token found, user shouldn't be blocked
         UserEntity entity = getDao().getByToken(token);
-        // User is logged in when token found and its expiration time is in future, user shouldn't be blocked
-        return entity != null && !entity.getBlocked() && !LocalDateTime.now().isAfter(entity.getExpires());
+        if (entity == null || entity.getBlocked()) {
+            return false;
+        }
+
+        // User is logged in expiration time is in future
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime expirationTime = ZonedDateTime.of(entity.getExpires(), ZoneOffset.UTC);
+        return !now.isAfter(expirationTime);
     }
 
     @Override
@@ -122,13 +131,28 @@ public class UserService extends SerialService<UserDto, UserEntity> implements I
             token = UUID.randomUUID().toString();
         } while (getDao().getByToken(token) != null);
 
+        ZonedDateTime expirationTime = ZonedDateTime.now(ZoneOffset.UTC).plusHours(1L);
         UserEntity newEntity = new UserEntity(oldEntity.getId(),
                 oldEntity.getLogin(), oldEntity.getPassword(),
                 oldEntity.getAdmin(), oldEntity.getBlocked(),
-                token, LocalDateTime.now().plusHours(1L));
+                token, expirationTime.toLocalDateTime());
         serviceHelper.updateUserEntity(newEntity, oldEntity);
         return new UserDto(null, newEntity.getLogin(), null, newEntity.getAdmin(), null,
-                newEntity.getToken(), newEntity.getExpires());
+                newEntity.getToken(), expirationTime);
+    }
+
+    @Override
+    public void logout(String token) {
+        LOGGER.debug("Entering method");
+        if (StringUtils.isEmpty(token)) {
+            return;
+        }
+        UserEntity oldEntity = getDao().getByToken(token);
+        if (oldEntity == null) {
+            return;
+        }
+        serviceHelper.updateUserEntity(new UserEntity(oldEntity.getId(), oldEntity.getLogin(), oldEntity.getPassword(),
+                oldEntity.getAdmin(), oldEntity.getBlocked(), "", oldEntity.getExpires()), oldEntity);
     }
 
     @Override

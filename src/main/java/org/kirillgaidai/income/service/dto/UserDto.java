@@ -1,6 +1,6 @@
 package org.kirillgaidai.income.service.dto;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class UserDto implements ISerialDto {
 
@@ -10,14 +10,14 @@ public class UserDto implements ISerialDto {
     private Boolean admin;
     private Boolean blocked;
     private String token;
-    private LocalDateTime expires;
+    private ZonedDateTime expires;
 
     public UserDto() {
     }
 
     public UserDto(
             Integer id, String login, String password, Boolean admin, Boolean blocked,
-            String token, LocalDateTime expires) {
+            String token, ZonedDateTime expires) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -77,11 +77,11 @@ public class UserDto implements ISerialDto {
         this.token = token;
     }
 
-    public LocalDateTime getExpires() {
+    public ZonedDateTime getExpires() {
         return expires;
     }
 
-    public void setExpires(LocalDateTime expires) {
+    public void setExpires(ZonedDateTime expires) {
         this.expires = expires;
     }
 

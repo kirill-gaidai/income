@@ -24,4 +24,11 @@ public interface IUserService extends ISerialService<UserDto> {
      */
     UserDto login(UserDto dto);
 
+    /**
+     * Logs out user
+     *
+     * @param token token
+     */
+    void logout(String token);
+
 }

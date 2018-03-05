@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.Filter;
+import java.util.Arrays;
 import java.util.Collections;
 
 @EnableWebSecurity
@@ -43,10 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // http.requiresChannel().anyRequest().requiresSecure();
-        // http.authorizeRequests().antMatchers("/rest/**", "/logout").authenticated();
+        http.authorizeRequests().antMatchers("/rest/**", "/logout").authenticated();
         http.authorizeRequests().anyRequest().permitAll();
         http.addFilterBefore(tokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
         http.formLogin().disable();
+        http.logout().disable();
         http.cors();
     }
 
@@ -67,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public Filter tokenAuthenticationProcessingFilter() throws Exception {
-        TokenAuthenticationProcessingFilter filter = new TokenAuthenticationProcessingFilter("/tmp/rest/**");
+        TokenAuthenticationProcessingFilter filter = new TokenAuthenticationProcessingFilter("/rest/**", "/logout");
         filter.setAuthenticationSuccessHandler(new TokenAuthenticationSuccessHandler());
         filter.setAuthenticationFailureHandler(new TokenAuthenticationFailureHandler());
         filter.setAuthenticationManager(authenticationManagerBean());
@@ -79,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
-        configuration.setAllowedHeaders(Collections.singletonList(HttpHeaders.CONTENT_TYPE));
+        configuration.setAllowedHeaders(Arrays.asList(HttpHeaders.CONTENT_TYPE, "Token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

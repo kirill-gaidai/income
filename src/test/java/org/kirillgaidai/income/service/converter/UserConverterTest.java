@@ -5,6 +5,8 @@ import org.kirillgaidai.income.dao.entity.UserEntity;
 import org.kirillgaidai.income.service.dto.UserDto;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import static org.junit.Assert.assertNull;
 import static org.kirillgaidai.income.utils.TestUtils.assertEntityEquals;
@@ -23,7 +25,7 @@ public class UserConverterTest {
         UserEntity entity = new UserEntity(1, "admin", "s3cr3t!", true, false, "token1",
                 LocalDateTime.of(2018, 1, 2, 8, 45, 30));
         UserDto expected = new UserDto(1, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
         UserDto actual = converter.convertToDto(entity);
         assertEntityEquals(expected, actual);
     }
@@ -47,7 +49,7 @@ public class UserConverterTest {
     @Test
     public void testConvertToEntity_NotNull() throws Exception {
         UserDto dto = new UserDto(1, "admin", "s3cr3t!", true, false, "token1",
-                LocalDateTime.of(2018, 1, 2, 8, 45, 30));
+                ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC));
         UserEntity expected = new UserEntity(1, "admin", "s3cr3t!", true, false, "token1",
                 LocalDateTime.of(2018, 1, 2, 8, 45, 30));
         UserEntity actual = converter.convertToEntity(dto);

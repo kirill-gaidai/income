@@ -5,6 +5,8 @@ import org.kirillgaidai.income.dao.entity.UserEntity;
 import org.kirillgaidai.income.service.dto.UserDto;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,9 +53,12 @@ public class UserServiceGetListTest extends UserServiceBaseTest {
         doReturn(entityList).when(userDao).getList();
 
         List<UserDto> expected = Arrays.asList(
-                new UserDto(1, "admin", "s3cr3t!", true, false, "token1", LocalDateTime.of(2018, 1, 2, 8, 45, 30)),
-                new UserDto(2, "blocked", "pass", false, true, "token2", LocalDateTime.of(2018, 1, 2, 9, 45, 30)),
-                new UserDto(3, "user", "password", false, false, "token3", LocalDateTime.of(2018, 1, 2, 10, 45, 30))
+                new UserDto(1, "admin", "s3cr3t!", true, false, "token1",
+                        ZonedDateTime.of(2018, 1, 2, 8, 45, 30, 0, ZoneOffset.UTC)),
+                new UserDto(2, "blocked", "pass", false, true, "token2",
+                        ZonedDateTime.of(2018, 1, 2, 9, 45, 30, 0, ZoneOffset.UTC)),
+                new UserDto(3, "user", "password", false, false, "token3",
+                        ZonedDateTime.of(2018, 1, 2, 10, 45, 30, 0, ZoneOffset.UTC))
         );
         List<UserDto> actual = service.getList();
         assertEntityListEquals(expected, actual);
