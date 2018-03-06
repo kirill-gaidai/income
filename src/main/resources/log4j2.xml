@@ -27,8 +27,8 @@
         <Logger name="org.kirillgaidai.income" level="off" additivity="false">
             <AppenderRef ref="console-appender"/>
         </Logger>
-        <Logger name="org.springframework" level="off" additivity="false">
-            <AppenderRef ref="console-appender"/>
+        <Logger name="org.springframework" level="debug" additivity="false">
+            <AppenderRef ref="file-appender"/>
         </Logger>
         <Root level="error">
             <AppenderRef ref="console-appender"/>
