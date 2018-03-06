@@ -6,6 +6,7 @@ import org.kirillgaidai.income.dao.intf.IUserDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.UserDto;
 import org.kirillgaidai.income.service.intf.IUserService;
+import org.kirillgaidai.income.service.util.CryptoUtils;
 import org.kirillgaidai.income.service.util.ServiceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +123,9 @@ public class UserService extends SerialService<UserDto, UserEntity> implements I
         validateDto(dto);
 
         UserEntity oldEntity = getDao().getByLogin(dto.getLogin());
-        if (oldEntity == null || oldEntity.getBlocked() || !dto.getPassword().equals(oldEntity.getPassword())) {
+
+        String password = CryptoUtils.encodeString(dto.getPassword());
+        if (oldEntity == null || oldEntity.getBlocked() || !password.equals(oldEntity.getPassword())) {
             return null;
         }
 
