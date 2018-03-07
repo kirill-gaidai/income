@@ -43,13 +43,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.requiresChannel().anyRequest().requiresSecure();
+        // http.requiresChannel().anyRequest().requiresSecure();
         http.authorizeRequests().antMatchers("/rest/**", "/logout").authenticated();
         http.authorizeRequests().anyRequest().permitAll();
         http.addFilterBefore(tokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
         http.formLogin().disable();
         http.logout().disable();
-        // http.cors();
+        http.cors();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
-    /*@Bean
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
@@ -85,6 +85,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }*/
+    }
 
 }
