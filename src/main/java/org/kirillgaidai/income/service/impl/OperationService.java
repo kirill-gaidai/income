@@ -317,12 +317,18 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
 
         // If previous balance is fixed then updating this balance if no balances after this
         if (prevBalanceEntity.getManual()) {
-            if (balanceDao.getAfter(accountId, thisDay) == null) {
+            int operationCount = getDao().getCountByAccountIdAndDay(accountId, thisDay);
+            if (operationCount != 1 && balanceDao.getAfter(accountId, thisDay) == null) {
+                // Recalculating balance only if not deleting last operation and no balance after this
                 BigDecimal newAmount = thisBalanceEntity.getAmount().add(amount);
                 BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay, newAmount, false);
                 serviceHelper.updateBalanceEntity(newBalanceEntity, thisBalanceEntity);
             }
             serviceHelper.deleteOperationEntity(operationEntity);
+            if (operationCount == 1) {
+                // Deleting balance if not fixed and last operation for account on day
+                serviceHelper.deleteBalanceEntity(thisBalanceEntity);
+            }
             return;
         }
 
@@ -339,20 +345,27 @@ public class OperationService extends SerialService<OperationDto, OperationEntit
 
         // At this point no balances are fixed
 
-        if (balanceDao.getAfter(accountId, thisDay) == null) {
-            // If no balances after this, then updating this balance
-            BigDecimal newAmount = thisBalanceEntity.getAmount().add(amount);
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay, newAmount, false);
-            serviceHelper.updateBalanceEntity(newBalanceEntity, thisBalanceEntity);
-        } else if (balanceDao.getBefore(accountId, prevDay) == null) {
-            // If no balances before previous then updating previous balance
-            BigDecimal newAmount = prevBalanceEntity.getAmount().subtract(amount);
-            BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay, newAmount, false);
-            serviceHelper.updateBalanceEntity(newBalanceEntity, prevBalanceEntity);
+        int operationCount = getDao().getCountByAccountIdAndDay(accountId, thisDay);
+        if (operationCount != 1) {
+            if (balanceDao.getAfter(accountId, thisDay) == null) {
+                // If no balances after this, then updating this balance
+                BigDecimal newAmount = thisBalanceEntity.getAmount().add(amount);
+                BalanceEntity newBalanceEntity = new BalanceEntity(accountId, thisDay, newAmount, false);
+                serviceHelper.updateBalanceEntity(newBalanceEntity, thisBalanceEntity);
+            } else if (balanceDao.getBefore(accountId, prevDay) == null) {
+                // If no balances before previous then updating previous balance
+                BigDecimal newAmount = prevBalanceEntity.getAmount().subtract(amount);
+                BalanceEntity newBalanceEntity = new BalanceEntity(accountId, prevDay, newAmount, false);
+                serviceHelper.updateBalanceEntity(newBalanceEntity, prevBalanceEntity);
+            }
         }
 
         // Otherwise, simply deleting operation
         serviceHelper.deleteOperationEntity(operationEntity);
+        if (operationCount == 1) {
+            // Deleting balance anyway if last operation for account on day
+            serviceHelper.deleteBalanceEntity(thisBalanceEntity);
+        }
     }
 
     @Override

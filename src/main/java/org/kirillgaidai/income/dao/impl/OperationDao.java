@@ -146,4 +146,14 @@ public class OperationDao extends SerialDao<OperationEntity> implements IOperati
         return namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
     }
 
+    @Override
+    public int getCountByAccountIdAndDay(Integer accountId, LocalDate day) {
+        LOGGER.debug("Entering method");
+        String sql = "SELECT COUNT(*) FROM operations WHERE (account_id = :account_id) AND (day = :day)";
+        Map<String, Object> params = new HashMap<>();
+        params.put("account_id", accountId);
+        params.put("day", Date.valueOf(day));
+        return namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
+    }
+
 }

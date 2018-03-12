@@ -166,7 +166,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
 
     /**
      * Previous balance is fixed. This balance isn't fixed. After balance isn't found.
-     * This balance is updated. Operation is deleted
+     * This balance is updated. Operation is deleted. Two operations for account and this day
      *
      * @throws Exception exception
      */
@@ -187,6 +187,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         doReturn(operationEntity).when(operationDao).get(operationId);
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
+        doReturn(2).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         doReturn(null).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(thisBalanceEntity));
         doReturn(1).when(operationDao).delete(operationEntity);
@@ -198,6 +199,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(operationDao).get(operationId);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(thisBalanceEntity));
         verify(operationDao).delete(operationEntity);
@@ -208,8 +210,46 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
     }
 
     /**
+     * Previous balance is fixed. This balance isn't fixed. After balance isn't found.
+     * This balance is updated. Operation is deleted. Last operation for account and this day
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testBalancePrevFixedThisNotFixedAfterNotFoundLastOperation() throws Exception {
+        Integer operationId = 1;
+        Integer accountId = 2;
+        Integer categoryId = 3;
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        BigDecimal amount = new BigDecimal("1.25");
+
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("9.00"), false);
+
+        doReturn(operationEntity).when(operationDao).get(operationId);
+        doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
+        doReturn(1).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
+        doReturn(1).when(balanceDao).delete(thisBalanceEntity);
+        doReturn(1).when(operationDao).delete(operationEntity);
+
+        service.delete(operationId);
+
+        verify(operationDao).get(operationId);
+        verify(balanceDao).getBefore(accountId, thisDay);
+        verify(balanceDao).get(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
+        verify(balanceDao).delete(thisBalanceEntity);
+        verify(operationDao).delete(operationEntity);
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
      * Prev balance is fixed. This balance isn't fixed. After balance is found.
-     * No balance is updated. Operation is deleted
+     * No balance is updated. Operation is deleted. Two operations for account and this day
      *
      * @throws Exception exception
      */
@@ -232,6 +272,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         doReturn(operationEntity).when(operationDao).get(operationId);
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
+        doReturn(2).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(operationDao).delete(operationEntity);
 
@@ -240,7 +281,46 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(operationDao).get(operationId);
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
+        verify(operationDao).delete(operationEntity);
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Prev balance is fixed. This balance isn't fixed. After balance is found.
+     * No balance is updated. Operation is deleted. Last operation for account and this day
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testBalancePrevFixedThisNotFixedAfterFoundLastOperation() throws Exception {
+        Integer operationId = 1;
+        Integer accountId = 2;
+        Integer categoryId = 3;
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        BigDecimal amount = new BigDecimal("1.25");
+
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("11.25"), true);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("10.00"), false);
+
+        doReturn(operationEntity).when(operationDao).get(operationId);
+        doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
+        doReturn(1).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
+        doReturn(1).when(balanceDao).delete(thisBalanceEntity);
+        doReturn(1).when(operationDao).delete(operationEntity);
+
+        service.delete(operationId);
+
+        verify(operationDao).get(operationId);
+        verify(balanceDao).getBefore(accountId, thisDay);
+        verify(balanceDao).get(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
+        verify(balanceDao).delete(thisBalanceEntity);
         verify(operationDao).delete(operationEntity);
         verifyNoMoreDaoInteractions();
     }
@@ -328,7 +408,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
 
     /**
      * Before balance isn't found. Previous balance isn't fixed. This balance isn't fixed. After balance isn't found.
-     * This balance is updated. Operation is deleted.
+     * This balance is updated. Operation is deleted. Two operations for account and this day
      *
      * @throws Exception exception
      */
@@ -349,6 +429,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         doReturn(operationEntity).when(operationDao).get(operationId);
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
+        doReturn(2).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(thisBalanceEntity));
         doReturn(1).when(operationDao).delete(operationEntity);
 
@@ -360,6 +441,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(thisBalanceEntity));
         verify(operationDao).delete(operationEntity);
         verifyNoMoreDaoInteractions();
@@ -369,8 +451,46 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
     }
 
     /**
+     * Before balance isn't found. Previous balance isn't fixed. This balance isn't fixed. After balance isn't found.
+     * This balance is updated. Operation is deleted. Last operation for account and this day
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testBalanceBeforeNotFoundPrevNotFixedThisNotFixedAfterNotFoundLastOperation() throws Exception {
+        Integer operationId = 1;
+        Integer accountId = 2;
+        Integer categoryId = 3;
+        LocalDate prevDay = LocalDate.of(2017, 5, 5);
+        LocalDate thisDay = LocalDate.of(2017, 5, 7);
+        BigDecimal amount = new BigDecimal("1.25");
+
+        OperationEntity operationEntity =
+                new OperationEntity(operationId, accountId, categoryId, thisDay, amount, "note");
+        BalanceEntity prevBalanceEntity = new BalanceEntity(accountId, prevDay, new BigDecimal("10.00"), false);
+        BalanceEntity thisBalanceEntity = new BalanceEntity(accountId, thisDay, new BigDecimal("7.75"), false);
+
+        doReturn(operationEntity).when(operationDao).get(operationId);
+        doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
+        doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
+        doReturn(1).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
+        doReturn(1).when(balanceDao).delete(thisBalanceEntity);
+        doReturn(1).when(operationDao).delete(operationEntity);
+
+        service.delete(operationId);
+
+        verify(operationDao).get(operationId);
+        verify(balanceDao).getBefore(accountId, thisDay);
+        verify(balanceDao).get(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
+        verify(balanceDao).delete(thisBalanceEntity);
+        verify(operationDao).delete(operationEntity);
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
      * Before balance is found. Previous balance isn't fixed. This balance isn't fixed. After balance isn't found.
-     * This balance is updated. Operation is deleted.
+     * This balance is updated. Operation is deleted. Two operations for account and this day
      *
      * @throws Exception exception
      */
@@ -394,6 +514,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         doReturn(beforeBalanceEntity).when(balanceDao).getBefore(accountId, prevDay);
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
+        doReturn(2).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         doReturn(null).when(balanceDao).getAfter(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(thisBalanceEntity));
         doReturn(1).when(operationDao).delete(operationEntity);
@@ -406,6 +527,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(thisBalanceEntity));
         verify(operationDao).delete(operationEntity);
         verifyNoMoreDaoInteractions();
@@ -416,12 +538,12 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
 
     /**
      * Before balance isn't found. Previous balance isn't fixed. This balance isn't fixed. After balance is found.
-     * Previous balance is updated. Operation is deleted
+     * Previous balance is updated. Operation is deleted. Two operations for account and this day
      *
      * @throws Exception exception
      */
     @Test
-    public void testBalanceBeforeNotFondPrevNotFixedThisNotFixedAfterFond() throws Exception {
+    public void testBalanceBeforeNotFoundPrevNotFixedThisNotFixedAfterFound() throws Exception {
         Integer operationId = 1;
         Integer accountId = 2;
         Integer categoryId = 3;
@@ -440,6 +562,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
+        doReturn(2).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         doReturn(1).when(balanceDao).update(any(BalanceEntity.class), eq(prevBalanceEntity));
         doReturn(1).when(operationDao).delete(operationEntity);
 
@@ -452,6 +575,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         verify(balanceDao).update(argumentCaptor.capture(), eq(prevBalanceEntity));
         verify(operationDao).delete(operationEntity);
         verifyNoMoreDaoInteractions();
@@ -462,7 +586,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
 
     /**
      * Before balance is found. Previous balance isn't fixed. This balance isn't fixed. After balance is found.
-     * No balance is updated. Operation is deleted
+     * No balance is updated. Operation is deleted. Two operations for account and this day
      *
      * @throws Exception exception
      */
@@ -489,6 +613,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         doReturn(prevBalanceEntity).when(balanceDao).getBefore(accountId, thisDay);
         doReturn(thisBalanceEntity).when(balanceDao).get(accountId, thisDay);
         doReturn(afterBalanceEntity).when(balanceDao).getAfter(accountId, thisDay);
+        doReturn(2).when(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         doReturn(1).when(operationDao).delete(operationEntity);
 
         service.delete(operationId);
@@ -498,6 +623,7 @@ public class OperationServiceDeleteTest extends OperationServiceBaseTest {
         verify(balanceDao).getBefore(accountId, thisDay);
         verify(balanceDao).get(accountId, thisDay);
         verify(balanceDao).getAfter(accountId, thisDay);
+        verify(operationDao).getCountByAccountIdAndDay(accountId, thisDay);
         verify(operationDao).delete(operationEntity);
         verifyNoMoreDaoInteractions();
     }
