@@ -132,10 +132,8 @@ public class UserService extends SerialService<UserDto, UserEntity> implements I
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
         ZonedDateTime oldExpirationTime = ZonedDateTime.of(oldEntity.getExpires(), ZoneOffset.UTC);
 
-        String token;
-        if (!now.isAfter(oldExpirationTime)) {
-            token = oldEntity.getToken();
-        } else {
+        String token = oldEntity.getToken();
+        if (StringUtils.isEmpty(token) || now.isAfter(oldExpirationTime)) {
             do {
                 token = UUID.randomUUID().toString();
             } while (getDao().getByToken(token) != null);
