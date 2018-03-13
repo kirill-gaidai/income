@@ -129,19 +129,26 @@ public class UserService extends SerialService<UserDto, UserEntity> implements I
             return null;
         }
 
-        String token;
-        do {
-            token = UUID.randomUUID().toString();
-        } while (getDao().getByToken(token) != null);
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        ZonedDateTime oldExpirationTime = ZonedDateTime.of(oldEntity.getExpires(), ZoneOffset.UTC);
 
-        ZonedDateTime expirationTime = ZonedDateTime.now(ZoneOffset.UTC).plusHours(1L);
+        String token;
+        if (!now.isAfter(oldExpirationTime)) {
+            token = oldEntity.getToken();
+        } else {
+            do {
+                token = UUID.randomUUID().toString();
+            } while (getDao().getByToken(token) != null);
+        }
+        ZonedDateTime newExpirationTime = now.plusHours(1L);
+
         UserEntity newEntity = new UserEntity(oldEntity.getId(),
                 oldEntity.getLogin(), oldEntity.getPassword(),
                 oldEntity.getAdmin(), oldEntity.getBlocked(),
-                token, expirationTime.toLocalDateTime());
+                token, newExpirationTime.toLocalDateTime());
         serviceHelper.updateUserEntity(newEntity, oldEntity);
         return new UserDto(null, newEntity.getLogin(), null, newEntity.getAdmin(), null,
-                newEntity.getToken(), expirationTime);
+                newEntity.getToken(), newExpirationTime);
     }
 
     @Override
