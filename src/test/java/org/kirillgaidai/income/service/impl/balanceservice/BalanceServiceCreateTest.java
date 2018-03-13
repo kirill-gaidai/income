@@ -117,18 +117,23 @@ public class BalanceServiceCreateTest extends BalanceServiceBaseTest {
 
         doReturn(accountEntity).when(accountDao).get(accountId);
         doReturn(null).when(balanceDao).get(accountId, day);
+        doReturn(1).when(balanceDao).insert(any(BalanceEntity.class));
 
-        try {
-            service.create(dto);
-        } catch (IncomeServiceException e) {
-            assertEquals(String.format("Balance for account with id %d on %s must be manual", accountId, day),
-                    e.getMessage());
-        }
+        BalanceDto expected = new BalanceDto(accountId, "title", day, new BigDecimal("10"), true);
+        BalanceDto actual = service.create(dto);
+        assertEntityEquals(expected, actual);
+
+        ArgumentCaptor<BalanceEntity> argumentCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
 
         verify(accountDao).get(accountId);
         verify(balanceDao).get(accountId, day);
+        verify(balanceDao).insert(argumentCaptor.capture());
 
         verifyNoMoreDaoInteractions();
+
+        BalanceEntity expectedEntity = new BalanceEntity(accountId, day, new BigDecimal("10"), true);
+        BalanceEntity actualEntity = argumentCaptor.getValue();
+        assertEntityEquals(expectedEntity, actualEntity);
     }
 
     /**

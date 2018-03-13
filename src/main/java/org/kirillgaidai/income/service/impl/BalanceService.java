@@ -8,7 +8,6 @@ import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceDuplicateException;
-import org.kirillgaidai.income.service.exception.IncomeServiceException;
 import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.IBalanceService;
 import org.kirillgaidai.income.service.util.ServiceHelper;
@@ -117,25 +116,15 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
 
         if (oldBalanceEntity == null) {
             // If balance does not exist
-
             if (mode == 'U') {
                 // Error if trying to update non-existing balance
                 String message = String.format("Balance for account with id %d on %s not found", accountId, day);
                 LOGGER.error(message);
                 throw new IncomeServiceNotFoundException(message);
             }
-
-            if (!newBalanceEntity.getManual()) {
-                // Error if trying to create balance without fixed flag
-                String message = String.format("Balance for account with id %d on %s must be manual", accountId, day);
-                LOGGER.error(message);
-                throw new IncomeServiceException(message);
-            }
-
-            serviceHelper.createBalanceEntity(newBalanceEntity);
-            BalanceDto result = converter.convertToDto(newBalanceEntity);
-            result.setAccountTitle(accountEntity.getTitle());
-            return result;
+            // Always setting fixed flag when creating manually
+            serviceHelper.createBalanceEntity(new BalanceEntity(accountId, day, newBalanceEntity.getAmount(), true));
+            return new BalanceDto(accountId, accountEntity.getTitle(), day, newBalanceEntity.getAmount(), true);
         }
 
         // After this point old balance exists
@@ -147,44 +136,35 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
             throw new IncomeServiceDuplicateException(message);
         }
 
-        if (newBalanceEntity.getManual()) {
-            // Everything ok if trying to update old balance with new one with fixed flag
+        if (newBalanceEntity.getManual() || operationDao.getCountByAccountIdAndDay(accountId, day) != 0) {
+            // Updating balance if:
+            // trying to update old balance with new one with fixed flag
+            // or operations for account on day exist
             serviceHelper.updateBalanceEntity(newBalanceEntity, oldBalanceEntity);
             BalanceDto result = converter.convertToDto(newBalanceEntity);
             result.setAccountTitle(accountEntity.getTitle());
             return result;
         }
 
-        // Updating old balance with new one without fixed flag means its deletion
-
-        if (operationDao.getCountByAccountIdAndDay(accountId, day) != 0) {
-            // Error if operations at that day exist
-            String message = String.format("Balance for account with is %d on %s must be manual", accountId, day);
-            LOGGER.error(message);
-            throw new IncomeServiceException(message);
-        }
-
-        if (getDao().getBefore(accountId, day) != null) {
-            // Everything is ok if no operations at that day and balance exists before
+        BalanceEntity beforeBalanceEntity = getDao().getBefore(accountId, day);
+        if (beforeBalanceEntity != null) {
+            // Deleting balance if balance before exists
             serviceHelper.deleteBalanceEntity(oldBalanceEntity);
-            BalanceDto result = converter.convertToDto(newBalanceEntity);
-            result.setAccountTitle(accountEntity.getTitle());
-            return result;
+            return new BalanceDto(accountId, accountEntity.getTitle(), day, beforeBalanceEntity.getAmount(), false);
         }
 
         BalanceEntity afterBalanceEntity = getDao().getAfter(accountId, day);
         if (afterBalanceEntity != null && operationDao.getCountByAccountIdAndDay(
                 afterBalanceEntity.getAccountId(), afterBalanceEntity.getDay()) != 0) {
-            // Error if balance after exists and operations for that day exist
-            String message = String.format("Balance for account with is %d on %s must be manual", accountId, day);
-            LOGGER.error(message);
-            throw new IncomeServiceException(message);
+            // Updating balance if no balance before and balance after with operations exist
+            serviceHelper.updateBalanceEntity(new BalanceEntity(accountId, day, newBalanceEntity.getAmount(), true),
+                    oldBalanceEntity);
+            return new BalanceDto(accountId, accountEntity.getTitle(), day, newBalanceEntity.getAmount(), true);
         }
 
+        // Deleting balance if no balance before and no balance after or balance after without operations exist
         serviceHelper.deleteBalanceEntity(oldBalanceEntity);
-        BalanceDto result = converter.convertToDto(newBalanceEntity);
-        result.setAccountTitle(accountEntity.getTitle());
-        return result;
+        return new BalanceDto(accountId, accountEntity.getTitle(), day, BigDecimal.ZERO, false);
     }
 
     @Override
