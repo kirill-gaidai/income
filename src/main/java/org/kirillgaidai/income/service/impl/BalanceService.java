@@ -4,9 +4,12 @@ import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.dao.intf.IAccountDao;
 import org.kirillgaidai.income.dao.intf.IBalanceDao;
+import org.kirillgaidai.income.dao.intf.IOperationDao;
 import org.kirillgaidai.income.service.converter.IGenericConverter;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceDuplicateException;
+import org.kirillgaidai.income.service.exception.IncomeServiceException;
+import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.intf.IBalanceService;
 import org.kirillgaidai.income.service.util.ServiceHelper;
 import org.slf4j.Logger;
@@ -29,15 +32,18 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     final private static Logger LOGGER = LoggerFactory.getLogger(BalanceService.class);
 
     final private IAccountDao accountDao;
+    final private IOperationDao operationDao;
 
     @Autowired
     public BalanceService(
             IBalanceDao balanceDao,
             IAccountDao accountDao,
+            IOperationDao operationDao,
             ServiceHelper serviceHelper,
             IGenericConverter<BalanceEntity, BalanceDto> converter) {
         super(balanceDao, converter, serviceHelper);
         this.accountDao = accountDao;
+        this.operationDao = operationDao;
     }
 
     private IBalanceDao getDao() {
@@ -82,70 +88,100 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     @Transactional
     public BalanceDto create(BalanceDto dto) {
         LOGGER.debug("Entering method");
-
-        validateDto(dto);
-
-        Integer accountId = dto.getAccountId();
-        LocalDate day = dto.getDay();
-
-        validateAccountIdAndDay(accountId, day);
-
-        AccountEntity accountEntity = serviceHelper.getAccountEntity(dto.getAccountId());
-
-        if (getDao().get(accountId, day) != null) {
-            String message = String.format("Balance for account with id %d on %s already exists", accountId, day);
-            LOGGER.error(message);
-            throw new IncomeServiceDuplicateException(message);
-        }
-
-        BalanceEntity entity = converter.convertToEntity(dto);
-        serviceHelper.createBalanceEntity(entity);
-        BalanceDto result = converter.convertToDto(entity);
-        result.setAccountTitle(accountEntity.getTitle());
-        return result;
+        return createOrUpdateBalance(dto, 'C');
     }
 
     @Override
     @Transactional
     public BalanceDto update(BalanceDto dto) {
         LOGGER.debug("Entering method");
-
-        validateDto(dto);
-        validateAccountIdAndDay(dto.getAccountId(), dto.getDay());
-
-        BalanceEntity oldBalanceEntity = serviceHelper.getBalanceEntity(dto.getAccountId(), dto.getDay(), 0);
-        AccountEntity accountEntity = serviceHelper.getAccountEntity(dto.getAccountId());
-
-        BalanceEntity entity = converter.convertToEntity(dto);
-        serviceHelper.updateBalanceEntity(entity, oldBalanceEntity);
-        BalanceDto result = converter.convertToDto(entity);
-
-        result.setAccountTitle(accountEntity.getTitle());
-        return result;
+        return createOrUpdateBalance(dto, 'U');
     }
 
     @Override
     @Transactional
     public BalanceDto save(BalanceDto dto) {
         LOGGER.debug("Entering method");
+        return createOrUpdateBalance(dto, 'S');
+    }
 
+    private BalanceDto createOrUpdateBalance(BalanceDto dto, char mode) {
+        LOGGER.debug("Entering method");
         validateDto(dto);
-
         Integer accountId = dto.getAccountId();
         LocalDate day = dto.getDay();
-
         validateAccountIdAndDay(accountId, day);
-
         AccountEntity accountEntity = serviceHelper.getAccountEntity(accountId);
         BalanceEntity newBalanceEntity = converter.convertToEntity(dto);
-
         BalanceEntity oldBalanceEntity = getDao().get(accountId, day);
+
         if (oldBalanceEntity == null) {
+            // If balance does not exist
+
+            if (mode == 'U') {
+                // Error if trying to update non-existing balance
+                String message = String.format("Balance for account with id %d on %s not found", accountId, day);
+                LOGGER.error(message);
+                throw new IncomeServiceNotFoundException(message);
+            }
+
+            if (!newBalanceEntity.getManual()) {
+                // Error if trying to create balance without fixed flag
+                String message = String.format("Balance for account with id %d on %s must be manual", accountId, day);
+                LOGGER.error(message);
+                throw new IncomeServiceException(message);
+            }
+
             serviceHelper.createBalanceEntity(newBalanceEntity);
-        } else {
-            serviceHelper.updateBalanceEntity(newBalanceEntity, oldBalanceEntity);
+            BalanceDto result = converter.convertToDto(newBalanceEntity);
+            result.setAccountTitle(accountEntity.getTitle());
+            return result;
         }
 
+        // After this point old balance exists
+
+        if (mode == 'C') {
+            // Error if trying to create balance over existing balance
+            String message = String.format("Balance for account with id %d on %s already exists", accountId, day);
+            LOGGER.error(message);
+            throw new IncomeServiceDuplicateException(message);
+        }
+
+        if (newBalanceEntity.getManual()) {
+            // Everything ok if trying to update old balance with new one with fixed flag
+            serviceHelper.updateBalanceEntity(newBalanceEntity, oldBalanceEntity);
+            BalanceDto result = converter.convertToDto(newBalanceEntity);
+            result.setAccountTitle(accountEntity.getTitle());
+            return result;
+        }
+
+        // Updating old balance with new one without fixed flag means its deletion
+
+        if (operationDao.getCountByAccountIdAndDay(accountId, day) != 0) {
+            // Error if operations at that day exist
+            String message = String.format("Balance for account with is %d on %s must be manual", accountId, day);
+            LOGGER.error(message);
+            throw new IncomeServiceException(message);
+        }
+
+        if (getDao().getBefore(accountId, day) != null) {
+            // Everything is ok if no operations at that day and balance exists before
+            serviceHelper.deleteBalanceEntity(oldBalanceEntity);
+            BalanceDto result = converter.convertToDto(newBalanceEntity);
+            result.setAccountTitle(accountEntity.getTitle());
+            return result;
+        }
+
+        BalanceEntity afterBalanceEntity = getDao().getAfter(accountId, day);
+        if (afterBalanceEntity != null && operationDao.getCountByAccountIdAndDay(
+                afterBalanceEntity.getAccountId(), afterBalanceEntity.getDay()) != 0) {
+            // Error if balance after exists and operations for that day exist
+            String message = String.format("Balance for account with is %d on %s must be manual", accountId, day);
+            LOGGER.error(message);
+            throw new IncomeServiceException(message);
+        }
+
+        serviceHelper.deleteBalanceEntity(oldBalanceEntity);
         BalanceDto result = converter.convertToDto(newBalanceEntity);
         result.setAccountTitle(accountEntity.getTitle());
         return result;
@@ -155,7 +191,25 @@ public class BalanceService extends GenericService<BalanceDto, BalanceEntity> im
     public void delete(Integer accountId, LocalDate day) {
         LOGGER.debug("Entering method");
         validateAccountIdAndDay(accountId, day);
-        getDao().delete(accountId, day);
+        BalanceEntity oldBalanceEntity = getDao().get(accountId, day);
+        // Simply exit if no balance for account on day was found
+        if (oldBalanceEntity == null) {
+            return;
+        }
+        // Error if operations for account on current day exist
+        serviceHelper.checkAccountAndDayDependentOperations(accountId, day);
+        // Can delete if no operations for account on current day exist and balance before exists
+        if (getDao().getBefore(accountId, day) != null) {
+            serviceHelper.deleteBalanceEntity(oldBalanceEntity);
+            return;
+        }
+        BalanceEntity afterBalanceEntity = getDao().getAfter(accountId, day);
+        // Error if balance before doesn't exist, and balance after exists, and operations for the next day exist
+        if (afterBalanceEntity != null) {
+            serviceHelper.checkAccountAndDayDependentOperations(
+                    afterBalanceEntity.getAccountId(), afterBalanceEntity.getDay());
+        }
+        serviceHelper.deleteBalanceEntity(oldBalanceEntity);
     }
 
     @Override

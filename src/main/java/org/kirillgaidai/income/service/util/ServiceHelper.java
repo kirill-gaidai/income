@@ -24,6 +24,7 @@ import org.kirillgaidai.income.service.exception.optimistic.IncomeServiceOptimis
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -281,7 +282,7 @@ public class ServiceHelper {
     }
 
     public void deleteCurrencyEntity(CurrencyEntity currencyEntity) {
-        LOGGER.debug("Entering meyhod");
+        LOGGER.debug("Entering method");
         deleteEntity(currencyEntity, currencyDao, CurrencyEntity.class);
     }
 
@@ -326,6 +327,15 @@ public class ServiceHelper {
         LOGGER.debug("Entering method");
         if (operationDao.getCountByCategoryId(categoryId) != 0) {
             String message = String.format("Operations dependent on category with id %d found", categoryId);
+            LOGGER.error(message);
+            throw new IncomeServiceDependentOnException(message);
+        }
+    }
+
+    public void checkAccountAndDayDependentOperations(Integer accountId, LocalDate day) {
+        LOGGER.debug("Entering method");
+        if (operationDao.getCountByAccountIdAndDay(accountId, day) != 0) {
+            String message = String.format("Operations dependent on account with id %d on %s found", accountId, day);
             LOGGER.error(message);
             throw new IncomeServiceDependentOnException(message);
         }

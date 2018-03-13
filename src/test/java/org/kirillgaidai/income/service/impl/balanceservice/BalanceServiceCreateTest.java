@@ -5,6 +5,7 @@ import org.kirillgaidai.income.dao.entity.AccountEntity;
 import org.kirillgaidai.income.dao.entity.BalanceEntity;
 import org.kirillgaidai.income.service.dto.BalanceDto;
 import org.kirillgaidai.income.service.exception.IncomeServiceDuplicateException;
+import org.kirillgaidai.income.service.exception.IncomeServiceException;
 import org.kirillgaidai.income.service.exception.IncomeServiceNotFoundException;
 import org.kirillgaidai.income.service.exception.optimistic.IncomeServiceOptimisticCreateException;
 import org.mockito.ArgumentCaptor;
@@ -77,6 +78,8 @@ public class BalanceServiceCreateTest extends BalanceServiceBaseTest {
     }
 
     /**
+     * Test account not found
+     *
      * @throws Exception exception
      */
     @Test
@@ -95,6 +98,35 @@ public class BalanceServiceCreateTest extends BalanceServiceBaseTest {
         }
 
         verify(accountDao).get(accountId);
+
+        verifyNoMoreDaoInteractions();
+    }
+
+    /**
+     * Test not fixed balance
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testNotFixedBalance() throws Exception {
+        Integer accountId = 1;
+        LocalDate day = LocalDate.of(2017, 11, 27);
+
+        BalanceDto dto = new BalanceDto(accountId, null, day, new BigDecimal("10"), false);
+        AccountEntity accountEntity = new AccountEntity(accountId, 2, "01", "title");
+
+        doReturn(accountEntity).when(accountDao).get(accountId);
+        doReturn(null).when(balanceDao).get(accountId, day);
+
+        try {
+            service.create(dto);
+        } catch (IncomeServiceException e) {
+            assertEquals(String.format("Balance for account with id %d on %s must be manual", accountId, day),
+                    e.getMessage());
+        }
+
+        verify(accountDao).get(accountId);
+        verify(balanceDao).get(accountId, day);
 
         verifyNoMoreDaoInteractions();
     }
